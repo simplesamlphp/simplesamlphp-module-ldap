@@ -205,6 +205,10 @@ class ConfigHelper
                 }
             }
 
+            /**
+             * PHPdoc changed in SSP 1.18; Remove it after release
+             * @var string|null $dn
+             */
             $dn = $ldap->searchfordn(
                 $this->searchBase,
                 $this->searchAttributes,
@@ -213,6 +217,7 @@ class ConfigHelper
                 $this->searchFilter,
                 $this->searchScope
             );
+
             if ($dn === null) {
                 /* User not found with search. */
                 \SimpleSAML\Logger::info($this->location.': Unable to find users DN. username=\''.$username.'\'');
