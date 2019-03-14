@@ -2,6 +2,8 @@
 
 namespace SimpleSAML\Module\ldap\Auth\Source;
 
+use Webmozart\Assert\Assert;
+
 /**
  * LDAP authentication source.
  *
@@ -39,8 +41,8 @@ class LDAPMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
      */
     public function __construct($info, $config)
     {
-        assert(is_array($info));
-        assert(is_array($config));
+        Assert::isArray($info);
+        assert::isArray($config);
 
         // Call the parent constructor first, as required by the interface
         parent::__construct($info, $config);
@@ -99,9 +101,9 @@ class LDAPMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
      */
     protected function login($username, $password, $org, array $sasl_args = null)
     {
-        assert(is_string($username));
-        assert(is_string($password));
-        assert(is_string($org));
+        Assert::string($username);
+        Assert::string($password);
+        Assert::string($org);
 
         if (!array_key_exists($org, $this->ldapOrgs)) {
             // The user has selected an organization which doesn't exist anymore.
