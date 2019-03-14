@@ -2,6 +2,8 @@
 
 namespace SimpleSAML\Module\ldap;
 
+use Webmozart\Assert\Assert;
+
 /**
  * LDAP authentication source configuration parser.
  *
@@ -122,10 +124,9 @@ class ConfigHelper
      * @param array $config  Configuration.
      * @param string $location  The location of this configuration. Used for error reporting.
      */
-    public function __construct($config, $location)
+    public function __construct(array $config, $location)
     {
-        assert(is_array($config));
-        assert(is_string($location));
+        Assert::string($location);
 
         $this->location = $location;
 
@@ -178,8 +179,8 @@ class ConfigHelper
      */
     public function login($username, $password, array $sasl_args = null)
     {
-        assert(is_string($username));
-        assert(is_string($password));
+        Assert::string($username);
+        Assert::string($password);
 
         if (empty($password)) {
             \SimpleSAML\Logger::info($this->location.': Login with empty password disallowed.');
