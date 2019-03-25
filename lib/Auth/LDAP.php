@@ -5,6 +5,8 @@ namespace SimpleSAML\Module\ldap\Auth;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
 
+use Webmozart\Assert\Assert;
+
 /**
  * Constants defining possible errors
  */
@@ -34,9 +36,9 @@ class LDAP
     /**
      * LDAP link identifier.
      *
-     * @var resource|null
+     * @var resource
      */
-    protected $ldap = null;
+    protected $ldap;
 
     /**
      * LDAP user: authz_id if SASL is in use, binding dn otherwise
@@ -244,7 +246,9 @@ class LDAP
     {
         // Create the search filter
         $attribute = self::escape_filter_value($attribute, false);
+        /** @var string $value */
         $value = self::escape_filter_value($value, true);
+
         $filter = '';
         foreach ($attribute as $attr) {
             $filter .= '('.$attr.'='.$value.')';
@@ -368,7 +372,7 @@ class LDAP
         } else {
             // Zero hits not allowed
             throw $this->makeException('Library - LDAP searchfordn(): LDAP search returned zero entries for'.
-                ' filter \'('.join(' | ', $attribute).' = '.$value.')\' on base(s) \'('.join(' & ', $bases).')\'', 2);
+                ' filter \'('.join(' | ', \SimpleSAML\Utils\Arrays::arrayize($attribute)).' = '.$value.')\' on base(s) \'('.join(' & ', $bases).')\'', 2);
         }
     }
 
@@ -409,7 +413,8 @@ class LDAP
             if (count($filters) > 1) {
                 $filter = ($and ? '(&' : '(|').$filter.')';
             }
-        } elseif (is_string($filters)) {
+        } else {
+            Assert::string($filters);
             $filter = $filters;
         }
 
@@ -629,7 +634,9 @@ class LDAP
         if ($entry === false) {
             throw $this->makeException('Library - LDAP getAttributes(): Could not get first entry from DN \''.$dn.'\'');
         }
-        $attributes = @ldap_get_attributes($this->ldap, $entry); // Recycling $attributes... Possibly bad practice.
+        unset($attributes);
+
+        $attributes = @ldap_get_attributes($this->ldap, $entry);
         if ($attributes === false) {
             throw $this->makeException(
                 'Library - LDAP getAttributes(): Could not get attributes of first entry from DN \''.$dn.'\''
@@ -734,7 +741,7 @@ class LDAP
      * @static
      * @param string|array $values Array of values to escape
      * @param bool $singleValue
-     * @return array Array $values, but escaped
+     * @return string|array Array $values, but escaped
      */
     public static function escape_filter_value($values = [], $singleValue = true)
     {
@@ -835,11 +842,13 @@ class LDAP
         $authz_id = '';
         if (function_exists('ldap_exop_whoami')) {
             if (version_compare(phpversion(), '7', '<')) {
+                /** @psalm-suppress TooManyArguments */
                 if (ldap_exop_whoami($this->ldap, $authz_id) !== true) {
                     throw $this->makeException('LDAP whoami exop failure');
                 }
             } else {
-                if (($authz_id = ldap_exop_whoami($this->ldap)) === false) {
+                $authz_id = ldap_exop_whoami($this->ldap);
+                if ($authz_id === false) {
                     throw $this->makeException('LDAP whoami exop failure');
                 }
             }
