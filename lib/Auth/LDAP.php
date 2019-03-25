@@ -7,7 +7,7 @@ namespace SimpleSAML\Module\ldap\Auth;
 /**
  * @deprecated To be removed in a next major release
  */
-if (!class_exists('LDAP')) {
+if (!class_exists('Ldap')) {
     class LDAP extends Ldap
     {
         public function __construct()
