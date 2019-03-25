@@ -51,7 +51,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      * Instance, object of the ldap connection. Stored here to
      * be access later during processing.
      *
-     * @var \SimpleSAML\Module\ldap\Auth\LDAP|null
+     * @var \SimpleSAML\Module\ldap\Auth\Ldap|null
      */
     private $ldap = null;
 
@@ -257,7 +257,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      * rather than setting in the constructor to avoid unnecessarily
      * connecting to LDAP when it might not be needed.
      *
-     * @return \SimpleSAML\Module\ldap\Auth\LDAP
+     * @return \SimpleSAML\Module\ldap\Auth\Ldap
      */
     protected function getLdap()
     {

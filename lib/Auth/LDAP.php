@@ -7,6 +7,6 @@ namespace SimpleSAML\Module\ldap\Auth;
 /**
  * @deprecated To be removed in a next major release
  */
-class Ldap extends LDAP
+class LDAP extends Ldap
 {
 }

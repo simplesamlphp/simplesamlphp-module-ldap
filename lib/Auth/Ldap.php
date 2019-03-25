@@ -702,6 +702,7 @@ class Ldap
         if (isset($config['dnpattern'])) {
             $dn = str_replace('%username%', $username, $config['dnpattern']);
         } else {
+            /** @var string $dn */
             $dn = $this->searchfordn($config['searchbase'], $config['searchattributes'], $username, false);
         }
 
@@ -850,8 +851,9 @@ class Ldap
                 }
             }
         } else {
-            $authz_id = $this->authz_id;
             Assert::string($authz_id);
+            /** @var string $authz_id */
+            $authz_id = $this->authz_id;
         }
 
         $dn = $this->authzidToDn($searchBase, $searchAttributes, $authz_id);
