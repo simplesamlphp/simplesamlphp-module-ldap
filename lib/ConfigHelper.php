@@ -186,7 +186,7 @@ class ConfigHelper
             throw new \SimpleSAML\Error\Error('WRONGUSERPASS');
         }
 
-        $ldap = new \SimpleSAML\Auth\LDAP(
+        $ldap = new Auth\LDAP(
             $this->hostname,
             $this->enableTLS,
             $this->debug,
@@ -271,7 +271,7 @@ class ConfigHelper
      */
     public function searchfordn($attribute, $value, $allowZeroHits)
     {
-        $ldap = new \SimpleSAML\Auth\LDAP(
+        $ldap = new Auth\LDAP(
             $this->hostname,
             $this->enableTLS,
             $this->debug,
@@ -313,7 +313,7 @@ class ConfigHelper
             $attributes = $this->attributes;
         }
 
-        $ldap = new \SimpleSAML\Auth\LDAP(
+        $ldap = new Auth\LDAP(
             $this->hostname,
             $this->enableTLS,
             $this->debug,
