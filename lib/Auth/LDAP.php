@@ -156,14 +156,7 @@ class LDAP
      */
     private function makeException($description, $type = null)
     {
-        $errNo = 0x00;
-
-        // Log LDAP code and description, if possible
-        if (empty($this->ldap)) {
-            Logger::error($description);
-        } else {
-            $errNo = @ldap_errno($this->ldap);
-        }
+        $errNo = @ldap_errno($this->ldap);
 
         // Decide exception type and return
         if ($type) {
@@ -245,7 +238,9 @@ class LDAP
     private function search($base, $attribute, $value, $searchFilter = null, $scope = "subtree")
     {
         // Create the search filter
+        /** @var array $attribute */
         $attribute = self::escape_filter_value($attribute, false);
+
         /** @var string $value */
         $value = self::escape_filter_value($value, true);
 
@@ -636,6 +631,7 @@ class LDAP
         }
         unset($attributes);
 
+        /** @var array|false $attributes */
         $attributes = @ldap_get_attributes($this->ldap, $entry);
         if ($attributes === false) {
             throw $this->makeException(
@@ -706,7 +702,7 @@ class LDAP
         if (isset($config['dnpattern'])) {
             $dn = str_replace('%username%', $username, $config['dnpattern']);
         } else {
-            $dn = $this->searchfordn($config['searchbase'], $config['searchattributes'], $username);
+            $dn = $this->searchfordn($config['searchbase'], $config['searchattributes'], $username, false);
         }
 
         if ($password !== null) {
@@ -847,6 +843,7 @@ class LDAP
                     throw $this->makeException('LDAP whoami exop failure');
                 }
             } else {
+                /** @var string|false $authz_id */
                 $authz_id = ldap_exop_whoami($this->ldap);
                 if ($authz_id === false) {
                     throw $this->makeException('LDAP whoami exop failure');
@@ -854,6 +851,7 @@ class LDAP
             }
         } else {
             $authz_id = $this->authz_id;
+            Assert::string($authz_id);
         }
 
         $dn = $this->authzidToDn($searchBase, $searchAttributes, $authz_id);

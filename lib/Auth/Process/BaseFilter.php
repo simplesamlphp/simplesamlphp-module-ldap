@@ -2,7 +2,7 @@
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
-use SimpleSAML\module\ldap\Auth\LDAP;
+use SimpleSAML\module\ldap\Auth\LDAP as Ldap;
 
 /**
  * This base LDAP filter class can be extended to enable real
@@ -290,7 +290,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         );
 
         // Connect to the LDAP server to be queried during processing
-        $this->ldap = new LDAP($hostname, $enable_tls, $debug, $timeout, $port, $referrals);
+        $this->ldap = new Ldap($hostname, $enable_tls, $debug, $timeout, $port, $referrals);
         $this->ldap->bind($username, $password);
 
         // All done
