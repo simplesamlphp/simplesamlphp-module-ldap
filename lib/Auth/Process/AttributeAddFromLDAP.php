@@ -2,7 +2,7 @@
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
-use SimpleSAML\module\ldap\Auth\LDAP;
+use SimpleSAML\Module\ldap\Auth\Ldap;
 
 /**
  * Filter to add attributes to the identity by executing a query against an LDAP directory
@@ -155,7 +155,7 @@ class AttributeAddFromLDAP extends BaseFilter
             $arrSearch[] = '%'.$attr.'%';
 
             if (strlen($val[0]) > 0) {
-                $arrReplace[] = LDAP::escape_filter_value($val[0]);
+                $arrReplace[] = Ldap::escape_filter_value($val[0]);
             } else {
                 $arrReplace[] = '';
             }
