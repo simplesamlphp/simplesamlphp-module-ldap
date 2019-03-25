@@ -159,7 +159,7 @@ class Ldap
         $errNo = @ldap_errno($this->ldap);
 
         // Decide exception type and return
-        if ($type) {
+        if ($type !== null) {
             if ($errNo !== 0) {
                 // Only log real LDAP errors; not success
                 Logger::error($description.'; cause: \''.ldap_error($this->ldap).'\' (0x'.dechex($errNo).')');
