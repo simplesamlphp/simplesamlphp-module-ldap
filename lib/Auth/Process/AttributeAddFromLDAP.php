@@ -2,7 +2,7 @@
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
-use SimpleSAML\module\ldap\Auth\Ldap;
+use SimpleSAML\Module\ldap\Auth\Ldap;
 
 use Webmozart\Assert\Assert;
 
