@@ -314,7 +314,7 @@ class ConfigHelper
             $attributes = $this->attributes;
         }
 
-        $ldap = new Auth\ldap(
+        $ldap = new Auth\Ldap(
             $this->hostname,
             $this->enableTLS,
             $this->debug,

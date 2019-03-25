@@ -832,7 +832,7 @@ class Ldap
      * @param string $searchBase
      * @param array $searchAttributes
      * @throws \Exception
-     * @return string|null
+     * @return string
      */
     public function whoami($searchBase, $searchAttributes)
     {
@@ -858,7 +858,7 @@ class Ldap
 
         $dn = $this->authzidToDn($searchBase, $searchAttributes, $authz_id);
 
-        if (!isset($dn) || ($dn == '')) {
+        if (empty($dn)) {
             throw $this->makeException('Cannot figure userID');
         }
 
