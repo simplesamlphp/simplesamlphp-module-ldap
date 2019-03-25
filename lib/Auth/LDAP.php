@@ -10,6 +10,10 @@ namespace SimpleSAML\Module\ldap\Auth;
 if (!class_exists('LDAP')) {
     class LDAP extends Ldap
     {
+        public function __construct()
+        {
+            parent::__construct();
+        }
     }
 } else {
     require_once('Ldap.php');
