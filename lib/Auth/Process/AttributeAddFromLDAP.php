@@ -2,7 +2,7 @@
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
-use SimpleSAML\module\Auth\LDAP;
+use SimpleSAML\module\ldap\Auth\LDAP;
 
 /**
  * Filter to add attributes to the identity by executing a query against an LDAP directory
