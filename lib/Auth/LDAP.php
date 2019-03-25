@@ -7,6 +7,10 @@ namespace SimpleSAML\Module\ldap\Auth;
 /**
  * @deprecated To be removed in a next major release
  */
-class LDAP extends Ldap
-{
+if (!class_exists('LDAP')) {
+    class LDAP extends Ldap
+    {
+    }
+} else {
+    require_once('Ldap.php');
 }
