@@ -2,7 +2,7 @@
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
-use SimpleSAML\module\ldap\Auth\LDAP as Ldap;
+use SimpleSAML\module\ldap\Auth\Ldap;
 
 /**
  * This base LDAP filter class can be extended to enable real
