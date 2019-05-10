@@ -841,7 +841,7 @@ class Ldap
         if (function_exists('ldap_exop_whoami')) {
             if (version_compare(phpversion(), '7', '<')) {
                 /** @psalm-suppress TooManyArguments */
-                if (ldap_exop_whoami($this->ldap, $authz_id) !== true) {
+                if (ldap_exop_whoami($this->ldap, $authz_id) === false) {
                     throw $this->makeException('LDAP whoami exop failure');
                 }
             } else {
