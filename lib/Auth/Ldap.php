@@ -605,23 +605,26 @@ class Ldap
      * The array of attributes and their values.
      * @see http://no.php.net/manual/en/function.ldap-read.php
      */
-    public function getAttributes($dn, $attributes = null, $maxsize = null)
+    public function getAttributes($dn, $requested_attributes = null, $maxsize = null)
     {
+        $no_attributes = is_array($requested_attributes) && empty($requested_attributes);
+
         // Preparations, including a pretty debug message...
-        $description = 'all attributes';
-        if (is_array($attributes)) {
-            $description = '\''.join(',', $attributes).'\'';
+        if ($no_attributes) {
+            $description = 'zero attributes';
+        } else if (is_array($requested_attributes)) {
+            $description = '\''.join(',', $requested_attributes).'\'';
         } else {
             // Get all attributes...
-            // TODO: Verify that this originally was the intended behaviour. Could $attributes be a string?
-            $attributes = [];
+            $description = 'all attributes';
+            $requested_attributes = [];
         }
         Logger::debug('Library - LDAP getAttributes(): Getting '.$description.' from DN \''.$dn.'\'');
 
         // Attempt to get attributes
         // TODO: Should aliases be dereferenced?
         /** @var array $attributes */
-        $result = @ldap_read($this->ldap, $dn, 'objectClass=*', $attributes, 0, 0, $this->timeout);
+        $result = @ldap_read($this->ldap, $dn, 'objectClass=*', $requested_attributes, 0, 0, $this->timeout);
         if ($result === false) {
             throw $this->makeException('Library - LDAP getAttributes(): Failed to get attributes from DN \''.$dn.'\'');
         }
@@ -640,42 +643,44 @@ class Ldap
         }
 
         // Parsing each found attribute into our result set
-        $result = []; // Recycling $result... Possibly bad practice.
-        for ($i = 0; $i < $attributes['count']; $i++) {
-            // Ignore attributes that exceed the maximum allowed size
-            $name = $attributes[$i];
-            $attribute = $attributes[$name];
+        $return_attributes = [];
+        if ($no_attributes !== true) {
+            for ($i = 0; $i < $attributes['count']; $i++) {
+                // Ignore attributes that exceed the maximum allowed size
+                $name = $attributes[$i];
+                $attribute = $attributes[$name];
 
-            // Deciding whether to base64 encode
-            $values = [];
-            for ($j = 0; $j < $attribute['count']; $j++) {
-                $value = $attribute[$j];
+                // Deciding whether to base64 encode
+                $values = [];
+                for ($j = 0; $j < $attribute['count']; $j++) {
+                    $value = $attribute[$j];
 
-                if (!empty($maxsize) && strlen($value) > $maxsize) {
-                    // Ignoring and warning
-                    Logger::warning('Library - LDAP getAttributes(): Attribute \''.
-                        $name.'\' exceeded maximum allowed size by '.(strlen($value) - $maxsize));
-                    continue;
+                    if (!empty($maxsize) && strlen($value) > $maxsize) {
+                        // Ignoring and warning
+                        Logger::warning('Library - LDAP getAttributes(): Attribute \''.
+                            $name.'\' exceeded maximum allowed size by '.(strlen($value) - $maxsize));
+                        continue;
+                    }
+
+                    // Base64 encode binary attributes
+                    if (strtolower($name) === 'jpegphoto'
+                        || strtolower($name) === 'objectguid'
+                        || strtolower($name) === 'ms-ds-consistencyguid'
+                    ) {
+                        $values[] = base64_encode($value);
+                    } else {
+                        $values[] = $value;
+                    }
                 }
 
-                // Base64 encode binary attributes
-                if (strtolower($name) === 'jpegphoto'
-                    || strtolower($name) === 'objectguid'
-                    || strtolower($name) === 'ms-ds-consistencyguid'
-                ) {
-                    $values[] = base64_encode($value);
-                } else {
-                    $values[] = $value;
-                }
+                // Adding
+                $result[$name] = $values;
             }
-
-            // Adding
-            $result[$name] = $values;
         }
 
         // We're done
-        Logger::debug('Library - LDAP getAttributes(): Found attributes \'('.join(',', array_keys($result)).')\'');
-        return $result;
+        Logger::debug('Library - LDAP getAttributes(): Found attributes \'('.join(',', array_keys($return_attributes)).')\'');
+        return $return_attributes;
     }
 
 
