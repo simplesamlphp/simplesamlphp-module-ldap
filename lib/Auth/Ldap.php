@@ -623,7 +623,7 @@ class Ldap
 
         // Attempt to get attributes
         // TODO: Should aliases be dereferenced?
-        /** @var array $attributes */
+        /** @var array $requested_attributes */
         $result = @ldap_read($this->ldap, $dn, 'objectClass=*', $requested_attributes, 0, 0, $this->timeout);
         if ($result === false) {
             throw $this->makeException('Library - LDAP getAttributes(): Failed to get attributes from DN \''.$dn.'\'');
@@ -632,7 +632,6 @@ class Ldap
         if ($entry === false) {
             throw $this->makeException('Library - LDAP getAttributes(): Could not get first entry from DN \''.$dn.'\'');
         }
-        unset($attributes);
 
         /** @var array|false $attributes */
         $attributes = @ldap_get_attributes($this->ldap, $entry);
