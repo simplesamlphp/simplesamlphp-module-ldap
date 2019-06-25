@@ -879,7 +879,7 @@ class Ldap
         Logger::warning('Library - LDAP setAttributes(): No array of attributes given for DN \''.$dn.'\'');
         return false;
       } else {
-        Logger::debug('Library - LDAP setAttributes(): Recevied arraydata:'.print_r($attributes,true));
+        Logger::debug('Library - LDAP setAttributes(): Received arraydata:'.print_r($attributes,true));
       }
 
       // Attempt to set attributes
@@ -904,7 +904,7 @@ class Ldap
          Logger::warning('Library - LDAP addAttributes(): No array of attributes given for DN \''.$dn.'\'');
          return false;
        } else {
-         Logger::debug('Library - LDAP addAttributes(): Recevied arraydata:'.print_r($attributes,true));
+         Logger::debug('Library - LDAP addAttributes(): Received arraydata:'.print_r($attributes,true));
        }
 
        // Attempt to add attributes
