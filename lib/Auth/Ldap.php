@@ -863,7 +863,8 @@ class Ldap
 
         return $dn;
     }
-    
+
+
     /**
      * Set for a given DN attributes
      *
@@ -875,19 +876,17 @@ class Ldap
      * Result of operation
      */
     public function setAttributes($dn, array $attributes) {
-      if (!is_array($attributes)) {
-        Logger::warning('Library - LDAP setAttributes(): No array of attributes given for DN \''.$dn.'\'');
-        return false;
-      } else {
-        Logger::debug('Library - LDAP setAttributes(): Received arraydata:'.print_r($attributes,true));
-      }
+      Logger::debug('Library - LDAP setAttributes(): Received arraydata:'.print_r($attributes, true));
 
       // Attempt to set attributes
       $result = @ldap_mod_replace($this->ldap, $dn, $attributes);
-      if ($result === false) throw $this->makeException('Library - LDAP setAttributes(): Failed to set attributes for DN \''.$dn.'\'. Bind necessary?');
+      if ($result === false) {
+          throw $this->makeException('Library - LDAP setAttributes(): Failed to set attributes for DN \''.$dn.'\'. Bind necessary?');
+      }
 
       return $result;
     }
+
 
     /**
       * Adds for a given DN attributes
@@ -900,16 +899,13 @@ class Ldap
       * Result of operation
       */
      public function addAttributes($dn, array $attributes) {
-       if (!is_array($attributes)) {
-         Logger::warning('Library - LDAP addAttributes(): No array of attributes given for DN \''.$dn.'\'');
-         return false;
-       } else {
-         Logger::debug('Library - LDAP addAttributes(): Received arraydata:'.print_r($attributes,true));
-       }
+       Logger::debug('Library - LDAP addAttributes(): Received arraydata:'.print_r($attributes, true));
 
        // Attempt to add attributes
        $result = @ldap_mod_add($this->ldap, $dn, $attributes);
-       if ($result === false) throw $this->makeException('Library - LDAP addAttributes(): Failed to set attributes for DN \''.$dn.'\'. Bind necessary?');
+       if ($result === false) {
+           throw $this->makeException('Library - LDAP addAttributes(): Failed to set attributes for DN \''.$dn.'\'. Bind necessary?');
+       }
 
        return $result;
      }    
