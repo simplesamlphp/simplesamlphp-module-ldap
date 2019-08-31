@@ -874,7 +874,7 @@ class Ldap
      * @return bool
      * Result of operation
      */
-    public function setAttributes($dn, $attributes) {
+    public function setAttributes($dn, array $attributes) {
       if (!is_array($attributes)) {
         Logger::warning('Library - LDAP setAttributes(): No array of attributes given for DN \''.$dn.'\'');
         return false;
@@ -899,7 +899,7 @@ class Ldap
       * @return bool
       * Result of operation
       */
-     public function addAttributes($dn, $attributes) {
+     public function addAttributes($dn, array $attributes) {
        if (!is_array($attributes)) {
          Logger::warning('Library - LDAP addAttributes(): No array of attributes given for DN \''.$dn.'\'');
          return false;
