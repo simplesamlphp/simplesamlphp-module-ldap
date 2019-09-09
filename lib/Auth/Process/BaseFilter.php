@@ -129,8 +129,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
             }
 
             // Get just the specified authsource config values
-            $authsource = $authsource->getConfigItem($config['authsource']);
-            $authsource = $authsource->toArray();
+            $authsource = $authsource->getArray($config['authsource']);
 
             // Make sure it is an ldap source
             // TODO: Support ldap:LDAPMulti, if possible
