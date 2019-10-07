@@ -61,6 +61,14 @@ class AttributeAddFromLDAP extends BaseFilter
      * @var string
      */
     protected $attr_policy;
+    
+    
+    /**
+     * Only run when none of these attributes are set. Empty array implies always run.
+     *
+     * @var array
+     */
+    protected $if_missing_attributes;
 
 
     /**
@@ -83,6 +91,8 @@ class AttributeAddFromLDAP extends BaseFilter
 
         // get the attribute policy
         $this->attr_policy = $this->config->getString('attribute.policy', 'merge');
+        
+        $this->if_missing_attributes = $this->config->getArrayize('if.missing.attributes', []);
     }
 
 
@@ -97,6 +107,14 @@ class AttributeAddFromLDAP extends BaseFilter
         Assert::keyExists($request, 'Attributes');
 
         $attributes = &$request['Attributes'];
+        
+        // skip if any of if_missing_attributes is set
+        foreach($this->if_missing_attributes as $attribute) {
+            if (isset($attributes[$attribute])) {
+                \SimpleSAML\Logger::debug("AttributeAddFromLDAP: skipping because ".$attribute." is present");
+                return;
+            }
+        }
 
         // perform a merge on the ldap_search_filter
         // loop over the attributes and build the search and replace arrays
