@@ -19,103 +19,103 @@ class ConfigHelper
      * String with the location of this configuration.
      * Used for error reporting.
      */
-    private $location;
+    protected $location;
 
     /**
      * The hostname of the LDAP server.
      */
-    private $hostname;
+    protected $hostname;
 
     /**
      * Whether we should use TLS/SSL when contacting the LDAP server.
      */
-    private $enableTLS;
+    protected $enableTLS;
 
     /**
      * Whether debug output is enabled.
      *
      * @var bool
      */
-    private $debug;
+    protected $debug;
 
     /**
      * The timeout for accessing the LDAP server.
      *
      * @var int
      */
-    private $timeout;
+    protected $timeout;
 
     /**
      * The port used when accessing the LDAP server.
      *
      * @var int
      */
-    private $port;
+    protected $port;
 
     /**
      * Whether to follow referrals
      */
-    private $referrals;
+    protected $referrals;
 
     /**
      * Whether we need to search for the users DN.
      */
-    private $searchEnable;
+    protected $searchEnable;
 
     /**
      * The username we should bind with before we can search for the user.
      */
-    private $searchUsername;
+    protected $searchUsername;
 
     /**
      * The password we should bind with before we can search for the user.
      */
-    private $searchPassword;
+    protected $searchPassword;
 
     /**
      * Array with the base DN(s) for the search.
      */
-    private $searchBase;
+    protected $searchBase;
 
     /**
      * The scope of the search.
      */
-    private $searchScope;
+    protected $searchScope;
 
     /**
      * Additional LDAP filter fields for the search
      */
-    private $searchFilter;
+    protected $searchFilter;
 
     /**
      * The attributes which should match the username.
      */
-    private $searchAttributes;
+    protected $searchAttributes;
 
     /**
      * The DN pattern we should use to create the DN from the username.
      */
-    private $dnPattern;
+    protected $dnPattern;
 
     /**
      * The attributes we should fetch. Can be NULL in which case we will fetch all attributes.
      */
-    private $attributes;
+    protected $attributes;
 
     /**
      * The user cannot get all attributes, privileged reader required
      */
-    private $privRead;
+    protected $privRead;
 
     /**
      * The DN we should bind with before we can get the attributes.
      */
-    private $privUsername;
+    protected $privUsername;
 
     /**
      * The password we should bind with before we can get the attributes.
      */
-    private $privPassword;
+    protected $privPassword;
 
 
     /**
