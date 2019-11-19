@@ -5,8 +5,6 @@ namespace SimpleSAML\Module\ldap\Auth;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
 
-use Webmozart\Assert\Assert;
-
 /**
  * Constants defining possible errors
  */
@@ -409,7 +407,6 @@ class Ldap
                 $filter = ($and ? '(&' : '(|').$filter.')';
             }
         } else {
-            Assert::string($filters);
             $filter = $filters;
         }
 
@@ -857,8 +854,6 @@ class Ldap
                 }
             }
         } else {
-            Assert::string($authz_id);
-            /** @var string $authz_id */
             $authz_id = $this->authz_id;
         }
 
