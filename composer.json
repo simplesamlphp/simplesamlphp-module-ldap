@@ -38,6 +38,9 @@
         "simplesamlphp/simplesamlphp": "^1.17",
         "phpunit/phpunit": "~5.7"
     },
+    "suggest": {
+        "ext-ldap": "Needed when using LDAP authentication in SimpleSAMLphp"
+    },
     "support": {
         "issues": "https://github.com/tvdijen/simplesamlphp-module-ldap/issues",
         "source": "https://github.com/tvdijen/simplesamlphp-module-ldap"
