@@ -111,7 +111,10 @@ class AttributeAddFromLDAP extends BaseFilter
         // skip if any of if_missing_attributes is set
         foreach($this->if_missing_attributes as $attribute) {
             if (isset($attributes[$attribute])) {
-                \SimpleSAML\Logger::debug("AttributeAddFromLDAP: skipping because ".$attribute." is present");
+                \SimpleSAML\Logger::debug(
+                    'AttributeAddFromLDAP: '
+                    . 'skipping because ' . $attribute . ' is present'
+                );
                 return;
             }
         }
