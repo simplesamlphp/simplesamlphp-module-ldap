@@ -156,7 +156,7 @@ class AttributeAddFromLDAP extends BaseFilter
         foreach ($attributes as $attr => $val) {
             $arrSearch[] = '%'.$attr.'%';
 
-            if (count($val) > 0 && strlen($val[0]) > 0) {
+            if (is_array($val) && count($val) > 0 && strlen($val[0]) > 0) {
                 $arrReplace[] = Ldap::escape_filter_value($val[0]);
             } else {
                 $arrReplace[] = '';
