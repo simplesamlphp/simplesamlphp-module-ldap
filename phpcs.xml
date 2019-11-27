@@ -4,6 +4,8 @@
         By default it is less stringent about long lines than other coding standards
     </description>
 
+    <file>lib</file>
+    <file>tests</file>
     <!-- Use this to exclude paths. You can have multiple patterns -->
     <!--<exclude-pattern>*/tests/*</exclude-pattern>-->
     <!--<exclude-pattern>*/other/*</exclude-pattern>-->
