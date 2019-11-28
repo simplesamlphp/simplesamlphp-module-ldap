@@ -1,16 +1,23 @@
 <?php
 
+/**
+ * The LDAP class holds helper functions to access an LDAP database.
+ *
+ * @author Andreas Aakre Solberg, UNINETT AS. <andreas.solberg@uninett.no>
+ * @author Anders Lund, UNINETT AS. <anders.lund@uninett.no>
+ * @package SimpleSAMLphp
+ */
+
 namespace SimpleSAML\Module\ldap\Auth;
 
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
-
+use SimpleSAML\Utils;
 use Webmozart\Assert\Assert;
 
 /**
  * Constants defining possible errors
  */
-
 define('ERR_INTERNAL', 1);
 define('ERR_NO_USER', 2);
 define('ERR_WRONG_PW', 3);
@@ -22,14 +29,6 @@ define('ERR_AS_ATTRIBUTE', 6);
 if (!defined('LDAP_OPT_DIAGNOSTIC_MESSAGE')) {
     define('LDAP_OPT_DIAGNOSTIC_MESSAGE', 0x0032);
 }
-
-/**
- * The LDAP class holds helper functions to access an LDAP database.
- *
- * @author Andreas Aakre Solberg, UNINETT AS. <andreas.solberg@uninett.no>
- * @author Anders Lund, UNINETT AS. <anders.lund@uninett.no>
- * @package SimpleSAMLphp
- */
 
 class Ldap
 {
@@ -74,12 +73,12 @@ class Ldap
         $referrals = true
     ) {
         // Debug
-        Logger::debug('Library - LDAP __construct(): Setup LDAP with '.
-            'host=\''.$hostname.
-            '\', tls='.var_export($enable_tls, true).
-            ', debug='.var_export($debug, true).
-            ', timeout='.var_export($timeout, true).
-            ', referrals='.var_export($referrals, true));
+        Logger::debug('Library - LDAP __construct(): Setup LDAP with ' .
+            'host=\'' . $hostname .
+            '\', tls=' . var_export($enable_tls, true) .
+            ', debug=' . var_export($debug, true) .
+            ', timeout=' . var_export($timeout, true) .
+            ', referrals=' . var_export($referrals, true));
 
         /*
          * Set debug level before calling connect. Note that this passes
@@ -98,7 +97,7 @@ class Ldap
         $resource = @ldap_connect($hostname, $port);
         if ($resource === false) {
             throw $this->makeException(
-                'Library - LDAP __construct(): Unable to connect to \''.$hostname.'\'',
+                'Library - LDAP __construct(): Unable to connect to \'' . $hostname . '\'',
                 ERR_INTERNAL
             );
         }
@@ -115,7 +114,7 @@ class Ldap
         // Set referral option
         if (!@ldap_set_option($this->ldap, LDAP_OPT_REFERRALS, $referrals)) {
             throw $this->makeException(
-                'Library - LDAP __construct(): Failed to set LDAP Referrals (LDAP_OPT_REFERRALS) to '.$referrals,
+                'Library - LDAP __construct(): Failed to set LDAP Referrals (LDAP_OPT_REFERRALS) to ' . $referrals,
                 ERR_INTERNAL
             );
         }
@@ -126,12 +125,12 @@ class Ldap
         if ($timeout > 0) {
             if (!@ldap_set_option($this->ldap, LDAP_OPT_NETWORK_TIMEOUT, $timeout)) {
                 Logger::warning(
-                    'Library - LDAP __construct(): Unable to set timeouts (LDAP_OPT_NETWORK_TIMEOUT) to '.$timeout
+                    'Library - LDAP __construct(): Unable to set timeouts (LDAP_OPT_NETWORK_TIMEOUT) to ' . $timeout
                 );
             }
             if (!@ldap_set_option($this->ldap, LDAP_OPT_TIMELIMIT, $timeout)) {
                 Logger::warning(
-                    'Library - LDAP __construct(): Unable to set timeouts (LDAP_OPT_TIMELIMIT) to '.$timeout
+                    'Library - LDAP __construct(): Unable to set timeouts (LDAP_OPT_TIMELIMIT) to ' . $timeout
                 );
             }
         }
@@ -139,8 +138,7 @@ class Ldap
         // Enable TLS, if needed
         if (stripos($hostname, "ldaps:") === false && $enable_tls) {
             if (!@ldap_start_tls($this->ldap)) {
-                throw $this->makeException('Library - LDAP __construct():'.
-                    ' Unable to force TLS', ERR_INTERNAL);
+                throw $this->makeException('Library - LDAP __construct():' . ' Unable to force TLS', ERR_INTERNAL);
             }
         }
     }
@@ -162,7 +160,7 @@ class Ldap
         if ($type !== null) {
             if ($errNo !== 0) {
                 // Only log real LDAP errors; not success
-                Logger::error($description.'; cause: \''.ldap_error($this->ldap).'\' (0x'.dechex($errNo).')');
+                Logger::error($description . '; cause: \'' . ldap_error($this->ldap) . '\' (0x' . dechex($errNo) . ')');
             } else {
                 Logger::error($description);
             }
@@ -181,11 +179,12 @@ class Ldap
             }
         } else {
             if ($errNo !== 0) {
-                $description .= '; cause: \''.ldap_error($this->ldap).'\' (0x'.dechex($errNo).')';
-                if (@ldap_get_option($this->ldap, LDAP_OPT_DIAGNOSTIC_MESSAGE, $extendedError)
+                $description .= '; cause: \'' . ldap_error($this->ldap) . '\' (0x' . dechex($errNo) . ')';
+                if (
+                    @ldap_get_option($this->ldap, LDAP_OPT_DIAGNOSTIC_MESSAGE, $extendedError)
                     && !empty($extendedError)
                 ) {
-                    $description .= '; additional: \''.$extendedError.'\'';
+                    $description .= '; additional: \'' . $extendedError . '\'';
                 }
             }
             switch ($errNo) {
@@ -239,24 +238,26 @@ class Ldap
     {
         // Create the search filter
         /** @var array $attribute */
-        $attribute = self::escape_filter_value($attribute, false);
+        $attribute = self::escapeFilterValue($attribute, false);
 
         /** @var string $value */
-        $value = self::escape_filter_value($value, true);
+        $value = self::escapeFilterValue($value, true);
 
         $filter = '';
         foreach ($attribute as $attr) {
-            $filter .= '('.$attr.'='.$value.')';
+            $filter .= '(' . $attr . '=' . $value . ')';
         }
-        $filter = '(|'.$filter.')';
+        $filter = '(|' . $filter . ')';
 
         // Append LDAP filters if defined
         if ($searchFilter !== null) {
-            $filter = "(&".$filter."".$searchFilter.")";
+            $filter = "(&" . $filter . "" . $searchFilter . ")";
         }
 
         // Search using generated filter
-        Logger::debug('Library - LDAP search(): Searching base ('.$scope.') \''.$base.'\' for \''.$filter.'\'');
+        Logger::debug(
+            'Library - LDAP search(): Searching base (' . $scope . ') \'' . $base . '\' for \'' . $filter . '\''
+        );
         if ($scope === 'base') {
             $result = @ldap_read($this->ldap, $base, $filter, [], 0, 0, $this->timeout, LDAP_DEREF_NEVER);
         } elseif ($scope === 'onelevel') {
@@ -267,7 +268,7 @@ class Ldap
 
         if ($result === false) {
             throw $this->makeException(
-                'Library - LDAP search(): Failed search on base \''.$base.'\' for \''.$filter.'\''
+                'Library - LDAP search(): Failed search on base \'' . $base . '\' for \'' . $filter . '\''
             );
         }
 
@@ -278,13 +279,15 @@ class Ldap
         } elseif ($count > 1) {
             // More than one entry is found. External error
             throw $this->makeException(
-                'Library - LDAP search(): Found '.$count.' entries searching base \''.$base.'\' for \''.$filter.'\'',
+                'Library - LDAP search(): Found ' . $count . ' entries searching base \'' . $base .
+                    '\' for \'' . $filter . '\'',
                 ERR_AS_DATA_INCONSIST
             );
         } elseif ($count === 0) {
             // No entry is fond => wrong username is given (or not registered in the catalogue). User error
             throw $this->makeException(
-                'Library - LDAP search(): Found no entries searching base \''.$base.'\' for \''.$filter.'\'',
+                'Library - LDAP search(): Found no entries searching base \'' . $base .
+                    '\' for \'' . $filter . '\'',
                 ERR_NO_USER
             );
         }
@@ -294,14 +297,15 @@ class Ldap
         $entry = @ldap_first_entry($this->ldap, $result);
         if ($entry === false) {
             throw $this->makeException(
-                'Library - LDAP search(): Unable to retrieve result after searching base \''.
-                    $base.'\' for \''.$filter.'\''
+                'Library - LDAP search(): Unable to retrieve result after searching base \'' .
+                    $base . '\' for \'' . $filter . '\''
             );
         }
         $dn = @ldap_get_dn($this->ldap, $entry);
         if ($dn === false) {
             throw $this->makeException(
-                'Library - LDAP search(): Unable to get DN after searching base \''.$base.'\' for \''.$filter.'\''
+                'Library - LDAP search(): Unable to get DN after searching base \'' . $base .
+                    '\' for \'' . $filter . '\''
             );
         }
         return $dn;
@@ -344,7 +348,7 @@ class Ldap
         $scope = 'subtree'
     ) {
         // Traverse all search bases, returning DN if found
-        $bases = \SimpleSAML\Utils\Arrays::arrayize($base);
+        $bases = Utils\Arrays::arrayize($base);
         foreach ($bases as $current) {
             try {
                 // Single base search
@@ -366,8 +370,9 @@ class Ldap
             return null;
         } else {
             // Zero hits not allowed
-            throw $this->makeException('Library - LDAP searchfordn(): LDAP search returned zero entries for'.
-                ' filter \'('.join(' | ', \SimpleSAML\Utils\Arrays::arrayize($attribute)).' = '.$value.')\' on base(s) \'('.join(' & ', $bases).')\'', 2);
+            throw $this->makeException('Library - LDAP searchfordn(): LDAP search returned zero entries for' .
+                ' filter \'(' . join(' | ', Utils\Arrays::arrayize($attribute)) .
+                ' = ' . $value . ')\' on base(s) \'(' . join(' & ', $bases) . ')\'', 2);
         }
     }
 
@@ -396,7 +401,7 @@ class Ldap
     ) {
         // Escape the filter values, if requested
         if ($escape) {
-            $filters = $this->escape_filter_value($filters, false);
+            $filters = $this->escapeFilterValue($filters, false);
         }
 
         // Build search filter
@@ -406,7 +411,7 @@ class Ldap
                 $filter .= "($attribute=$value)";
             }
             if (count($filters) > 1) {
-                $filter = ($and ? '(&' : '(|').$filter.')';
+                $filter = ($and ? '(&' : '(|') . $filter . ')';
             }
         } else {
             Assert::string($filters);
@@ -424,7 +429,7 @@ class Ldap
             throw $this->makeException('ldap:LdapConnection->search_manual : No base DNs were passed', ERR_INTERNAL);
         }
 
-        $attributes = \SimpleSAML\Utils\Arrays::arrayize($attributes);
+        $attributes = Utils\Arrays::arrayize($attributes);
 
         // Search each base until result is found
         $result = false;
@@ -445,14 +450,14 @@ class Ldap
         // Verify that a result was found in one of the bases
         if ($result === false) {
             throw $this->makeException(
-                'ldap:LdapConnection->search_manual : Failed to search LDAP using base(s) ['.
-                implode('; ', $bases).'] with filter ['.$filter.']. LDAP error ['.
-                ldap_error($this->ldap).']'
+                'ldap:LdapConnection->search_manual : Failed to search LDAP using base(s) [' .
+                implode('; ', $bases) . '] with filter [' . $filter . ']. LDAP error [' .
+                ldap_error($this->ldap) . ']'
             );
         } elseif (@ldap_count_entries($this->ldap, $result) < 1) {
             throw $this->makeException(
-                'ldap:LdapConnection->search_manual : No entries found in LDAP using base(s) ['.
-                implode('; ', $bases).'] with filter ['.$filter.']',
+                'ldap:LdapConnection->search_manual : No entries found in LDAP using base(s) [' .
+                implode('; ', $bases) . '] with filter [' . $filter . ']',
                 ERR_NO_USER
             );
         }
@@ -477,7 +482,8 @@ class Ldap
                 // decide whether to base64 encode or not
                 for ($k = 0; $k < $attribute['count']; $k++) {
                     // base64 encode binary attributes
-                    if (strtolower($name) === 'jpegphoto'
+                    if (
+                        strtolower($name) === 'jpegphoto'
                         || strtolower($name) === 'objectguid'
                         || strtolower($name) === 'objectsid'
                         || strtolower($name) === 'ms-ds-consistencyguid'
@@ -539,7 +545,7 @@ class Ldap
         if ($error === true) {
             // Good
             $this->authz_id = $authz_id;
-            Logger::debug('Library - LDAP bind(): Bind successful with DN \''.$dn.'\'');
+            Logger::debug('Library - LDAP bind(): Bind successful with DN \'' . $dn . '\'');
             return true;
         }
 
@@ -562,7 +568,7 @@ class Ldap
         }
 
         // Bad
-        throw $this->makeException('Library - LDAP bind(): Bind failed with DN \''.$dn.'\'');
+        throw $this->makeException('Library - LDAP bind(): Bind failed with DN \'' . $dn . '\'');
     }
 
 
@@ -579,16 +585,16 @@ class Ldap
         // Attempt to set the LDAP option
         if (!@ldap_set_option($this->ldap, $option, $value)) {
             throw $this->makeException(
-                'ldap:LdapConnection->setOption : Failed to set LDAP option ['.
-                $option.'] with the value ['.$value.'] error: '.ldap_error($this->ldap),
+                'ldap:LdapConnection->setOption : Failed to set LDAP option [' .
+                $option . '] with the value [' . $value . '] error: ' . ldap_error($this->ldap),
                 ERR_INTERNAL
             );
         }
 
         // Log debug message
         Logger::debug(
-            'ldap:LdapConnection->setOption : Set the LDAP option ['.
-            $option.'] with the value ['.$value.']'
+            'ldap:LdapConnection->setOption : Set the LDAP option [' .
+            $option . '] with the value [' . $value . ']'
         );
     }
 
@@ -614,32 +620,34 @@ class Ldap
         // Preparations, including a pretty debug message...
         $description = 'all attributes';
         if (is_array($attributes)) {
-            $description = '\''.join(',', $attributes).'\'';
+            $description = '\'' . join(',', $attributes) . '\'';
         } else {
             // Get all attributes...
             // TODO: Verify that this originally was the intended behaviour. Could $attributes be a string?
             $attributes = [];
         }
-        Logger::debug('Library - LDAP getAttributes(): Getting '.$description.' from DN \''.$dn.'\'');
+        Logger::debug('Library - LDAP getAttributes(): Getting ' . $description . ' from DN \'' . $dn . '\'');
 
         // Attempt to get attributes
         // TODO: Should aliases be dereferenced?
-        /** @var array $attributes */
         $result = @ldap_read($this->ldap, $dn, 'objectClass=*', $attributes, 0, 0, $this->timeout);
         if ($result === false) {
-            throw $this->makeException('Library - LDAP getAttributes(): Failed to get attributes from DN \''.$dn.'\'');
+            throw $this->makeException(
+                'Library - LDAP getAttributes(): Failed to get attributes from DN \'' . $dn . '\''
+            );
         }
         $entry = @ldap_first_entry($this->ldap, $result);
         if ($entry === false) {
-            throw $this->makeException('Library - LDAP getAttributes(): Could not get first entry from DN \''.$dn.'\'');
+            throw $this->makeException(
+                'Library - LDAP getAttributes(): Could not get first entry from DN \'' . $dn . '\''
+            );
         }
         unset($attributes);
 
-        /** @var array|false $attributes */
         $attributes = @ldap_get_attributes($this->ldap, $entry);
         if ($attributes === false) {
             throw $this->makeException(
-                'Library - LDAP getAttributes(): Could not get attributes of first entry from DN \''.$dn.'\''
+                'Library - LDAP getAttributes(): Could not get attributes of first entry from DN \'' . $dn . '\''
             );
         }
 
@@ -657,13 +665,14 @@ class Ldap
 
                 if (!empty($maxsize) && strlen($value) > $maxsize) {
                     // Ignoring and warning
-                    Logger::warning('Library - LDAP getAttributes(): Attribute \''.
-                        $name.'\' exceeded maximum allowed size by '.(strlen($value) - $maxsize));
+                    Logger::warning('Library - LDAP getAttributes(): Attribute \'' .
+                        $name . '\' exceeded maximum allowed size by ' . (strlen($value) - $maxsize));
                     continue;
                 }
 
                 // Base64 encode binary attributes
-                if (strtolower($name) === 'jpegphoto'
+                if (
+                    strtolower($name) === 'jpegphoto'
                     || strtolower($name) === 'objectguid'
                     || strtolower($name) === 'objectsid'
                     || strtolower($name) === 'ms-ds-consistencyguid'
@@ -679,7 +688,7 @@ class Ldap
         }
 
         // We're done
-        Logger::debug('Library - LDAP getAttributes(): Found attributes \'('.join(',', array_keys($result)).')\'');
+        Logger::debug('Library - LDAP getAttributes(): Found attributes \'(' . join(',', array_keys($result)) . ')\'');
         return $result;
     }
 
@@ -718,7 +727,7 @@ class Ldap
             $password = addcslashes($password, ',+"\\<>;*');
             if (!$this->bind($dn, $password)) {
                 Logger::info(
-                    'Library - LDAP validate(): Failed to authenticate \''.$username.'\' using DN \''.$dn.'\''
+                    'Library - LDAP validate(): Failed to authenticate \'' . $username . '\' using DN \'' . $dn . '\''
                 );
                 return false;
             }
@@ -746,10 +755,10 @@ class Ldap
      * @param bool $singleValue
      * @return string|array Array $values, but escaped
      */
-    public static function escape_filter_value($values = [], $singleValue = true)
+    public static function escapeFilterValue($values = [], $singleValue = true)
     {
         // Parameter validation
-        $values = \SimpleSAML\Utils\Arrays::arrayize($values);
+        $values = Utils\Arrays::arrayize($values);
 
         foreach ($values as $key => $val) {
             if ($val === null) {
@@ -791,9 +800,9 @@ class Ldap
             if (ord($char) < 32) {
                 $hex = dechex(ord($char));
                 if (strlen($hex) == 1) {
-                    $hex = '0'.$hex;
+                    $hex = '0' . $hex;
                 }
-                $string = str_replace($char, '\\'.$hex, $string);
+                $string = str_replace($char, '\\' . $hex, $string);
             }
         }
         return $string;
@@ -850,7 +859,6 @@ class Ldap
                     throw $this->makeException('LDAP whoami exop failure');
                 }
             } else {
-                /** @var string|false $authz_id */
                 $authz_id = ldap_exop_whoami($this->ldap);
                 if ($authz_id === false) {
                     throw $this->makeException('LDAP whoami exop failure');

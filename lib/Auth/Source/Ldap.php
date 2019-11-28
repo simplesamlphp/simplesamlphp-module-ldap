@@ -2,6 +2,7 @@
 
 namespace SimpleSAML\Module\ldap\Auth\Source;
 
+use SimpleSAML\Module\ldap\ConfigHelper;
 use Webmozart\Assert\Assert;
 
 /**
@@ -15,7 +16,7 @@ use Webmozart\Assert\Assert;
  * @package SimpleSAMLphp
  */
 
-class LDAP extends \SimpleSAML\Module\core\Auth\UserPassBase
+class Ldap extends \SimpleSAML\Module\core\Auth\UserPassBase
 {
     /**
      * A LDAP configuration object.
@@ -37,9 +38,9 @@ class LDAP extends \SimpleSAML\Module\core\Auth\UserPassBase
         // Call the parent constructor first, as required by the interface
         parent::__construct($info, $config);
 
-        $this->ldapConfig = new \SimpleSAML\Module\ldap\ConfigHelper(
+        $this->ldapConfig = new ConfigHelper(
             $config,
-            'Authentication source '.var_export($this->authId, true)
+            'Authentication source ' . var_export($this->authId, true)
         );
     }
 
