@@ -16,7 +16,7 @@ class BaseFilterTest extends TestCase
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
         $class = new \ReflectionClass($stub);
-        $method = $class->getMethod('var_export');
+        $method = $class->getMethod('varExport');
         $method->setAccessible(true);
 
         $this->assertEquals(

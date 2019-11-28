@@ -1,9 +1,5 @@
 <?php
 
-namespace SimpleSAML\Module\ldap\Auth\Source;
-
-use Webmozart\Assert\Assert;
-
 /**
  * LDAP authentication source.
  *
@@ -15,7 +11,15 @@ use Webmozart\Assert\Assert;
  * @package SimpleSAMLphp
  */
 
-class LDAPMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
+namespace SimpleSAML\Module\ldap\Auth\Source;
+
+use SimpleSAML\Configuration;
+use SimpleSAML\Error;
+use SimpleSAML\Logger;
+use SimpleSAML\Module\ldap\ConfigHelper;
+use Webmozart\Assert\Assert;
+
+class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
 {
     /**
      * An array with descriptions for organizations.
@@ -47,9 +51,9 @@ class LDAPMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
         // Call the parent constructor first, as required by the interface
         parent::__construct($info, $config);
 
-        $cfgHelper = \SimpleSAML\Configuration::loadFromArray(
+        $cfgHelper = Configuration::loadFromArray(
             $config,
-            'Authentication source '.var_export($this->authId, true)
+            'Authentication source ' . var_export($this->authId, true)
         );
 
 
@@ -82,9 +86,10 @@ class LDAPMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
                 $this->orgs[$orgId] = $orgId;
             }
 
-            $orgCfg = new \SimpleSAML\Module\ldap\ConfigHelper(
+            $orgCfg = new ConfigHelper(
                 $orgCfg,
-                'Authentication source '.var_export($this->authId, true).', organization '.var_export($orgId, true)
+                'Authentication source ' . var_export($this->authId, true) .
+                    ', organization ' . var_export($orgId, true)
             );
             $this->ldapOrgs[$orgId] = $orgCfg;
         }
@@ -107,14 +112,14 @@ class LDAPMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
 
         if (!array_key_exists($org, $this->ldapOrgs)) {
             // The user has selected an organization which doesn't exist anymore.
-            \SimpleSAML\Logger::warning('Authentication source '.var_export($this->authId, true).
-                ': Organization seems to have disappeared while the user logged in.'.
-                ' Organization was '.var_export($org, true));
-            throw new \SimpleSAML\Error\Error('WRONGUSERPASS');
+            Logger::warning('Authentication source ' . var_export($this->authId, true) .
+                ': Organization seems to have disappeared while the user logged in.' .
+                ' Organization was ' . var_export($org, true));
+            throw new Error\Error('WRONGUSERPASS');
         }
 
         if ($this->includeOrgInUsername) {
-            $username = $username.'@'.$org;
+            $username = $username . '@' . $org;
         }
 
         return $this->ldapOrgs[$org]->login($username, $password, $sasl_args);

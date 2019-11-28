@@ -1,9 +1,5 @@
 <?php
 
-namespace SimpleSAML\Module\ldap;
-
-use Webmozart\Assert\Assert;
-
 /**
  * LDAP authentication source configuration parser.
  *
@@ -12,6 +8,13 @@ use Webmozart\Assert\Assert;
  *
  * @package SimpleSAMLphp
  */
+
+namespace SimpleSAML\Module\ldap;
+
+use SimpleSAML\Configuration;
+use SimpleSAML\Error;
+use SimpleSAML\Logger;
+use Webmozart\Assert\Assert;
 
 class ConfigHelper
 {
@@ -131,7 +134,7 @@ class ConfigHelper
         $this->location = $location;
 
         // Parse configuration
-        $config = \SimpleSAML\Configuration::loadFromArray($config, $location);
+        $config = Configuration::loadFromArray($config, $location);
 
         $this->hostname = $config->getString('hostname');
         $this->enableTLS = $config->getBoolean('enable_tls', false);
@@ -183,8 +186,8 @@ class ConfigHelper
         Assert::string($password);
 
         if (empty($password)) {
-            \SimpleSAML\Logger::info($this->location.': Login with empty password disallowed.');
-            throw new \SimpleSAML\Error\Error('WRONGUSERPASS');
+            Logger::info($this->location . ': Login with empty password disallowed.');
+            throw new Error\Error('WRONGUSERPASS');
         }
 
         $ldap = new Auth\Ldap(
@@ -206,10 +209,6 @@ class ConfigHelper
                 }
             }
 
-            /**
-             * PHPdoc changed in SSP 1.18; Remove it after release
-             * @var string|null $dn
-             */
             $dn = $ldap->searchfordn(
                 $this->searchBase,
                 $this->searchAttributes,
@@ -221,14 +220,14 @@ class ConfigHelper
 
             if ($dn === null) {
                 /* User not found with search. */
-                \SimpleSAML\Logger::info($this->location.': Unable to find users DN. username=\''.$username.'\'');
-                throw new \SimpleSAML\Error\Error('WRONGUSERPASS');
+                Logger::info($this->location . ': Unable to find users DN. username=\'' . $username . '\'');
+                throw new Error\Error('WRONGUSERPASS');
             }
         }
 
         if (!$ldap->bind($dn, $password, $sasl_args)) {
-            \SimpleSAML\Logger::info($this->location.': '.$username.' failed to authenticate. DN='.$dn);
-            throw new \SimpleSAML\Error\Error('WRONGUSERPASS');
+            Logger::info($this->location . ': ' . $username . ' failed to authenticate. DN=' . $dn);
+            throw new Error\Error('WRONGUSERPASS');
         }
 
         // In case of SASL bind, authenticated and authorized DN may differ
