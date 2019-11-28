@@ -569,7 +569,7 @@ class Ldap
     /**
      * Applies an LDAP option to the current connection.
      *
-     * @throws Exception
+     * @throws \Exception
      * @param mixed $option
      * @param mixed $value
      * @return void
