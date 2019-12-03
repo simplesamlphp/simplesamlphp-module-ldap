@@ -23,8 +23,7 @@
     "autoload": {
         "psr-4": {
             "SimpleSAML\\Module\\ldap\\": "lib/"
-        },
-        "files": ["lib/_autoload.php"]
+        }
     },
     "autoload-dev": {
         "psr-4": {
