@@ -25,12 +25,11 @@ class AttributeAddUsersGroups extends BaseFilter
      * are then added to the request attributes.
      *
      * @throws \SimpleSAML\Error\Exception
-     * @param $request
+     * @param array $request
      * @return void
      */
-    public function process(&$request)
+    public function process(array &$request): void
     {
-        Assert::isArray($request);
         Assert::keyExists($request, 'Attributes');
 
         // Log the process
@@ -82,7 +81,7 @@ class AttributeAddUsersGroups extends BaseFilter
      * @param array $attributes
      * @return array
      */
-    protected function getGroups($attributes)
+    protected function getGroups(array $attributes): array
     {
         // Log the request
         Logger::debug(
@@ -144,7 +143,7 @@ class AttributeAddUsersGroups extends BaseFilter
      * @param array $attributes
      * @return array
      */
-    protected function getGroupsOpenLdap($attributes)
+    protected function getGroupsOpenLdap(array $attributes): array
     {
         // Log the OpenLDAP specific search
         Logger::debug(
@@ -193,7 +192,7 @@ class AttributeAddUsersGroups extends BaseFilter
      * @param array $attributes
      * @return array
      */
-    protected function getGroupsActiveDirectory($attributes)
+    protected function getGroupsActiveDirectory(array $attributes): array
     {
         // Log the AD specific search
         Logger::debug(
@@ -223,6 +222,7 @@ class AttributeAddUsersGroups extends BaseFilter
         return $this->searchActiveDirectory($attributes[$map['dn']][0]);
     }
 
+
     /**
      * Looks for groups from the list of DN's passed. Also
      * recursively searches groups for further membership.
@@ -232,7 +232,7 @@ class AttributeAddUsersGroups extends BaseFilter
      * @param array $memberof
      * @return array
      */
-    protected function search(array $memberof)
+    protected function search(array $memberof): array
     {
         // Used to determine what DN's have already been searched
         static $searched = [];
@@ -308,10 +308,8 @@ class AttributeAddUsersGroups extends BaseFilter
      * @param string $dn
      * @return array
      */
-    protected function searchActiveDirectory($dn)
+    protected function searchActiveDirectory(string $dn): array
     {
-        Assert::stringNotEmpty($dn);
-
         // Shorten the variable name
         $map = &$this->attribute_map;
 

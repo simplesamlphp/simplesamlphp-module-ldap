@@ -65,12 +65,12 @@ class Ldap
      * @psalm-suppress NullArgument
      */
     public function __construct(
-        $hostname,
-        $enable_tls = true,
-        $debug = false,
-        $timeout = 0,
-        $port = 389,
-        $referrals = true
+        string $hostname,
+        bool $enable_tls = true,
+        bool $debug = false,
+        int $timeout = 0,
+        int $port = 389,
+        bool $referrals = true
     ) {
         // Debug
         Logger::debug('Library - LDAP __construct(): Setup LDAP with ' .
@@ -152,7 +152,7 @@ class Ldap
      * @param int|null $type The exception's type
      * @return \Exception
      */
-    private function makeException($description, $type = null)
+    private function makeException(string $description, int $type = null): \Exception
     {
         $errNo = @ldap_errno($this->ldap);
 
@@ -234,8 +234,13 @@ class Ldap
      * - Zero entries were found
      * @psalm-suppress TypeDoesNotContainType
      */
-    private function search($base, $attribute, $value, $searchFilter = null, $scope = "subtree")
-    {
+    private function search(
+        string $base,
+        $attribute,
+        string $value,
+        ?string $searchFilter = null,
+        string $scope = "subtree"
+    ): string {
         // Create the search filter
         /** @var array $attribute */
         $attribute = self::escapeFilterValue($attribute, false);
@@ -342,11 +347,11 @@ class Ldap
     public function searchfordn(
         $base,
         $attribute,
-        $value,
-        $allowZeroHits = false,
-        $searchFilter = null,
-        $scope = 'subtree'
-    ) {
+        string $value,
+        bool $allowZeroHits = false,
+        ?string $searchFilter = null,
+        string $scope = 'subtree'
+    ): ?string {
         // Traverse all search bases, returning DN if found
         $bases = Utils\Arrays::arrayize($base);
         foreach ($bases as $current) {
@@ -395,10 +400,10 @@ class Ldap
         $bases,
         $filters,
         $attributes = [],
-        $and = true,
-        $escape = true,
-        $scope = 'subtree'
-    ) {
+        bool $and = true,
+        bool $escape = true,
+        string $scope = 'subtree'
+    ): array {
         // Escape the filter values, if requested
         if ($escape) {
             $filters = $this->escapeFilterValue($filters, false);
@@ -414,6 +419,7 @@ class Ldap
                 $filter = ($and ? '(&' : '(|') . $filter . ')';
             }
         } else {
+            /** @psalm-suppress RedundantConditionGivenDocblockType */
             Assert::string($filters);
             $filter = $filters;
         }
@@ -516,7 +522,7 @@ class Ldap
      * LDAP_INAPPROPRIATE_AUTH, LDAP_INSUFFICIENT_ACCESS
      * @throws Error\Exception on other errors
      */
-    public function bind($dn, $password, array $sasl_args = null)
+    public function bind(string $dn, string $password, array $sasl_args = null): ?bool
     {
         if ($sasl_args != null) {
             if (!function_exists('ldap_sasl_bind')) {
@@ -580,7 +586,7 @@ class Ldap
      * @param mixed $value
      * @return void
      */
-    public function setOption($option, $value)
+    public function setOption($option, $value): void
     {
         // Attempt to set the LDAP option
         if (!@ldap_set_option($this->ldap, $option, $value)) {
@@ -615,7 +621,7 @@ class Ldap
      * The array of attributes and their values.
      * @see http://no.php.net/manual/en/function.ldap-read.php
      */
-    public function getAttributes($dn, $attributes = null, $maxsize = null)
+    public function getAttributes(string $dn, $attributes = null, int $maxsize = null): array
     {
         // Preparations, including a pretty debug message...
         $description = 'all attributes';
@@ -698,10 +704,10 @@ class Ldap
      *
      * @param array $config
      * @param string $username
-     * @param string $password
+     * @param string|null $password
      * @return array|false
      */
-    public function validate($config, $username, $password = null)
+    public function validate(array $config, string $username, string $password = null)
     {
         /**
          * Escape any characters with a special meaning in LDAP. The following
@@ -755,7 +761,7 @@ class Ldap
      * @param bool $singleValue
      * @return string|array Array $values, but escaped
      */
-    public static function escapeFilterValue($values = [], $singleValue = true)
+    public static function escapeFilterValue($values = [], bool $singleValue = true)
     {
         // Parameter validation
         $values = Utils\Arrays::arrayize($values);
@@ -793,7 +799,7 @@ class Ldap
      * @static
      * @return string
      */
-    public static function asc2hex32($string)
+    public static function asc2hex32(string $string): string
     {
         for ($i = 0; $i < strlen($string); $i++) {
             $char = substr($string, $i, 1);
@@ -808,6 +814,7 @@ class Ldap
         return $string;
     }
 
+
     /**
      * Convert SASL authz_id into a DN
      *
@@ -816,7 +823,7 @@ class Ldap
      * @param string $authz_id
      * @return string|null
      */
-    private function authzidToDn($searchBase, $searchAttributes, $authz_id)
+    private function authzidToDn(string $searchBase, array $searchAttributes, string $authz_id): ?string
     {
         if (preg_match("/^dn:/", $authz_id)) {
             return preg_replace("/^dn:/", "", $authz_id);
@@ -832,46 +839,24 @@ class Ldap
         return $authz_id;
     }
 
+
     /**
      * ldap_exop_whoami accessor, if available. Use requested authz_id
      * otherwise.
-     *
-     * ldap_exop_whoami() has been provided as a third party patch that
-     * waited several years to get its way upstream:
-     * http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/databases/php-ldap/files
-     *
-     * When it was integrated into PHP repository, the function prototype
-     * was changed, The new prototype was used in third party patch for
-     * PHP 7.0 and 7.1, hence the version test below.
      *
      * @param string $searchBase
      * @param array $searchAttributes
      * @throws \Exception
      * @return string
      */
-    public function whoami($searchBase, $searchAttributes)
+    public function whoami(string $searchBase, array $searchAttributes): string
     {
-        $authz_id = '';
-        if (function_exists('ldap_exop_whoami')) {
-            if (version_compare(phpversion(), '7', '<')) {
-                /** @psalm-suppress TooManyArguments */
-                if (ldap_exop_whoami($this->ldap, $authz_id) === false) {
-                    throw $this->makeException('LDAP whoami exop failure');
-                }
-            } else {
-                $authz_id = ldap_exop_whoami($this->ldap);
-                if ($authz_id === false) {
-                    throw $this->makeException('LDAP whoami exop failure');
-                }
-            }
-        } else {
-            Assert::string($authz_id);
-            /** @var string $authz_id */
-            $authz_id = $this->authz_id;
+        $authz_id = ldap_exop_whoami($this->ldap);
+        if ($authz_id === false) {
+            throw $this->makeException('LDAP whoami exop failure');
         }
 
         $dn = $this->authzidToDn($searchBase, $searchAttributes, $authz_id);
-
         if (empty($dn)) {
             throw $this->makeException('Cannot figure userID');
         }

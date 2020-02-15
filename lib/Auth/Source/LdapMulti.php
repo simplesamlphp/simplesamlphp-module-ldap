@@ -43,11 +43,8 @@ class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
      * @param array $info  Information about this authentication source.
      * @param array $config  Configuration.
      */
-    public function __construct($info, $config)
+    public function __construct(array $info, array $config)
     {
-        Assert::isArray($info);
-        assert::isArray($config);
-
         // Call the parent constructor first, as required by the interface
         parent::__construct($info, $config);
 
@@ -104,12 +101,8 @@ class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
      * @param string $org  The organization the user chose.
      * @return array  Associative array with the users attributes.
      */
-    protected function login($username, $password, $org, array $sasl_args = null)
+    protected function login(string $username, string $password, string $org, array $sasl_args = null): array
     {
-        Assert::string($username);
-        Assert::string($password);
-        Assert::string($org);
-
         if (!array_key_exists($org, $this->ldapOrgs)) {
             // The user has selected an organization which doesn't exist anymore.
             Logger::warning('Authentication source ' . var_export($this->authId, true) .
@@ -131,7 +124,7 @@ class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
      *
      * @return array  Associative array with the organizations.
      */
-    protected function getOrganizations()
+    protected function getOrganizations(): array
     {
         return $this->orgs;
     }

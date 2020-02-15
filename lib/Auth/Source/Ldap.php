@@ -30,11 +30,8 @@ class Ldap extends \SimpleSAML\Module\core\Auth\UserPassBase
      * @param array $info  Information about this authentication source.
      * @param array $config  Configuration.
      */
-    public function __construct($info, $config)
+    public function __construct(array $info, array $config)
     {
-        Assert::isArray($info);
-        Assert::isArray($config);
-
         // Call the parent constructor first, as required by the interface
         parent::__construct($info, $config);
 
@@ -53,11 +50,8 @@ class Ldap extends \SimpleSAML\Module\core\Auth\UserPassBase
      * param array $sasl_arg  Associative array of SASL options
      * @return array  Associative array with the users attributes.
      */
-    protected function login($username, $password, array $sasl_args = null)
+    protected function login(string $username, string $password, array $sasl_args = null): array
     {
-        Assert::string($username);
-        Assert::string($password);
-
         return $this->ldapConfig->login($username, $password, $sasl_args);
     }
 }

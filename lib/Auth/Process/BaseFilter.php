@@ -28,7 +28,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      */
     protected $attribute_map;
 
-
     /**
      * The base DN of the LDAP connection. Used when searching
      * the LDAP server.
@@ -36,7 +35,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      * @var string|array
      */
     protected $base_dn;
-
 
     /**
      * The construct method will change the filter config into
@@ -47,7 +45,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      */
     protected $config;
 
-
     /**
      * Instance, object of the ldap connection. Stored here to
      * be access later during processing.
@@ -55,7 +52,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      * @var \SimpleSAML\Module\ldap\Auth\Ldap|null
      */
     private $ldap = null;
-
 
     /**
      * Many times a LDAP product specific query can be used to
@@ -67,7 +63,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      */
     protected $product;
 
-
     /**
      * The class "title" used in logging and exception messages.
      * This should be prepended to the beginning of the message.
@@ -75,7 +70,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      * @var string
      */
     protected $title = 'ldap:BaseFilter : ';
-
 
     /**
      * List of LDAP object types, used to determine the type of
@@ -95,7 +89,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      * @param array &$config
      * @param mixed $reserved
      */
-    public function __construct(&$config, $reserved)
+    public function __construct(array &$config, $reserved)
     {
         parent::__construct($config, $reserved);
 
@@ -262,7 +256,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      *
      * @return \SimpleSAML\Module\ldap\Auth\Ldap
      */
-    protected function getLdap()
+    protected function getLdap(): Ldap
     {
         // Check if already connected
         if (isset($this->ldap)) {
@@ -310,7 +304,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      * @param mixed $value
      * @return string
      */
-    protected function varExport($value)
+    protected function varExport($value): string
     {
         if (is_array($value)) {
             // remove sensitive data

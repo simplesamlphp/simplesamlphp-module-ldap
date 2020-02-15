@@ -127,10 +127,8 @@ class ConfigHelper
      * @param array $config  Configuration.
      * @param string $location  The location of this configuration. Used for error reporting.
      */
-    public function __construct(array $config, $location)
+    public function __construct(array $config, string $location)
     {
-        Assert::string($location);
-
         $this->location = $location;
 
         // Parse configuration
@@ -180,11 +178,8 @@ class ConfigHelper
      * @param array $sasl_args  Array of SASL options for LDAP bind.
      * @return array  Associative array with the users attributes.
      */
-    public function login($username, $password, array $sasl_args = null)
+    public function login(string $username, string $password, array $sasl_args = null): array
     {
-        Assert::string($username);
-        Assert::string($password);
-
         if (empty($password)) {
             Logger::info($this->location . ': Login with empty password disallowed.');
             throw new Error\Error('WRONGUSERPASS');
@@ -250,7 +245,7 @@ class ConfigHelper
     /**
      * Search for a DN.
      *
-     * @param string|array $attribute
+     * @param string|array|null $attribute
      * The attribute name(s) searched for. If set to NULL, values from
      * configuration is used.
      * @param string $value
@@ -269,7 +264,7 @@ class ConfigHelper
      * - $allowZeroHits is FALSE and no result is found
      *
      */
-    public function searchfordn($attribute, $value, $allowZeroHits)
+    public function searchfordn($attribute, string $value, bool $allowZeroHits): ?string
     {
         $ldap = new Auth\Ldap(
             $this->hostname,
@@ -280,7 +275,7 @@ class ConfigHelper
             $this->referrals
         );
 
-        if ($attribute == null) {
+        if ($attribute === null) {
             $attribute = $this->searchAttributes;
         }
 
@@ -307,7 +302,7 @@ class ConfigHelper
      * @return array
      * @throws \Exception
      */
-    public function getAttributes($dn, $attributes = null)
+    public function getAttributes(string $dn, array $attributes = null): array
     {
         if ($attributes == null) {
             $attributes = $this->attributes;
