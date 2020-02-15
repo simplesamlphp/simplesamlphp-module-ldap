@@ -48,14 +48,12 @@ class AttributeAddFromLDAP extends BaseFilter
      */
     protected $search_attributes;
 
-
     /**
      * LDAP search filter to use in the LDAP query
      *
      * @var string
      */
     protected $search_filter;
-
 
     /**
      * What to do with attributes when the target already exists. Either replace, merge or add.
@@ -71,7 +69,7 @@ class AttributeAddFromLDAP extends BaseFilter
      * @param array $config Configuration information about this filter.
      * @param mixed $reserved For future use.
      */
-    public function __construct($config, $reserved)
+    public function __construct(array $config, $reserved)
     {
         parent::__construct($config, $reserved);
 
@@ -94,9 +92,8 @@ class AttributeAddFromLDAP extends BaseFilter
      * @param array &$request The current request
      * @return void
      */
-    public function process(&$request)
+    public function process(array &$request): void
     {
-        Assert::isArray($request);
         Assert::keyExists($request, 'Attributes');
 
         $attributes = &$request['Attributes'];

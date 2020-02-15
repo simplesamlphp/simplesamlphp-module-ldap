@@ -10,7 +10,7 @@ class BaseFilterTest extends TestCase
     /**
      * @return void
      */
-    public function testVarExportHidesLdapPassword()
+    public function testVarExportHidesLdapPassword(): void
     {
         $stub = $this->getMockBuilder(BaseFilter::class)
             ->disableOriginalConstructor()
