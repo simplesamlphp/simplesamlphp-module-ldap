@@ -6,10 +6,10 @@ LDAP server. There are two separate authentication modules and two
 authentication processing filters:
 
 
-`ldap:LDAP`
+`ldap:Ldap`
 : Authenticate the user against a single LDAP server.
 
-`ldap:LDAPMulti`
+`ldap:LdapMulti`
 : Allow the user to chose one LDAP server to authenticate against.
 
 `ldap:AttributeAddFromLDAP`
@@ -18,7 +18,7 @@ authentication processing filters:
 `ldap:AttributeAddUsersGroups`
 : Add an attribute to the request with all the user's group memberships
 
-`ldap:LDAP`
+`ldap:Ldap`
 -----------
 
 This module is used when you have an organization with a single LDAP
@@ -26,21 +26,21 @@ server with all the users. To create an LDAP authentication source, open
 `config/authsources.php` in a text editor, and add an entry for the
 authentication source:
 
-	'example-ldap' => array(
-		'ldap:LDAP',
+	'example-ldap' => [
+		'ldap:Ldap',
 
 		/* The hostname of the LDAP server. */
 		'hostname' => 'ldap.example.org',
 
 		/* Whether SSL/TLS should be used when contacting the LDAP server. */
-		'enable_tls' => FALSE,
+		'enable_tls' => false,
 
 		/*
 		 * Which attributes should be retrieved from the LDAP server.
 		 * This can be an array of attribute names, or NULL, in which case
 		 * all attributes are fetched.
 		 */
-		'attributes' => NULL,
+		'attributes' => null,
 
 		/*
 		 * The pattern which should be used to create the user's DN given the username.
@@ -54,7 +54,7 @@ authentication source:
 		 * As an alternative to specifying a pattern for the users DN, it is possible to
 		 * search for the username in a set of attributes. This is enabled by this option.
 		 */
-		'search.enable' => FALSE,
+		'search.enable' => false,
 
 		/*
 		 * The DN which will be used as a base for the search.
@@ -75,7 +75,7 @@ authentication source:
 		 * This is an array with one or more attribute names. Any of the attributes in
 		 * the array may match the value the username.
 		 */
-		'search.attributes' => array('uid', 'mail'),
+		'search.attributes' => ['uid', 'mail'],
 
 		/*
 		 * Additional filters that must match for the entire LDAP search to be TRUE
@@ -89,9 +89,9 @@ authentication source:
 		 * The username & password where SimpleSAMLphp should bind to before searching. If
 		 * this is left NULL, no bind will be performed before searching.
 		 */
-		'search.username' => NULL,
-		'search.password' => NULL,
-	),
+		'search.username' => null,
+		'search.password' => null,
+	],
 
 
 You should update the name of this authentication source
@@ -148,15 +148,15 @@ In this case, if we are unable to connect to the first LDAP server within 10 sec
 #### Example ####
 
     /* Configuration that uses two ldap servers. */
-    'example-ldap' => array(
-        'ldap:LDAP',
+    'example-ldap' => [
+        'ldap:Ldap',
         /* The hostname of the LDAP server. */
         'hostname' => 'ldaps://ldap1.example.org ldaps://ldap2.example.org',
         'dnpattern' => 'uid=%username%,ou=people,dc=example,dc=org',
-    ),
+    ],
 
 
-`ldap:LDAPMulti`
+`ldap:LdapMulti`
 ----------------
 
 This module can be used if your organization has separate groups with
@@ -164,8 +164,8 @@ separate LDAP servers or separate LDAP configurations. To use this
 authentication module, open `config/authsources.php` in a text editor,
 and add an entry which uses this module:
 
-	'example-ldapmulti' => array(
-		'ldap:LDAPMulti',
+	'example-ldapmulti' => [
+		'ldap:LdapMulti',
 
 		/*
 		 * The way the organization as part of the username should be handled.
@@ -188,7 +188,7 @@ and add an entry which uses this module:
 		 *
 		 * The default is FALSE.
 		 */
-		'include_organization_in_username' => FALSE,
+		'include_organization_in_username' => false,
 
 		/*
 		 * A list of available LDAP servers.
@@ -200,7 +200,7 @@ and add an entry which uses this module:
 		 * The value of each element is an array in the same format as an LDAP
 		 * authentication source.
 		 */
-		'employees' => array(
+		'employees' => [
 			/*
 			 * A short name/description for this group. Will be shown in a dropdown list
 			 * when the user logs on.
@@ -215,16 +215,16 @@ and add an entry which uses this module:
 			 */
 			'hostname' => 'ldap.employees.example.org',
 			'dnpattern' => 'uid=%username%,ou=employees,dc=example,dc=org',
-		),
+		],
 
-		'students' => array(
+		'students' => [
 			'description' => 'Students',
 
 			'hostname' => 'ldap.students.example.org',
 			'dnpattern' => 'uid=%username%,ou=students,dc=example,dc=org',
-		),
+		],
 
-	),
+	],
 
 The name of the authentication source (`example-ldapmulti`) should be
 changed to something that makes sense for your organization. Each entry
@@ -235,12 +235,12 @@ and will be shown to the user in a dropdown list on the login page.
 The `description`-option can also be an array with descriptions in
 different languages:
 
-	'description' => array(
+	'description' => [
 		'en' => 'Employees',
 		'no' => 'Ansatte',
-	),
+	],
 
-All options from the `ldap:LDAP` configuration can be used in each
+All options from the `ldap:Ldap` configuration can be used in each
 group, and you should refer to the documentation for that module for
 more information about available options.
 
@@ -254,7 +254,7 @@ in the ldap:AttributeAddUsersGroups filter (below), these are the filter
 specific configuration options:
 
 
-	50 = array(
+	50 = [
 		'class' => 'ldap:AttributeAddFromLDAP',
 
 		/**
@@ -265,7 +265,7 @@ specific configuration options:
 		 * Default: NULL
 		 * Required: Yes
 		 */
-		'attributes' => array('mail', 'jpegPhoto' => 'jpegphoto'),
+		'attributes' => ['mail', 'jpegPhoto' => 'jpegphoto'],
 
 		/**
 		 * The attribute policy that defines what to do with attributes that are
@@ -297,7 +297,7 @@ specific configuration options:
 		 * Required: Yes
 		 */
 		'search.filter' => '(uid=%uid%)',
-	);
+	];
 
 
 ### Backwards Compatibility ###
@@ -315,26 +315,26 @@ This is the most basic configuration possible. It will look at the
 authsource for all LDAP connection information and queries LDAP for
 the specific attributes requested.
 
-	50 => array(
+	50 => [
 		'class' => 'ldap:AttributeAddFromLDAP',
 		'authsource' => 'example-ldap',
-		'attributes' => array('displayName' => 'cn', 'jpegPhoto'),
+		'attributes' => ['displayName' => 'cn', 'jpegPhoto'],
 		'search.filter' => '(uid=%uid%)',
-	)
+	]
 
 If no authsource is available then you can specify the connection info
 using the filter configuration. Note: Not all of the options below are
 required, see the config options for ldap:AttributeAddFromLDAP above.
 
-	50 => array(
+	50 => [
 		'class' => 'ldap:AttributeAddFromLDAP',
 		'ldap.hostname' => 'ldap.example.org',
 		'ldap.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
 		'ldap.password' => 'Abc123',
 		'ldap.basedn' => 'DC=example,DC=org',
-		'attributes' => array('displayName' => 'cn', 'jpegPhoto'),
+		'attributes' => ['displayName' => 'cn', 'jpegPhoto'],
 		'search.filter' => '(uid=%uid%)',
-	)
+	]
 
 
 
@@ -351,7 +351,7 @@ a member of. This can be helpful for other filters to know. Below is
 a listing of all configuration options and their details.
 
 
-	50 => array(
+	50 => [
 		'class' => 'ldap:AttributeAddUsersGroups',
 
 
@@ -367,7 +367,7 @@ a listing of all configuration options and their details.
 		 * Default: NULL
 		 * Require: No
 		 */
-		'authsource' => NULL,
+		'authsource' => null,
 		'authsource' => 'example-ldap',
 
 
@@ -394,10 +394,10 @@ a listing of all configuration options and their details.
 		 */
 		'ldap.basedn' => '',
 		'ldap.basedn' => 'DC=example,DC=org',
-		'ldap.basedn' => array(
+		'ldap.basedn' => [
 			'OU=Staff,DC=example,DC=org',
 			'OU=Students,DC=example,DC=org'
-		),
+		],
 
 
 		/**
@@ -408,8 +408,8 @@ a listing of all configuration options and their details.
 		 * Required: No
 		 * AuthSource: debug
 		 */
-		'ldap.debug' => FALSE,
-		'ldap.debug' => TRUE,
+		'ldap.debug' => false,
+		'ldap.debug' => true,
 
 
 		/**
@@ -422,8 +422,8 @@ a listing of all configuration options and their details.
 		 * Required: No
 		 * AuthSource: enable_tls
 		 */
-		'ldap.enable_tls' => FALSE,
-		'ldap.enable_tls' => TRUE,
+		'ldap.enable_tls' => false,
+		'ldap.enable_tls' => true,
 
 
 		/**
@@ -532,7 +532,7 @@ a listing of all configuration options and their details.
 		 */
 		'type.group' => 'group',
 		'type.user' => 'user',
-	)
+	]
 
 
 ### Example ###
@@ -541,41 +541,41 @@ This is the most basic configuration possible. It will look at the
 authsource for all LDAP connection information and manually search
 the hierarchy for the users group memberships.
 
-	50 => array(
+	50 => [
 		'class' => 'ldap:AttributeAddUsersGroups',
 		'authsource' => 'example-ldap'
-	)
+	]
 
 By making one small change we can optimize the filter to use better
 group search methods and eliminate un-needed LDAP queries.
 
-	50 => array(
+	50 => [
 		'class' => 'ldap:AttributeAddUsersGroups',
 		'authsource' => 'example-ldap',
 		'ldap.product' => 'ActiveDirectory'
-	)
+	]
 
 If no authsource is available then you can specify the connection info
 using the filter configuration. Note: Not all of the options below are
 required, see the config info above for details.
 
-	50 => array(
+	50 => [
 		'class' => 'ldap:AttributeAddUsersGroups',
 		'ldap.hostname' => 'ldap.example.org',
 		'ldap.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
 		'ldap.password' => 'Abc123',
 		'ldap.basedn' => 'DC=example,DC=org'
-	)
+	]
 
 Example for unsupported OpenLDAP usage. 
 Intention is to filter in `ou=groups,dc=example,dc=com` for
 `(memberUid = <UID>)` and take only the attribute `cn` (=name of the group).
 
-    50 => array(
+    50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
         'ldap.product' => 'OpenLDAP',
         'ldap.basedn' => 'ou=groups,dc=example,dc=org',
         'attribute.username' => 'uid',
         'attribute.member' => 'cn',
         'attribute.memberof' => 'memberUid',
-    ),
+    ],
