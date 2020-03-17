@@ -6,7 +6,7 @@ LDAP server. There are two separate authentication modules and two
 authentication processing filters:
 
 
-`ldap:ldap`
+`ldap:Ldap`
 : Authenticate the user against a single LDAP server.
 
 `ldap:LdapMulti`
@@ -18,7 +18,7 @@ authentication processing filters:
 `ldap:AttributeAddUsersGroups`
 : Add an attribute to the request with all the user's group memberships
 
-`ldap:LDAP`
+`ldap:Ldap`
 -----------
 
 This module is used when you have an organization with a single LDAP
