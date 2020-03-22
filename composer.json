@@ -3,7 +3,7 @@
     "description": "A module that provides authentication against LDAP stores",
     "type": "simplesamlphp-module",
     "keywords": ["simplesamlphp", "ldap"],
-    "license": "LGPL-3.0-or-later",
+    "license": "LGPL-2.1-or-later",
     "authors": [
         {
             "name": "Olav Morken",
