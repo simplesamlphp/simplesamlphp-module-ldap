@@ -129,7 +129,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
             // Make sure it is an ldap source
             // TODO: Support ldap:LDAPMulti, if possible
             $ldapsources = ['ldap:Ldap', 'authX509:X509userCert'];
-            if (isset($authsource[0]) && in_array($authsource[0], $ldapsources)) {
+            if (isset($authsource[0]) && !in_array($authsource[0], $ldapsources)) {
                 throw new \SimpleSAML\Error\Exception(
                     $this->title . 'Authsource [' . $config['authsource'] .
                     '] specified in filter parameters is not an ldap:LDAP type'
