@@ -473,13 +473,14 @@ class Ldap
 
                 // decide whether to base64 encode or not
                 for ($k = 0; $k < $attribute['count']; $k++) {
+                    $value = $attributes[$k];
+
                     // base64 encode binary attributes
-                    if (strtolower($name) === 'jpegphoto'
-                        || strtolower($name) === 'objectguid'
-                        || strtolower($name) === 'objectsid'
-                        || strtolower($name) === 'ms-ds-consistencyguid'
+                    if (
+                        mb_detect_encoding($value) === false
+                        && preg_match('~[^\x20-\x7E\t\r\n]~', $value) > 0
                     ) {
-                        $results[$i][$name][$k] = base64_encode($attribute[$k]);
+                        $results[$i][$name][$k] = base64_encode($value);
                     }
                 }
             }
@@ -660,10 +661,9 @@ class Ldap
                 }
 
                 // Base64 encode binary attributes
-                if (strtolower($name) === 'jpegphoto'
-                    || strtolower($name) === 'objectguid'
-                    || strtolower($name) === 'objectsid'
-                    || strtolower($name) === 'ms-ds-consistencyguid'
+                if (
+                    mb_detect_encoding($value) === false
+                    && preg_match('~[^\x20-\x7E\t\r\n]~', $value) > 0
                 ) {
                     $values[] = base64_encode($value);
                 } else {
