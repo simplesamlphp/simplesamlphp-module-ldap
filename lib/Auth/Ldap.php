@@ -473,7 +473,7 @@ class Ldap
 
                 // decide whether to base64 encode or not
                 for ($k = 0; $k < $attribute['count']; $k++) {
-                    $value = $attributes[$k];
+                    $value = $attribute[$k];
 
                     // base64 encode binary attributes
                     if (
