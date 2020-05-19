@@ -473,15 +473,7 @@ class Ldap
 
                 // decide whether to base64 encode or not
                 for ($k = 0; $k < $attribute['count']; $k++) {
-                    $value = $attribute[$k];
-
-                    // base64 encode binary attributes
-                    if (
-                        mb_detect_encoding($value) === false
-                        && preg_match('~[^\x20-\x7E\t\r\n]~', $value) > 0
-                    ) {
-                        $results[$i][$name][$k] = base64_encode($value);
-                    }
+                    $results[$i][$name][$k] = $this->encodeIfBinary($attribute[$k]);
                 }
             }
         }
@@ -660,15 +652,7 @@ class Ldap
                     continue;
                 }
 
-                // Base64 encode binary attributes
-                if (
-                    mb_detect_encoding($value) === false
-                    && preg_match('~[^\x20-\x7E\t\r\n]~', $value) > 0
-                ) {
-                    $values[] = base64_encode($value);
-                } else {
-                    $values[] = $value;
-                }
+                $values[] = $this->encodeIfBinary($value);
             }
 
             // Adding
@@ -864,5 +848,24 @@ class Ldap
         }
 
         return $dn;
+    }
+
+
+    /**
+     * Base64 encode binary attributes, or pass original content back
+     *
+     * @param string $value  Possibly binary string
+     * @return string  Value safe for use in SAML attributes (base64 encoded)
+     */
+    private function encodeIfBinary(string $value)
+    {
+        // detect binary values
+        if (
+            mb_detect_encoding($value) === false
+            || preg_match('~[^\x20-\x7E\t\r\n]~', $value) > 0
+        ) {
+            return base64_encode($value);
+        }
+        return $value;
     }
 }
