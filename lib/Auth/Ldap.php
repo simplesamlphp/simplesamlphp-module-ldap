@@ -862,7 +862,7 @@ class Ldap
         // detect binary values
         if (
             mb_detect_encoding($value) === false
-            || preg_match('~[^\x20-\x7E\x80-xFF\t\r\n]~', $value) > 0
+            || preg_match('~[^\x20-\x7E\x80-\xFF\t\r\n]~', $value) > 0
         ) {
             return base64_encode($value);
         }
