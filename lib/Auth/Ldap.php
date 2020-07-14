@@ -487,7 +487,15 @@ class Ldap
 
                 // decide whether to base64 encode or not
                 for ($k = 0; $k < $attribute['count']; $k++) {
-                    $results[$i][$name][$k] = $this->encodeIfBinary($attribute[$k]);
+                    // base64 encode binary attributes
+                    if (
+                        strtolower($name) === 'jpegphoto'
+                        || strtolower($name) === 'objectguid'
+                        || strtolower($name) === 'objectsid'
+                        || strtolower($name) === 'ms-ds-consistencyguid'
+                    ) {
+                        $results[$i][$name][$k] = base64_encode($attribute[$k]);
+                    }
                 }
             }
         }
@@ -668,7 +676,17 @@ class Ldap
                     continue;
                 }
 
-                $values[] = $this->encodeIfBinary($value);
+                // Base64 encode binary attributes
+                if (
+                    strtolower($name) === 'jpegphoto'
+                    || strtolower($name) === 'objectguid'
+                    || strtolower($name) === 'objectsid'
+                    || strtolower($name) === 'ms-ds-consistencyguid'
+                ) {
+                    $values[] = base64_encode($value);
+                } else {
+                    $values[] = $value;
+                }
             }
 
             // Adding
@@ -844,24 +862,5 @@ class Ldap
         }
 
         return $dn;
-    }
-
-
-    /**
-     * Base64 encode binary attributes, or pass original content back
-     *
-     * @param string $value  Possibly binary string
-     * @return string  Value safe for use in SAML attributes (base64 encoded)
-     */
-    private function encodeIfBinary(string $value): string
-    {
-        // detect binary values
-        if (
-            mb_detect_encoding($value) === false
-            || preg_match('~[^\x20-\x7E\x80-\xFF\t\r\n]~', $value) > 0
-        ) {
-            return base64_encode($value);
-        }
-        return $value;
     }
 }
