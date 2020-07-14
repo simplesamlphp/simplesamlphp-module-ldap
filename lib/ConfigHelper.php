@@ -106,6 +106,11 @@ class ConfigHelper
     protected $attributes;
 
     /**
+     * The attributes that are marked binary in the LDAP-schema. They will be base64 encoded.
+     */
+    protected $binaryAttributes;
+
+    /**
      * The user cannot get all attributes, privileged reader required
      */
     protected $privRead;
@@ -164,6 +169,7 @@ class ConfigHelper
         }
 
         $this->attributes = $config->getArray('attributes', null);
+        $this->binaryAttributes = $config->getArray('attributes.binary', []);
     }
 
 
@@ -238,7 +244,7 @@ class ConfigHelper
             }
         }
 
-        return $ldap->getAttributes($dn, $this->attributes);
+        return $ldap->getAttributes($dn, $this->attributes, $this->binaryAttributes);
     }
 
 
@@ -299,10 +305,11 @@ class ConfigHelper
     /**
      * @param string $dn
      * @param array|null $attributes
+     * @param array $binaryAttributes
      * @return array
      * @throws \Exception
      */
-    public function getAttributes(string $dn, array $attributes = null): array
+    public function getAttributes(string $dn, array $attributes = null, array $binaryAttributes = []): array
     {
         if ($attributes == null) {
             $attributes = $this->attributes;
@@ -324,6 +331,6 @@ class ConfigHelper
                 throw new \Exception('Error authenticating using privileged DN & password.');
             }
         }
-        return $ldap->getAttributes($dn, $attributes);
+        return $ldap->getAttributes($dn, $attributes, $this->binaryAttributes);
     }
 }
