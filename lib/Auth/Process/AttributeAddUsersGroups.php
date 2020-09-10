@@ -5,7 +5,6 @@
  * looking for groups it is a member of and adds them to
  * a defined attribute, in DN format.
  *
- * @author Ryan Panning <panman@traileyes.com>
  * @package SimpleSAMLphp
  */
 

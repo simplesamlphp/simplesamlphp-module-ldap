@@ -8,8 +8,6 @@
  * Updated: 20161223 Remy Blom
  *          - Wrapped the building of authsource config with issets
  *
- * @author Ryan Panning <panman@traileyes.com>
- * @author Remy Blom <remy.blom@hku.nl>
  * @package SimpleSAMLphp
  */
 

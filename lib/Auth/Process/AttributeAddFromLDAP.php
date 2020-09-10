@@ -24,12 +24,6 @@
  * Updated: 20161223 Remy Blom <remy.blom@hku.nl>
  *          - Adjusted the silent fail so it does show a warning in log when $this->getLdap() fails
  *
- * @author Yørn de Jong
- * @author Jaime Perez
- * @author Steve Moitozo
- * @author JAARS, Inc.
- * @author Ryan Panning
- * @author Remy Blom <remy.blom@hku.nl>
  * @package SimpleSAMLphp
  */
 

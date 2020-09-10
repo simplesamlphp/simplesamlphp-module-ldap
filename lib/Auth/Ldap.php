@@ -3,8 +3,6 @@
 /**
  * The LDAP class holds helper functions to access an LDAP database.
  *
- * @author Andreas Aakre Solberg, UNINETT AS. <andreas.solberg@uninett.no>
- * @author Anders Lund, UNINETT AS. <anders.lund@uninett.no>
  * @package SimpleSAMLphp
  */
 
