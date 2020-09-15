@@ -579,7 +579,6 @@ class Ldap
      * @throws \Exception
      * @param mixed $option
      * @param mixed $value
-     * @return void
      */
     public function setOption($option, $value): void
     {

@@ -8,7 +8,6 @@ use SimpleSAML\Module\ldap\Auth\Process\BaseFilter;
 class BaseFilterTest extends TestCase
 {
     /**
-     * @return void
      */
     public function testVarExportHidesLdapPassword(): void
     {

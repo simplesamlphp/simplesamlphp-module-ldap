@@ -25,7 +25,6 @@ class AttributeAddUsersGroups extends BaseFilter
      *
      * @throws \SimpleSAML\Error\Exception
      * @param array $request
-     * @return void
      */
     public function process(array &$request): void
     {
