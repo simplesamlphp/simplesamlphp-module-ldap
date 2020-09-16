@@ -336,6 +336,6 @@ class ConfigHelper
                 throw new \Exception('Error authenticating using privileged DN & password.');
             }
         }
-        return $ldap->getAttributes($dn, $attributes, $this->binaryAttributes);
+        return $ldap->getAttributes($dn, $attributes, $binaryAttributes);
     }
 }
