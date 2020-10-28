@@ -688,8 +688,57 @@ class Ldap
         Logger::debug('Library - LDAP getAttributes(): Found attributes \'(' . join(',', array_keys($result)) . ')\'');
         return $result;
     }
+    
+    /**
+     * Set for a given DN attributes
+     *
+     * @param string $dn
+     * The DN of an element.
+     * @param array $attributes
+     * The names and value of the attribute(s) to set using ldap_mod_replace structure;
+     * @return bool
+     * Result of operation
+     */
+    public function setAttributes($dn, $attributes) {
+      if (!is_array($attributes)) {
+        Logger::warning('Library - LDAP setAttributes(): No array of attributes given for DN \''.$dn.'\'');
+	    return false;
+      } else {
+	    Logger::debug('Library - LDAP setAttributes(): Recevied arraydata: '.print_r($attributes,true));
+      }
+      
+      // Attempt to set attributes
+      $result = @ldap_mod_replace($this->ldap, $dn, $attributes);
+      if ($result === false) throw $this->makeException('Library - LDAP setAttributes(): Failed to set attributes for DN \''.$dn.'\'. Bind necessary?');
+      
+      return $result;
+    } 
+    
+    /**
+      * Adds for a given DN attributes
+      *
+      * @param string $dn
+      * The DN of an element.
+      * @param array $attributes
+      * The names and value of the attribute(s) to set using ldap_mod_replace structure;
+      * @return bool
+      * Result of operation
+      */
+     public function addAttributes($dn, $attributes) {
+       if (!is_array($attributes)) {
+         Logger::warning('Library - LDAP addAttributes(): No array of attributes given for DN \''.$dn.'\'');
+         return false;
+       } else {
+         Logger::debug('Library - LDAP addAttributes(): Recevied arraydata: '.print_r($attributes,true));
+       }
 
-
+       // Attempt to add attributes
+       $result = @ldap_mod_add($this->ldap, $dn, $attributes);
+       if ($result === false) throw $this->makeException('Library - LDAP addAttributes(): Failed to set attributes for DN \''.$dn.'\'. Bind necessary?');
+       
+       return $result;
+     } 
+    
     /**
      * Enter description here...
      *
