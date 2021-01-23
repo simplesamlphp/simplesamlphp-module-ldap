@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\ldap;
 
+use Exception;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
@@ -235,7 +236,13 @@ class ConfigHelper
 
         // In case of SASL bind, authenticated and authorized DN may differ
         if (isset($sasl_args)) {
-            $dn = $ldap->whoami($this->searchBase, $this->searchAttributes);
+            foreach ($this->searchBase as $base) {
+                try {
+                    $dn = $ldap->whoami($base, $this->searchAttributes);
+                } catch (Exception $e) {
+                    continue;
+                }
+            }
         }
 
         // Are privs needed to get the attributes?
