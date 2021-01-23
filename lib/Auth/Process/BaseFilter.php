@@ -108,11 +108,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         // Log the construction
         Logger::debug($this->title . 'Creating and configuring the filter.');
 
-        // Convert the config array to a config class,
-        // that way we can verify type and define defaults.
-        // Store in the instance in-case needed later, by a child class.
-        $this->config = Configuration::loadFromArray($config, 'ldap:AuthProcess');
-
         // If an authsource was defined (an not empty string)...
         if (isset($config['authsource']) && $config['authsource'] !== '') {
             $authconfig = $this->parseAuthSourceConfig($config['authsource']);
@@ -127,6 +122,11 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
                 '] configuration values: ' . $this->varExport($authconfig)
             );
         }
+
+        // Convert the config array to a config class,
+        // that way we can verify type and define defaults.
+        // Store in the instance in-case needed later, by a child class.
+        $this->config = Configuration::loadFromArray($config, 'ldap:AuthProcess');
 
         // Initialize the Ldap-object
         $this->initializeLdap();
