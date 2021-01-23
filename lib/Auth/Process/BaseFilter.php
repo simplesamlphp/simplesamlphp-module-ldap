@@ -22,6 +22,9 @@ use SimpleSAML\Module\ldap\Auth\Ldap;
 
 abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
 {
+    // TODO: Support ldap:LDAPMulti, if possible
+    protected static array $ldapsources = ['ldap:Ldap', 'authX509:X509userCert'];
+
     /**
      * List of attribute "alias's" linked to the real attribute
      * name. Used for abstraction / configuration of the LDAP
@@ -105,90 +108,14 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         // Log the construction
         Logger::debug($this->title . 'Creating and configuring the filter.');
 
+        // Convert the config array to a config class,
+        // that way we can verify type and define defaults.
+        // Store in the instance in-case needed later, by a child class.
+        $this->config = Configuration::loadFromArray($config, 'ldap:AuthProcess');
+
         // If an authsource was defined (an not empty string)...
-        if (isset($config['authsource']) && $config['authsource']) {
-            // Log the authsource request
-            Logger::debug(
-                $this->title . 'Attempting to get configuration values from authsource [' .
-                $config['authsource'] . ']'
-            );
-
-            // Get the authsources file, which should contain the config
-            $authsource = Configuration::getConfig('authsources.php');
-
-            // Verify that the authsource config exists
-            if (!$authsource->hasValue($config['authsource'])) {
-                throw new Error\Exception(
-                    $this->title . 'Authsource [' . $config['authsource'] .
-                    '] defined in filter parameters not found in authsources.php'
-                );
-            }
-
-            // Get just the specified authsource config values
-            $authsource = $authsource->getArray($config['authsource']);
-
-            // Make sure it is an ldap source
-            // TODO: Support ldap:LDAPMulti, if possible
-            $ldapsources = ['ldap:Ldap', 'authX509:X509userCert'];
-            if (isset($authsource[0]) && !in_array($authsource[0], $ldapsources)) {
-                throw new Error\Exception(
-                    $this->title . 'Authsource [' . $config['authsource'] .
-                    '] specified in filter parameters is not an ldap:LDAP type'
-                );
-            }
-
-            // Build the authsource config
-            $authconfig = [];
-            if (isset($authsource['hostname'])) {
-                $authconfig['ldap.hostname']   = $authsource['hostname'];
-            }
-            if (isset($authsource['enable_tls'])) {
-                $authconfig['ldap.enable_tls'] = $authsource['enable_tls'];
-            }
-            if (isset($authsource['port'])) {
-                $authconfig['ldap.port']       = $authsource['port'];
-            }
-            if (isset($authsource['timeout'])) {
-                $authconfig['ldap.timeout']    = $authsource['timeout'];
-            }
-            if (isset($authsource['debug'])) {
-                $authconfig['ldap.debug']      = $authsource['debug'];
-            }
-            if (isset($authsource['referrals'])) {
-                $authconfig['ldap.referrals']  = $authsource['referrals'];
-            }
-            // only set when search.enabled = true
-            if (isset($authsource['search.enable']) && $authsource['search.enable']) {
-                if (isset($authsource['search.base'])) {
-                    $authconfig['ldap.basedn'] = $authsource['search.base'];
-                }
-                if (isset($authsource['search.scope'])) {
-                    $authconfig['ldap.scope'] = $authsource['search.scope'];
-                }
-                if (isset($authsource['search.username'])) {
-                    $authconfig['ldap.username']   = $authsource['search.username'];
-                }
-                if (isset($authsource['search.password'])) {
-                    $authconfig['ldap.password']   = $authsource['search.password'];
-                }
-                // Only set the username attribute if the authsource specifies one attribute
-                if (
-                    isset($authsource['search.attributes'])
-                    && is_array($authsource['search.attributes'])
-                    && count($authsource['search.attributes']) == 1
-                ) {
-                    $authconfig['attribute.username'] = reset($authsource['search.attributes']);
-                }
-            }
-            // only set when priv.read = true
-            if (isset($authsource['priv.read']) && $authsource['priv.read']) {
-                if (isset($authsource['priv.username'])) {
-                    $authconfig['ldap.username'] = $authsource['priv.username'];
-                }
-                if (isset($authsource['priv.password'])) {
-                    $authconfig['ldap.password'] = $authsource['priv.password'];
-                }
-            }
+        if (isset($config['authsource']) && $config['authsource'] !== '') {
+            $authconfig = $this->parseAuthSourceConfig($config['authsource']);
 
             // Merge the authsource config with the filter config,
             // but have the filter config override the authsource config
@@ -200,11 +127,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
                 '] configuration values: ' . $this->varExport($authconfig)
             );
         }
-
-        // Convert the config array to a config class,
-        // that way we can verify type and define defaults.
-        // Store in the instance in-case needed later, by a child class.
-        $this->config = Configuration::loadFromArray($config, 'ldap:AuthProcess');
 
         // Set all the filter values, setting defaults if needed
         $this->base_dn = $this->config->getArrayizeString('ldap.basedn', '');
@@ -248,6 +170,98 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         Logger::debug(
             $this->title . 'Type map created: ' . $this->varExport($this->type_map)
         );
+    }
+
+
+    /**
+     * Parse authsource config
+     *
+     * @param string $as The name of the authsource
+     */
+    private function parseAuthSourceConfig(string $as) : array
+    {
+        // Log the authsource request
+        Logger::debug(
+            $this->title . 'Attempting to get configuration values from authsource [' . $as . ']'
+        );
+
+        // Get the authsources file, which should contain the config
+        $authsources = Configuration::getConfig('authsources.php');
+
+        // Verify that the authsource config exists
+        if (!$authsources->hasValue($as)) {
+            throw new Error\Exception(
+                $this->title . 'Authsource [' . $as . '] defined in filter parameters not found in authsources.php'
+            );
+        }
+
+        // Get just the specified authsource config values
+        $authsource = $authsources->getArray($as);
+
+        // Make sure it is an ldap source
+        if (isset($authsource[0]) && !in_array($authsource[0], self::$ldapsources)) {
+            throw new Error\Exception(
+                $this->title . 'Authsource [' . $as . '] specified in filter parameters is not an ldap:LDAP type'
+            );
+        }
+
+        // Build the authsource config
+        $authconfig = [];
+        if (isset($authsource['hostname'])) {
+            $authconfig['ldap.hostname']   = $authsource['hostname'];
+        }
+        if (isset($authsource['enable_tls'])) {
+            $authconfig['ldap.enable_tls'] = $authsource['enable_tls'];
+        }
+        if (isset($authsource['port'])) {
+            $authconfig['ldap.port']       = $authsource['port'];
+        }
+        if (isset($authsource['timeout'])) {
+            $authconfig['ldap.timeout']    = $authsource['timeout'];
+        }
+        if (isset($authsource['debug'])) {
+            $authconfig['ldap.debug']      = $authsource['debug'];
+        }
+        if (isset($authsource['referrals'])) {
+            $authconfig['ldap.referrals']  = $authsource['referrals'];
+        }
+
+        // only set when search.enabled = true
+        if (isset($authsource['search.enable']) && $authsource['search.enable']) {
+            if (isset($authsource['search.base'])) {
+                $authconfig['ldap.basedn'] = $authsource['search.base'];
+            }
+            if (isset($authsource['search.scope'])) {
+                $authconfig['ldap.scope'] = $authsource['search.scope'];
+            }
+            if (isset($authsource['search.username'])) {
+                $authconfig['ldap.username']   = $authsource['search.username'];
+            }
+            if (isset($authsource['search.password'])) {
+                $authconfig['ldap.password']   = $authsource['search.password'];
+            }
+
+            // Only set the username attribute if the authsource specifies one attribute
+            if (
+                isset($authsource['search.attributes'])
+                && is_array($authsource['search.attributes'])
+                && count($authsource['search.attributes']) == 1
+            ) {
+                $authconfig['attribute.username'] = reset($authsource['search.attributes']);
+            }
+        }
+
+        // only set when priv.read = true
+        if (isset($authsource['priv.read']) && $authsource['priv.read']) {
+            if (isset($authsource['priv.username'])) {
+                $authconfig['ldap.username'] = $authsource['priv.username'];
+            }
+            if (isset($authsource['priv.password'])) {
+                $authconfig['ldap.password'] = $authsource['priv.password'];
+            }
+        }
+
+        return $authconfig;
     }
 
 
