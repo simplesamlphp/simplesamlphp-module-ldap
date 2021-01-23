@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\ldap\Auth\Source;
 
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Module\ldap\ConfigHelper;
-use Webmozart\Assert\Assert;
 
 /**
  * LDAP authentication source.
