@@ -27,11 +27,13 @@
  * @package SimpleSAMLphp
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\ldap\Auth\Ldap;
-use Webmozart\Assert\Assert;
 
 class AttributeAddFromLDAP extends BaseFilter
 {
@@ -40,28 +42,28 @@ class AttributeAddFromLDAP extends BaseFilter
      *
      * @var array
      */
-    protected $search_attributes;
+    protected array $search_attributes;
 
     /**
      * LDAP attributes to base64 encode
      *
      * @var array
      */
-    protected $binary_attributes;
+    protected array $binary_attributes;
 
     /**
      * LDAP search filter to use in the LDAP query
      *
      * @var string
      */
-    protected $search_filter;
+    protected string $search_filter;
 
     /**
      * What to do with attributes when the target already exists. Either replace, merge or add.
      *
      * @var string
      */
-    protected $attr_policy;
+    protected string $attr_policy;
 
 
     /**

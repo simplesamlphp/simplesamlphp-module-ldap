@@ -8,12 +8,14 @@
  * @package SimpleSAMLphp
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Utils\Arrays;
-use Webmozart\Assert\Assert;
 
 class AttributeAddUsersGroups extends BaseFilter
 {

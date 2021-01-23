@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\ldap\Auth\Source;
 
 use SimpleSAML\Module\ldap\ConfigHelper;
@@ -21,7 +23,7 @@ class Ldap extends \SimpleSAML\Module\core\Auth\UserPassBase
     /**
      * A LDAP configuration object.
      */
-    private $ldapConfig;
+    private ConfigHelper $ldapConfig;
 
 
     /**

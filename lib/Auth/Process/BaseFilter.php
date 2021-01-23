@@ -11,8 +11,11 @@
  * @package SimpleSAMLphp
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
+use SimpleSAML\Configuration;
 use SimpleSAML\Module\ldap\Auth\Ldap;
 
 abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
@@ -24,7 +27,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      *
      * @var array
      */
-    protected $attribute_map;
+    protected array $attribute_map;
 
     /**
      * The base DN of the LDAP connection. Used when searching
@@ -41,7 +44,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      *
      * @var \SimpleSAML\Configuration
      */
-    protected $config;
+    protected Configuration $config;
 
     /**
      * Instance, object of the ldap connection. Stored here to
@@ -49,7 +52,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      *
      * @var \SimpleSAML\Module\ldap\Auth\Ldap|null
      */
-    private $ldap = null;
+    private ?Ldap $ldap = null;
 
     /**
      * Many times a LDAP product specific query can be used to
@@ -59,7 +62,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      *
      * @var string
      */
-    protected $product;
+    protected string $product;
 
     /**
      * The class "title" used in logging and exception messages.
@@ -67,7 +70,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      *
      * @var string
      */
-    protected $title = 'ldap:BaseFilter : ';
+    protected string $title = 'ldap:BaseFilter : ';
 
     /**
      * List of LDAP object types, used to determine the type of
@@ -75,7 +78,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      *
      * @var array
      */
-    protected $type_map;
+    protected array $type_map;
 
 
     /**

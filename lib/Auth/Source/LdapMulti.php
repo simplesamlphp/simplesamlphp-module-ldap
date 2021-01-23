@@ -11,30 +11,32 @@
  * @package SimpleSAMLphp
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\ldap\Auth\Source;
 
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\ldap\ConfigHelper;
-use Webmozart\Assert\Assert;
 
 class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
 {
     /**
      * An array with descriptions for organizations.
      */
-    private $orgs;
+    private array $orgs;
 
     /**
      * An array of organization IDs to LDAP configuration objects.
      */
-    private $ldapOrgs;
+    private array $ldapOrgs;
 
     /**
      * Whether we should include the organization as part of the username.
      */
-    private $includeOrgInUsername;
+    private bool $includeOrgInUsername;
 
 
     /**
@@ -98,24 +100,24 @@ class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
      *
      * @param string $username  The username the user wrote.
      * @param string $password  The password the user wrote.
-     * @param string $org  The organization the user chose.
+     * @param string $organization  The organization the user chose.
      * @return array  Associative array with the users attributes.
      */
-    protected function login(string $username, string $password, string $org, array $sasl_args = null): array
+    protected function login(string $username, string $password, string $organization, array $sasl_args = null): array
     {
-        if (!array_key_exists($org, $this->ldapOrgs)) {
+        if (!array_key_exists($organization, $this->ldapOrgs)) {
             // The user has selected an organization which doesn't exist anymore.
             Logger::warning('Authentication source ' . var_export($this->authId, true) .
                 ': Organization seems to have disappeared while the user logged in.' .
-                ' Organization was ' . var_export($org, true));
+                ' Organization was ' . var_export($organization, true));
             throw new Error\Error('WRONGUSERPASS');
         }
 
         if ($this->includeOrgInUsername) {
-            $username = $username . '@' . $org;
+            $username = $username . '@' . $organization;
         }
 
-        return $this->ldapOrgs[$org]->login($username, $password, $sasl_args);
+        return $this->ldapOrgs[$organization]->login($username, $password, $sasl_args);
     }
 
 

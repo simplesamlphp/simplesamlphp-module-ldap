@@ -6,6 +6,8 @@
  * @package SimpleSAMLphp
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\ldap\Auth;
 
 use SimpleSAML\Error;
@@ -42,14 +44,14 @@ class Ldap
      *
      * @var string|null
      */
-    protected $authz_id = null;
+    protected ?string $authz_id = null;
 
     /**
      * Timeout value, in seconds.
      *
      * @var int
      */
-    protected $timeout = 0;
+    protected int $timeout = 0;
 
     /**
      * Private constructor restricts instantiation to getInstance().

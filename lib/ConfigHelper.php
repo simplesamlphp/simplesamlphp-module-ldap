@@ -9,12 +9,14 @@
  * @package SimpleSAMLphp
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\ldap;
 
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
-use Webmozart\Assert\Assert;
 
 class ConfigHelper
 {
@@ -22,108 +24,108 @@ class ConfigHelper
      * String with the location of this configuration.
      * Used for error reporting.
      */
-    protected $location;
+    protected string $location;
 
     /**
      * The hostname of the LDAP server.
      */
-    protected $hostname;
+    protected string $hostname;
 
     /**
      * Whether we should use TLS/SSL when contacting the LDAP server.
      */
-    protected $enableTLS;
+    protected bool $enableTLS;
 
     /**
      * Whether debug output is enabled.
      *
      * @var bool
      */
-    protected $debug;
+    protected bool $debug;
 
     /**
      * The timeout for accessing the LDAP server.
      *
      * @var int
      */
-    protected $timeout;
+    protected int $timeout;
 
     /**
      * The port used when accessing the LDAP server.
      *
      * @var int
      */
-    protected $port;
+    protected int $port;
 
     /**
      * Whether to follow referrals
      */
-    protected $referrals;
+    protected bool $referrals;
 
     /**
      * Whether we need to search for the users DN.
      */
-    protected $searchEnable;
+    protected bool $searchEnable;
 
     /**
      * The username we should bind with before we can search for the user.
      */
-    protected $searchUsername;
+    protected ?string $searchUsername;
 
     /**
      * The password we should bind with before we can search for the user.
      */
-    protected $searchPassword;
+    protected string $searchPassword;
 
     /**
      * Array with the base DN(s) for the search.
      */
-    protected $searchBase;
+    protected array $searchBase;
 
     /**
      * The scope of the search.
      */
-    protected $searchScope;
+    protected string $searchScope;
 
     /**
      * Additional LDAP filter fields for the search
      */
-    protected $searchFilter;
+    protected ?string $searchFilter;
 
     /**
      * The attributes which should match the username.
      */
-    protected $searchAttributes;
+    protected array $searchAttributes;
 
     /**
      * The DN pattern we should use to create the DN from the username.
      */
-    protected $dnPattern;
+    protected string $dnPattern;
 
     /**
      * The attributes we should fetch. Can be NULL in which case we will fetch all attributes.
      */
-    protected $attributes;
+    protected ?array $attributes;
 
     /**
      * The attributes that are marked binary in the LDAP-schema. They will be base64 encoded.
      */
-    protected $binaryAttributes;
+    protected array $binaryAttributes;
 
     /**
      * The user cannot get all attributes, privileged reader required
      */
-    protected $privRead;
+    protected bool $privRead;
 
     /**
      * The DN we should bind with before we can get the attributes.
      */
-    protected $privUsername;
+    protected string $privUsername;
 
     /**
      * The password we should bind with before we can get the attributes.
      */
-    protected $privPassword;
+    protected string $privPassword;
 
 
     /**
