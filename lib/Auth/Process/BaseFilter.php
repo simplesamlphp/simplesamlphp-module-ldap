@@ -128,6 +128,9 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
             );
         }
 
+        // Initialize the Ldap-object
+        $this->initializeLdap();
+
         // Set all the filter values, setting defaults if needed
         $this->base_dn = $this->config->getArrayizeString('ldap.basedn', '');
         $this->product = $this->config->getString('ldap.product', '');
@@ -274,11 +277,6 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      */
     protected function getLdap(): Ldap
     {
-        // Check if already connected
-        if (isset($this->ldap)) {
-            return $this->ldap;
-        }
-
         // Get the connection specific options
         $hostname   = $this->config->getString('ldap.hostname');
         $port       = $this->config->getInteger('ldap.port', 389);
@@ -302,12 +300,30 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
             ' Password: ' . (empty($password) ? '' : '********')
         );
 
-        // Connect to the LDAP server to be queried during processing
-        $this->ldap = new Ldap($hostname, $enable_tls, $debug, $timeout, $port, $referrals);
         $this->ldap->bind($username, $password);
 
         // All done
         return $this->ldap;
+    }
+
+
+    /**
+     * Initialize the Ldap-object
+     *
+     * @return void
+     */
+    private function initializeLdap(): void
+    {
+        // Get the connection specific options
+        $hostname   = $this->config->getString('ldap.hostname');
+        $port       = $this->config->getInteger('ldap.port', 389);
+        $enable_tls = $this->config->getBoolean('ldap.enable_tls', false);
+        $debug      = $this->config->getBoolean('ldap.debug', false);
+        $referrals  = $this->config->getBoolean('ldap.referrals', true);
+        $timeout    = $this->config->getInteger('ldap.timeout', 0);
+
+        // Connect to the LDAP server to be queried during processing
+        $this->ldap = new Ldap($hostname, $enable_tls, $debug, $timeout, $port, $referrals);
     }
 
 
