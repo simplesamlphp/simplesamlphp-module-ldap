@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\ldap\Auth;
 
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Utils;
-use Webmozart\Assert\Assert;
 
 /**
  * Constants defining possible errors
