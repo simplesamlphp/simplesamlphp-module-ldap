@@ -209,7 +209,7 @@ class ConfigHelper
         } else {
             if ($this->searchUsername !== null) {
                 if (!$ldap->bind($this->searchUsername, $this->searchPassword)) {
-                    throw new \Exception('Error authenticating using search username & password.');
+                    throw new Exception('Error authenticating using search username & password.');
                 }
             }
 
@@ -249,7 +249,7 @@ class ConfigHelper
         if ($this->privRead) {
             // Yes, rebind with privs
             if (!$ldap->bind($this->privUsername, $this->privPassword)) {
-                throw new \Exception('Error authenticating using privileged DN & password.');
+                throw new Exception('Error authenticating using privileged DN & password.');
             }
         }
 
@@ -296,7 +296,7 @@ class ConfigHelper
 
         if ($this->searchUsername !== null) {
             if (!$ldap->bind($this->searchUsername, $this->searchPassword)) {
-                throw new \Exception('Error authenticating using search username & password.');
+                throw new Exception('Error authenticating using search username & password.');
             }
         }
 
@@ -337,7 +337,7 @@ class ConfigHelper
         if ($this->privRead) {
             // Yes, rebind with privs
             if (!$ldap->bind($this->privUsername, $this->privPassword)) {
-                throw new \Exception('Error authenticating using privileged DN & password.');
+                throw new Exception('Error authenticating using privileged DN & password.');
             }
         }
         return $ldap->getAttributes($dn, $attributes, $binaryAttributes);
