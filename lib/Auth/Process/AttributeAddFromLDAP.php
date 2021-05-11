@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
+use Exception;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\ldap\Auth\Ldap;
@@ -135,7 +136,7 @@ class AttributeAddFromLDAP extends BaseFilter
         // getLdap
         try {
             $ldap = $this->getLdap();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Added this warning in case $this->getLdap() fails
             Logger::warning("AttributeAddFromLDAP: exception = " . $e);
             return;
@@ -150,7 +151,7 @@ class AttributeAddFromLDAP extends BaseFilter
                 true,
                 false
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return; // silent fail, error is still logged by LDAP search
         }
 

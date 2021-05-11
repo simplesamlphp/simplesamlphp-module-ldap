@@ -15,7 +15,7 @@ namespace SimpleSAML\Module\ldap\Auth\Process;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
-use SimpleSAML\Utils\Arrays;
+use SimpleSAML\Utils;
 
 class AttributeAddUsersGroups extends BaseFilter
 {
@@ -310,6 +310,8 @@ class AttributeAddUsersGroups extends BaseFilter
      */
     protected function searchActiveDirectory(string $dn): array
     {
+        $arrayUtils = new Utils\Arrays();
+
         // Shorten the variable name
         $map = &$this->attribute_map;
 
@@ -321,7 +323,7 @@ class AttributeAddUsersGroups extends BaseFilter
             ' Member Attribute: ' . $map['member'] .
             ' Type Attribute: ' . $map['type'] .
             ' Type Value: ' . $this->type_map['group'] .
-            ' Base: ' . implode('; ', Arrays::Arrayize($this->base_dn))
+            ' Base: ' . implode('; ', $arrayUtils->arrayize($this->base_dn))
         );
 
         // AD connections should have this set
