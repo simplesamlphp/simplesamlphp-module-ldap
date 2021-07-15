@@ -259,7 +259,7 @@ in the ldap:AttributeAddUsersGroups filter (below), these are the filter
 specific configuration options:
 
 
-    50 = [
+    50 => [
         'class' => 'ldap:AttributeAddFromLDAP',
 
         /**
