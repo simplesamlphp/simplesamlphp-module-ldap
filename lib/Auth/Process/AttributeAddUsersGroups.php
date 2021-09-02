@@ -184,7 +184,7 @@ class AttributeAddUsersGroups extends BaseFilter
                     ],
                     $this->additional_filters
                 ),
-                [$map['member']]
+                [$map['return']]
             );
         } catch (Error\UserNotFound $e) {
             return $groups; // if no groups found return with empty (still just initialized) groups array
@@ -192,7 +192,7 @@ class AttributeAddUsersGroups extends BaseFilter
 
         // run through all groups and add each to our groups array
         foreach ($all_groups as $group_entry) {
-            $groups[] = $group_entry[$map['member']][0];
+            $groups[] = $group_entry[$map['return']][0];
         }
 
         return $groups;
@@ -336,6 +336,7 @@ class AttributeAddUsersGroups extends BaseFilter
             $this->title . 'Searching ActiveDirectory group membership.' .
             ' DN: ' . $dn .
             ' DN Attribute: ' . $map['dn'] .
+            ' Return Attribute: ' . $map['return'] .
             ' Member Attribute: ' . $map['member'] .
             ' Type Attribute: ' . $map['type'] .
             ' Type Value: ' . $this->type_map['group'] .
@@ -356,7 +357,7 @@ class AttributeAddUsersGroups extends BaseFilter
                     ],
                     $this->additional_filters
                 ),
-                [$map['dn']]
+                [$map['return']]
             );
 
         // The search may throw an exception if no entries
@@ -371,27 +372,27 @@ class AttributeAddUsersGroups extends BaseFilter
         // Check each entry..
         foreach ($entries as $entry) {
             // Check for the DN using the original attribute name
-            if (isset($entry[$map['dn']][0])) {
-                $groups[] = $entry[$map['dn']][0];
+            if (isset($entry[$map['return']][0])) {
+                $groups[] = $entry[$map['return']][0];
                 continue;
             }
 
             // Sometimes the returned attribute names are lowercase
-            if (isset($entry[strtolower($map['dn'])][0])) {
-                $groups[] = $entry[strtolower($map['dn'])][0];
+            if (isset($entry[strtolower($map['return'])][0])) {
+                $groups[] = $entry[strtolower($map['return'])][0];
                 continue;
             }
 
             // AD queries also seem to return the objects dn by default
-            if (isset($entry['dn'])) {
-                $groups[] = $entry['dn'];
+            if (isset($entry['return'])) {
+                $groups[] = $entry['return'];
                 continue;
             }
 
             // Could not find DN, log and continue
             Logger::notice(
-                $this->title . 'The DN attribute [' .
-                implode(', ', [$map['dn'], strtolower($map['dn']), 'dn']) .
+                $this->title . 'The return attribute [' .
+                implode(', ', [$map['return'], strtolower($map['return'])]) .
                 '] could not be found in the entry. ' . $this->varExport($entry)
             );
         }

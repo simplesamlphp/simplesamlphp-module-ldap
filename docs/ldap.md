@@ -522,6 +522,7 @@ a listing of all configuration options and their details.
         'attribute.member' => 'member',
         'attribute.memberof' => 'memberOf',
         'attribute.groupname' => 'name',
+        'attribute.return' => 'distinguishedName',
         'attribute.type' => 'objectClass',
         'attribute.username' => 'sAMAccountName',
 
