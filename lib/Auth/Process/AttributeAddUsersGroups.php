@@ -20,6 +20,15 @@ use SimpleSAML\Utils;
 class AttributeAddUsersGroups extends BaseFilter
 {
     /**
+     * LDAP search filters to be added to the base filters for this authproc-filter.
+     * It's an array of key => value pairs that will be translated to (key=value) in the ldap query.
+     *
+     * @var array
+     */
+    protected array $additional_filters;
+
+
+    /**
      * This is run when the filter is processed by SimpleSAML.
      * It will attempt to find the current users groups using
      * the best method possible for the LDAP product. The groups
@@ -36,6 +45,8 @@ class AttributeAddUsersGroups extends BaseFilter
         Logger::debug(
             $this->title . 'Attempting to get the users groups...'
         );
+
+        $this->additional_filters = $this->config->getArray('additional_filters', []);
 
         // Reference the attributes, just to make the names shorter
         $attributes = &$request['Attributes'];
@@ -167,7 +178,12 @@ class AttributeAddUsersGroups extends BaseFilter
              */
             $all_groups = $this->getLdap()->searchformultiple(
                 $openldap_base,
-                [$map['memberof'] => $attributes[$map['username']][0]],
+                array_merge(
+                    [
+                        $map['memberof'] => $attributes[$map['username']][0]
+                    ],
+                    $this->additional_filters
+                ),
                 [$map['member']]
             );
         } catch (Error\UserNotFound $e) {
@@ -333,7 +349,13 @@ class AttributeAddUsersGroups extends BaseFilter
         try {
             $entries = $this->getLdap()->searchformultiple(
                 $this->base_dn,
-                [$map['type'] => $this->type_map['group'], $map['member'] . ':1.2.840.113556.1.4.1941:' => $dn],
+                array_merge(
+                    [
+                        $map['type'] => $this->type_map['group'],
+                        $map['member'] . ':1.2.840.113556.1.4.1941:' => $dn
+                    ],
+                    $this->additional_filters
+                ),
                 [$map['dn']]
             );
 
