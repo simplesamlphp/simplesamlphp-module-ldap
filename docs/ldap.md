@@ -522,6 +522,7 @@ a listing of all configuration options and their details.
         'attribute.member' => 'member',
         'attribute.memberof' => 'memberOf',
         'attribute.groupname' => 'name',
+        'attribute.return' => 'distinguishedName',
         'attribute.type' => 'objectClass',
         'attribute.username' => 'sAMAccountName',
 
@@ -537,6 +538,14 @@ a listing of all configuration options and their details.
          */
         'type.group' => 'group',
         'type.user' => 'user',
+
+
+        /**
+         * LDAP search filters to be added to the base filters for this authproc-filter.
+         * It's an array of key => value pairs that will be translated to (key=value) in the ldap query.
+         *
+         */
+        'additional_filters' => [],
     ]
 
 
