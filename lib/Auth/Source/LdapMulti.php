@@ -16,13 +16,27 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\ldap\Auth\Source;
 
 use SimpleSAML\Assert\Assert;
+use SimpleSAML\Auth;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
-use SimpleSAML\Module\ldap\ConfigHelper;
+use SimpleSAML\Module\core\Auth\UserPassOrgBase;
 
-class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
+use function array_key_exists;
+use function var_export;
+
+class LdapMulti extends UserPassOrgBase
 {
+    /**
+     * An LDAP configuration object.
+     */
+    private Configuration $ldapConfig;
+
+    /**
+     * An array with mappings for organization => authsource.
+     */
+    private array $mapping;
+
     /**
      * An array with descriptions for organizations.
      */
@@ -50,47 +64,41 @@ class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
         // Call the parent constructor first, as required by the interface
         parent::__construct($info, $config);
 
-        $cfgHelper = Configuration::loadFromArray(
+        $this->ldapConfig = Configuration::loadFromArray(
             $config,
-            'Authentication source ' . var_export($this->authId, true)
+            'authsources[' . var_export($this->authId, true) . ']'
         );
 
+        $usernameOrgMethod = $this->ldapConfig->getValueValidate(
+            'username_organization_method',
+            ['none', 'allow', 'force']
+        );
+        $this->setUsernameOrgMethod($usernameOrgMethod);
 
-        $this->orgs = [];
-        $this->ldapOrgs = [];
-        foreach ($config as $name => $value) {
-            if ($name === 'username_organization_method') {
-                $usernameOrgMethod = $cfgHelper->getValueValidate(
-                    'username_organization_method',
-                    ['none', 'allow', 'force']
-                );
-                $this->setUsernameOrgMethod($usernameOrgMethod);
-                continue;
-            }
+        $this->includeOrgInUsername = $this->ldapConfig->getBoolean(
+            'include_organization_in_username',
+            false
+        );
 
-            if ($name === 'include_organization_in_username') {
-                $this->includeOrgInUsername = $cfgHelper->getBoolean(
-                    'include_organization_in_username',
-                    false
-                );
-                continue;
-            }
+        $this->mapping = $this->ldapConfig->getArray('mapping');
+        Assert::notEmpty($this->mapping);
 
-            $orgCfg = $cfgHelper->getArray($name);
-            $orgId = $name;
+        $organizations = array_keys($this->mapping);
+        $authsources = Configuration::getConfig('authsources.php');
 
-            if (array_key_exists('description', $orgCfg)) {
-                $this->orgs[$orgId] = $orgCfg['description'];
+        foreach ($organizations as $organization) {
+            Assert::keyExists($this->mapping[$organization], 'authsource');
+            $authsource = $this->mapping[$organization]['authsource'];
+            if (array_key_exists('description', $this->mapping[$organization])) {
+                $this->orgs[$organization] = $this->mapping[$organization]['description'];
             } else {
-                $this->orgs[$orgId] = $orgId;
+                $this->orgs[$organization] = $organization;
             }
 
-            $orgCfg = new ConfigHelper(
-                $orgCfg,
-                'Authentication source ' . var_export($this->authId, true) .
-                    ', organization ' . var_export($orgId, true)
+            $this->ldapOrgs[$organization] = Configuration::loadFromArray(
+                $authsources->getValue($authsource),
+                'authsources[' . var_export($this->authId, true) . '][' . var_export($organization, true). ']'
             );
-            $this->ldapOrgs[$orgId] = $orgCfg;
         }
     }
 
@@ -100,24 +108,24 @@ class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
      *
      * @param string $username  The username the user wrote.
      * @param string $password  The password the user wrote.
-     * @param string $organization  The organization the user chose.
      * @return array  Associative array with the users attributes.
      */
-    protected function login(string $username, string $password, string $organization, array $sasl_args = null): array
+    protected function login(string $username, string $password, string $organization): array
     {
-        if (!array_key_exists($organization, $this->ldapOrgs)) {
-            // The user has selected an organization which doesn't exist anymore.
-            Logger::warning('Authentication source ' . var_export($this->authId, true) .
-                ': Organization seems to have disappeared while the user logged in.' .
-                ' Organization was ' . var_export($organization, true));
-            throw new Error\Error('WRONGUSERPASS');
-        }
-
         if ($this->includeOrgInUsername) {
             $username = $username . '@' . $organization;
         }
 
-        return $this->ldapOrgs[$organization]->login($username, $password, $sasl_args);
+        $authsource = $this->mapping[$organization]['authsource'];
+        $sourceConfig = $this->ldapOrgs[$organization];
+
+        $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap {
+            public function _login(string $username, string $password) {
+                return $this->login($username, $password);
+            }
+        };
+
+        return $ldap->_login($username, $password);
     }
 
 
