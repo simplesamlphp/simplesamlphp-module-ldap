@@ -15,6 +15,7 @@ namespace SimpleSAML\Module\ldap\Auth\Process;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
+use SimpleSAML\Module\ldap\Utils\Ldap as LdapUtils;
 use SimpleSAML\Utils;
 
 class AttributeAddUsersGroups extends BaseFilter
@@ -176,12 +177,18 @@ class AttributeAddUsersGroups extends BaseFilter
             $map['memberof'] . "=" . $attributes[$map['username']][0] . ") and attributes " . $map['member']
         );
 
+        $username   = $this->config->getString('ldap.username');
+        $password   = $this->config->getString('ldap.password', null);
+
+        $ldapUtils = new LdapUtils();
+        $ldapUtils->bind($this->ldap, $username, $password);
+
         $groups = [];
         try {
             /* Intention is to filter in 'ou=groups,dc=example,dc=com' for
              * '(memberUid = <value of attribute.username>)' and take only the attributes 'cn' (=name of the group)
              */
-            $all_groups = $this->getLdap()->searchformultiple(
+            $all_groups = $ldapUtils->searchForMultiple(
                 $openldap_base,
                 array_merge(
                     [

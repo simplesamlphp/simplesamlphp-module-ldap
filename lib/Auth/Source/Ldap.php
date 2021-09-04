@@ -69,26 +69,30 @@ class Ldap extends UserPassBase
         $version = $this->ldapConfig->getInteger('version', 3);
         Assert::positiveInteger($version);
 
+        $timeout = $this->ldapConfig->getInteger('timeout', 3);
+        Assert::positiveInteger($timeout);
+
         $ldapUtils = new Utils\Ldap();
         $ldapServers = $ldapUtils->create(
             explode(' ', $this->ldapConfig->getString('connection_string')),
             $encryption,
             $version,
-            $this->ldapConfig->getString('extension', 'ext_ldap')
+            $this->ldapConfig->getString('extension', 'ext_ldap'),
+            $this->ldapConfig->getBoolean('debug', false),
+            [
+                'network_timeout' => $timeout,
+                'referrals' => $this->ldapConfig->getBoolean('referrals', false),
+            ]
         );
 
         $searchScope = $this->ldapConfig->getString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
 
-        $referrals = $this->ldapConfig->getValue('referrals', Query::DEREF_NEVER);
-        Assert::oneOf($referrals, [Query::DEREF_ALWAYS, Query::DEREF_NEVER, Query::DEREF_FINDING, Query::DEREF_SEARCHING]);
-
         $timeout = $this->ldapConfig->getString('timeout', 3);
-        $searchBase = $this->ldapConfig->getArray('search.base');
+        $searchBase = $this->ldapConfig->getArrayizeString('search.base');
         $options = [
             'scope' => $searchScope,
             'timeout' => $timeout,
-            'deref' => $referrals,
         ];
 
         $searchEnable = $this->ldapConfig->getBoolean('search.enable', false);
