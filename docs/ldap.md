@@ -29,11 +29,20 @@ authentication source:
     'example-ldap' => [
         'ldap:Ldap',
 
-        /* The hostname of the LDAP server. */
-        'hostname' => 'ldap.example.org',
+        /* The connection string for the LDAP-server. You can add multiple by separating them with a space. */
+        'connection_string' => 'ldap.example.org',
 
-        /* Whether SSL/TLS should be used when contacting the LDAP server. */
-        'enable_tls' => false,
+        /* Whether SSL/TLS should be used when contacting the LDAP server. Possible values are 'ssl', 'tls' or 'none' */
+        'encryption' => 'ssl',
+
+        /* The LDAP version to use when interfacing the LDAP-server. Defaults to 3 */
+        'version' => 3,
+
+        /*
+         * Set whether to follow referrals. AD Controllers may require 0x00 to function.
+         * Possible values are 0x00 (NEVER), 0x01 (SEARCHING), 0x02 (FINDING) or 0x03 (ALWAYS).
+         */
+        'referrals' => 0x00,
 
         /*
          * Which attributes should be retrieved from the LDAP server.
@@ -69,10 +78,10 @@ authentication source:
         'search.base' => 'ou=people,dc=example,dc=org',
 
         /*
-         * The scope of the search. Valid values are 'subtree' and 'onelevel' and 'base',
+         * The scope of the search. Valid values are 'sub' and 'one' and 'base',
          * first one being the default if no value is set.
          */
-        'search.scope' => 'subtree',
+        'search.scope' => 'sub',
 
         /*
          * The attribute(s) the username should match against.
@@ -205,28 +214,22 @@ and add an entry which uses this module:
          * The value of each element is an array in the same format as an LDAP
          * authentication source.
          */
-        'employees' => [
-            /*
-             * A short name/description for this group. Will be shown in a dropdown list
-             * when the user logs on.
-             *
-             * This option can be a string or an array with language => text mappings.
-             */
-            'description' => 'Employees',
+        'mapping' => [
+            'employees' => [
+                /*
+                 * A short name/description for this group. Will be shown in a dropdown list
+                 * when the user logs on.
+                 *
+                 * This option can be a string or an array with language => text mappings.
+                 */
+                'description' => 'Employees',
+                'authsource' => ''example-ldap,
+            ],
 
-            /*
-             * The rest of the options are the same as those available for
-             * the LDAP authentication source.
-             */
-            'hostname' => 'ldap.employees.example.org',
-            'dnpattern' => 'uid=%username%,ou=employees,dc=example,dc=org',
-        ],
-
-        'students' => [
-            'description' => 'Students',
-
-            'hostname' => 'ldap.students.example.org',
-            'dnpattern' => 'uid=%username%,ou=students,dc=example,dc=org',
+            'students' => [
+                'description' => 'Students',
+                'authsource' => 'example-ldap-2',
+            ],
         ],
 
     ],

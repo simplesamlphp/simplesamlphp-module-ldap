@@ -46,6 +46,9 @@
     "require-dev": {
         "simplesamlphp/simplesamlphp-test-framework": "^1.1.5"
     },
+    "suggest": {
+        "ext-ldap": "*"
+    },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-ldap/issues",
         "source": "https://github.com/simplesamlphp/simplesamlphp-module-ldap"

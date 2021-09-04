@@ -6,23 +6,16 @@ namespace SimpleSAML\Module\ldap\Auth\Source;
 
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
-use SimpleSAML\Error;
-use SimpleSAML\Logger;
 use SimpleSAML\Module\core\Auth\UserPassBase;
-use Symfony\Component\Ldap\Entry;
-use Symfony\Component\Ldap\Exception\ConnectionException;
-use Symfony\Component\Ldap\Ldap as LdapObject;
+use SimpleSAML\Module\ldap\Utils;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
 use function array_fill_keys;
 use function array_keys;
 use function array_map;
-use function array_pop;
 use function array_values;
-use function count;
-use function is_array;
+use function explode;
 use function sprintf;
-use function strval;
 use function str_replace;
 use function var_export;
 
@@ -73,17 +66,16 @@ class Ldap extends UserPassBase
         $encryption = $this->ldapConfig->getString('encryption', 'ssl');
         Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
 
-        foreach (explode(' ', $this->ldapConfig->getString('connection_string')) as $connection_string) {
-            Assert::regex($connection_string, '#^ldap[s]?:\/\/#');
+        $version = $this->ldapConfig->getInteger('version', 3);
+        Assert::positiveInteger($version);
 
-            $ldap = LdapObject::create(
-                $this->ldapConfig->getString('extension', 'ext_ldap'),
-                [
-                    'connection_string' => $connection_string,
-                    'encryption' => 'ssl',
-                ]
-            );
-        }
+        $ldapUtils = new Utils\Ldap();
+        $ldapServers = $ldapUtils->create(
+            explode(' ', $this->ldapConfig->getString('connection_string')),
+            $encryption,
+            $version,
+            $this->ldapConfig->getString('extension', 'ext_ldap')
+        );
 
         $searchScope = $this->ldapConfig->getString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
@@ -99,13 +91,10 @@ class Ldap extends UserPassBase
             'deref' => $referrals,
         ];
 
-
         $searchEnable = $this->ldapConfig->getBoolean('search.enable', false);
         if ($searchEnable === false) {
             $dnPattern = $this->ldapConfig->getString('dnpattern');
             $dn = str_replace('%username%', $username, $dnPattern);
-
-            $filter = '';
         } else {
             $searchUsername = $this->ldapConfig->getString('search.username');
             Assert::notWhitespaceOnly($searchUsername);
@@ -116,12 +105,7 @@ class Ldap extends UserPassBase
             $searchAttributes = $this->ldapConfig->getArray('search.attributes');
             $searchFilter = $this->ldapConfig->getString('search.filter', null);
 
-            try {
-                $ldap->bind($searchUsername, strval($searchPassword));
-            } catch (ConnectionException $e) {
-                $e = Error\Exception::fromException($e);
-                throw $e;
-            }
+            $ldap = $ldapUtils->bind($ldapServers, $searchUsername, $searchPassword);
 
             $filter = '';
             foreach ($searchAttributes as $attr) {
@@ -131,91 +115,25 @@ class Ldap extends UserPassBase
 
             // Append LDAP filters if defined
             if ($searchFilter !== null) {
-                $filter = "(&" . $filter . "" . $searchFilter . ")";
+                $filter = "(&" . $filter . $searchFilter . ")";
             }
 
-            $entry = null;
-            foreach ($searchBase as $base) {
-                $query = $ldap->query($base, $filter, $options);
-                $result = $query->execute();
-                $result = is_array($result) ? $result : $result->toArray();
-
-                if (count($result) > 1) {
-                    throw new Error\Exception(
-                        sprintf(
-                            "Library - LDAP search(): Found %d entries searching base '%s' for '%s'",
-                            count($result),
-                            $base,
-                            $filter,
-                        )
-                    );
-                } elseif (count($result) === 1) {
-                    $entry = array_pop($result);
-                    break;
-                } else {
-                    Logger::debug(
-                        sprintf(
-                            "Library - LDAP search(): Found no entries searching base '%s' for '%s'",
-                            count($result),
-                            $base,
-                            $filter,
-                        )
-                    );
-                }
-            }
-
-            if ($entry === null) {
-                throw new Error\UserNotFound("User not found");
-            }
-
+            /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
+            $entry = $ldapUtils->search($ldap, $searchBase, $filter, $options, false);
             $dn = $entry->getDn();
         }
 
-        try {
-            $ldap->bind($dn, strval($password));
-        } catch (ConnectionException $e) {
-            $e = Error\Exception::fromException($e);
-            throw $e;
-        }
+        $ldap = $ldapUtils->bind($ldapServers, $dn, $password);
+        $filter = sprintf('(distinguishedName=%s)', $dn);
 
-        $entry = null;
-        foreach ($searchBase as $base) {
-            $query = $ldap->query($base, sprintf('(distinguishedName=%s)', $dn), $options);
-            $result = $query->execute();
-            $result = is_array($result) ? $result : $result->toArray();
+        /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
+        $entry = $ldapUtils->search($ldap, $searchBase, $filter, $options, false);
 
-            if (count($result) > 1) {
-                throw new Error\Exception(
-                    sprintf(
-                        "Library - LDAP search(): Found %d entries searching base '%s' for '%s'",
-                        count($result),
-                        $base,
-                        $filter,
-                    )
-                );
-            } elseif (count($result) === 1) {
-                $entry = array_pop($result);
-                break;
-            } else {
-                Logger::debug(
-                    sprintf(
-                        "Library - LDAP search(): Found no entries searching base '%s' for '%s'",
-                        count($result),
-                        $base,
-                        $filter,
-                    )
-                );
-            }
-        }
-
-        if ($entry === null) {
-            throw new Error\UserNotFound("User not found");
-        }
-
-        $attributes = $this->ldapConfig->getArray('attributes', []);
-        if ($attributes === ['*']) {
+        $attributes = $this->ldapConfig->getValue('attributes', []);
+        if ($attributes === null) {
             $result = $entry->getAttributes();
         } else {
+            Assert::isArray($attributes);
             $result = array_intersect_key(
                 $entry->getAttributes(),
                 array_fill_keys(array_values($attributes), null)

@@ -283,7 +283,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         $port       = $this->config->getInteger('ldap.port', 389);
         $enable_tls = $this->config->getBoolean('ldap.enable_tls', false);
         $debug      = $this->config->getBoolean('ldap.debug', false);
-        $referrals  = $this->config->getBoolean('ldap.referrals', true);
+        $referrals  = $this->config->getInteger('ldap.referrals', 0x00);
         $timeout    = $this->config->getInteger('ldap.timeout', 0);
         $username   = $this->config->getString('ldap.username', null);
         $password   = $this->config->getString('ldap.password', null);
@@ -295,7 +295,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
             ' Port: ' . $port .
             ' Enable TLS: ' . ($enable_tls ? 'Yes' : 'No') .
             ' Debug: ' . ($debug ? 'Yes' : 'No') .
-            ' Referrals: ' . ($referrals ? 'Yes' : 'No') .
+            ' Referrals: ' . ($referrals === 0x00 ? 'Yes' : 'No') .
             ' Timeout: ' . $timeout .
             ' Username: ' . $username .
             ' Password: ' . (empty($password) ? '' : '********')
@@ -320,7 +320,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         $port       = $this->config->getInteger('ldap.port', 389);
         $enable_tls = $this->config->getBoolean('ldap.enable_tls', false);
         $debug      = $this->config->getBoolean('ldap.debug', false);
-        $referrals  = $this->config->getBoolean('ldap.referrals', true);
+        $referrals  = $this->config->getInteger('ldap.referrals', 0x00);
         $timeout    = $this->config->getInteger('ldap.timeout', 0);
 
         // Connect to the LDAP server to be queried during processing

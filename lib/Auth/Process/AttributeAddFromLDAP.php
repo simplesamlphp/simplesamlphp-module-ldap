@@ -157,7 +157,7 @@ class AttributeAddFromLDAP extends BaseFilter
 
         // handle [multiple] values
         foreach ($entries as $entry) {
-            foreach ($this->search_attributes as $target => $name) {
+            foreach ($this->search_attributes as $name => $target) {
                 if (is_numeric($target)) {
                     $target = $name;
                 }

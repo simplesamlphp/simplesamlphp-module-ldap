@@ -61,7 +61,7 @@ class Ldap
      * @param bool $debug
      * @param int $timeout
      * @param int $port
-     * @param bool $referrals
+     * @param integer $referrals
      * @psalm-suppress NullArgument
      */
     public function __construct(
@@ -70,7 +70,7 @@ class Ldap
         bool $debug = false,
         int $timeout = 0,
         int $port = 389,
-        bool $referrals = true
+        int $referrals = 0x00
     ) {
         // Debug
         Logger::debug('Library - LDAP __construct(): Setup LDAP with ' .

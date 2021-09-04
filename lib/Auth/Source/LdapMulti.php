@@ -89,6 +89,8 @@ class LdapMulti extends UserPassOrgBase
         foreach ($organizations as $organization) {
             Assert::keyExists($this->mapping[$organization], 'authsource');
             $authsource = $this->mapping[$organization]['authsource'];
+            Assert::notNull(Auth\Source::getById($authsource, Ldap::class));
+
             if (array_key_exists('description', $this->mapping[$organization])) {
                 $this->orgs[$organization] = $this->mapping[$organization]['description'];
             } else {
