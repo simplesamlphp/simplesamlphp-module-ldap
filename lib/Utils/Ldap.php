@@ -216,7 +216,7 @@ class Ldap
      *
      * @param string|array $values Array of values to escape
      * @param bool $singleValue
-     * @return string|array Array $values, but escaped
+     * @return string|string[] Array $values, but escaped
      */
     public function escapeFilterValue($values = [], bool $singleValue = true)
     {
