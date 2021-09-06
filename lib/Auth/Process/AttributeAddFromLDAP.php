@@ -115,7 +115,6 @@ class AttributeAddFromLDAP extends BaseFilter
             return;
         }
 
-        $ldapUtils = new LdapUtils();
         $ldap = $ldapUtils->bind($this->ldapServers, $this->searchUsername, $this->searchPassword);
 
         $options = [
@@ -143,7 +142,7 @@ class AttributeAddFromLDAP extends BaseFilter
                 $this->binaryAttributes,
             );
             foreach ($binaries as $binary) {
-                $tmp[$binary] = array_map('base64_encode', $result[$binary]);
+                $tmp[$binary] = array_map('base64_encode', $entry[$binary]);
             }
 
             $results[] = $tmp;
