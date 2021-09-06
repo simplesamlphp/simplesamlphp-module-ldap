@@ -79,7 +79,7 @@ class AttributeAddUsersGroups extends BaseFilter
         // Reference the attributes, just to make the names shorter
         $attributes = &$state['Attributes'];
         $map = &$this->attribute_map;
-        $distinguishedName = $attributes[$map['dn']][0]
+        $distinguishedName = $attributes[$map['dn']][0];
 
         // Get the users groups from LDAP
         $groups = $this->getGroups($distinguishedName);
