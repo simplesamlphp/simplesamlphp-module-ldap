@@ -142,7 +142,7 @@ class AttributeAddFromLDAP extends BaseFilter
                 $this->binaryAttributes,
             );
             foreach ($binaries as $binary) {
-                $tmp[$binary] = array_map('base64_encode', $entry[$binary]);
+                $tmp[$binary] = array_map('base64_encode', $entry->getAttribute($binary));
             }
 
             $results[] = $tmp;
