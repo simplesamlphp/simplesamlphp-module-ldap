@@ -99,7 +99,8 @@ class AttributeAddUsersGroups extends BaseFilter
             throw new Error\Exception(
                 sprintf(
                     '%sThe group attribute [%s] is not an array of group DNs. %s',
-                    $this->title, $map['groups'];
+                    $this->title,
+                     $map['groups'],
                     $this->varExport($attributes[$map['groups']])
                 )
             );
