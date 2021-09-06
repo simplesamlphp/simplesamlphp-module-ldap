@@ -20,6 +20,33 @@ use SimpleSAML\Utils;
 
 class AttributeAddUsersGroups extends BaseFilter
 {
+    /** @var string */
+    protected string $searchUsername;
+
+    /** @var string */
+    protected string $searchPassword;
+
+    /** @var string */
+    protected string $product;
+
+
+    /**
+     * Initialize this filter.
+     *
+     * @param array $config Configuration information about this filter.
+     * @param mixed $reserved For future use.
+     */
+    public function __construct(array $config, $reserved)
+    {
+        parent::__construct($config, $reserved);
+
+        // Get filter specific config options
+        $this->searchUsername = $this->config->getString('search.username');
+        $this->searchPassword = $this->config->getString('search.password', null);
+        $this->product = $this->config->getString('product', 'ActiveDirectory');
+    }
+
+
     /**
      * LDAP search filters to be added to the base filters for this authproc-filter.
      * It's an array of key => value pairs that will be translated to (key=value) in the ldap query.
@@ -52,9 +79,10 @@ class AttributeAddUsersGroups extends BaseFilter
         // Reference the attributes, just to make the names shorter
         $attributes = &$state['Attributes'];
         $map = &$this->attribute_map;
+        $distinguishedName = $attributes[$map['dn']][0]
 
         // Get the users groups from LDAP
-        $groups = $this->getGroups($attributes);
+        $groups = $this->getGroups($distinguishedName);
 
         // If there are none, do not proceed
         if (empty($groups)) {
@@ -69,8 +97,11 @@ class AttributeAddUsersGroups extends BaseFilter
         // Must be an array, else cannot merge groups
         if (!is_array($attributes[$map['groups']])) {
             throw new Error\Exception(
-                $this->title . 'The group attribute [' . $map['groups'] .
-                '] is not an array of group DNs. ' . $this->varExport($attributes[$map['groups']])
+                sprintf(
+                    '%sThe group attribute [%s] is not an array of group DNs. %s',
+                    $this->title, $map['groups'];
+                    $this->varExport($attributes[$map['groups']])
+                )
             );
         }
 
@@ -81,17 +112,18 @@ class AttributeAddUsersGroups extends BaseFilter
 
         // All done
         Logger::debug(
-            $this->title . 'Added users groups to the group attribute [' .
-            $map['groups'] . ']: ' . implode('; ', $groups)
+            sprintf(
+                '%sAdded users groups to the group attribute[%s]: %s',
+                $this->title,
+                $map['groups'],
+                implode('; ', $groups)
+            )
         );
     }
 
 
     /**
-     * This section of code was broken out because the child
-     * filter AuthorizeByGroup can use this method as well.
-     * Based on the LDAP product, it will do an optimized search
-     * using the required attribute values from the user to
+     * Will perform a search using the required attribute values from the user to
      * get their group membership, recursively.
      *
      * @throws \SimpleSAML\Error\Exception
@@ -104,6 +136,9 @@ class AttributeAddUsersGroups extends BaseFilter
         Logger::debug(
             $this->title . 'Checking for groups based on the best method for the LDAP product.'
         );
+
+        $ldapUtils = new LdapUtils();
+        $ldap = $ldapUtils->bind($this->ldapServers, $this->searchUsername, $this->searchPassword);
 
         // Based on the directory service, search LDAP for groups
         // If any attributes are needed, prepare them before calling search method
@@ -177,8 +212,8 @@ class AttributeAddUsersGroups extends BaseFilter
             $map['memberof'] . "=" . $attributes[$map['username']][0] . ") and attributes " . $map['member']
         );
 
-        $username   = $this->config->getString('ldap.username');
-        $password   = $this->config->getString('ldap.password', null);
+        $username   = $this->config->getString('search.username');
+        $password   = $this->config->getString('search.password', null);
 
         $ldapUtils = new LdapUtils();
         $ldapUtils->bind($this->ldap, $username, $password);
