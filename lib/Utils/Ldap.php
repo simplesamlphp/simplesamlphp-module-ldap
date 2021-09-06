@@ -177,9 +177,8 @@ class Ldap
         array $options,
         bool $allowMissing
     ): array {
-        $entry = null;
-
         $results = [];
+
         foreach ($searchBase as $base) {
             $query = $ldap->query($base, $filter, $options);
             $result = $query->execute();
