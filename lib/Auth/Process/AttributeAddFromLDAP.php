@@ -108,17 +108,18 @@ class AttributeAddFromLDAP extends BaseFilter
         // merge the attributes into the ldap_search_filter
         $filter = str_replace($arrSearch, $arrReplace, $this->searchFilter);
         if (strpos($filter, '%') !== false) {
-            Logger::info(
-                'AttributeAddFromLDAP: There are non-existing attributes in the search filter. (' .
-                $filter . ')'
-            );
+            Logger::info(sprintf(
+                '%s: AttributeAddFromLDAP: There are non-existing attributes in the search filter. (%s)',
+                $this->title,
+                $filter
+            ));
             return;
         }
 
         $ldap = $ldapUtils->bind($this->ldapServers, $this->searchUsername, $this->searchPassword);
 
         $options = [
-            'scope' => $this->config->getString('search.scope', QUERY::SCOPE_SUB),
+            'scope' => $this->config->getString('search.scope', Query::SCOPE_SUB),
             'timeout' => $this->config->getInteger('timeout', 3),
         ];
 

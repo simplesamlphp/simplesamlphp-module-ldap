@@ -99,7 +99,7 @@ class LdapMulti extends UserPassOrgBase
 
             $this->ldapOrgs[$organization] = Configuration::loadFromArray(
                 $authsources->getValue($authsource),
-                'authsources[' . var_export($this->authId, true) . '][' . var_export($organization, true). ']'
+                'authsources[' . var_export($this->authId, true) . '][' . var_export($organization, true) . ']'
             );
         }
     }
@@ -121,13 +121,15 @@ class LdapMulti extends UserPassOrgBase
         $authsource = $this->mapping[$organization]['authsource'];
         $sourceConfig = $this->ldapOrgs[$organization];
 
-        $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap {
-            public function _login(string $username, string $password) {
+        $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap
+        {
+            public function loginOverload(string $username, string $password)
+            {
                 return $this->login($username, $password);
             }
         };
 
-        return $ldap->_login($username, $password);
+        return $ldap->loginOverload($username, $password);
     }
 
 

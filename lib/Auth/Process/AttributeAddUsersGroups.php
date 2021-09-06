@@ -17,6 +17,7 @@ use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\ldap\Utils\Ldap as LdapUtils;
 use SimpleSAML\Utils;
+use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
 class AttributeAddUsersGroups extends BaseFilter
 {
@@ -70,9 +71,10 @@ class AttributeAddUsersGroups extends BaseFilter
         Assert::keyExists($state, 'Attributes');
 
         // Log the process
-        Logger::debug(
-            $this->title . 'Attempting to get the users groups...'
-        );
+        Logger::debug(sprintf(
+            '%s : Attempting to get the users groups...',
+            $this->title
+        ));
 
         $this->additional_filters = $this->config->getArray('additional_filters', []);
 
@@ -96,14 +98,12 @@ class AttributeAddUsersGroups extends BaseFilter
 
         // Must be an array, else cannot merge groups
         if (!is_array($attributes[$map['groups']])) {
-            throw new Error\Exception(
-                sprintf(
-                    '%sThe group attribute [%s] is not an array of group DNs. %s',
-                    $this->title,
-                     $map['groups'],
-                    $this->varExport($attributes[$map['groups']])
-                )
-            );
+            throw new Error\Exception(sprintf(
+                '%s : The group attribute [%s] is not an array of group DNs. %s',
+                $this->title,
+                $map['groups'],
+                $this->varExport($attributes[$map['groups']])
+            ));
         }
 
         // Add the users group(s)
@@ -112,14 +112,12 @@ class AttributeAddUsersGroups extends BaseFilter
         $group_attribute = array_unique($group_attribute);
 
         // All done
-        Logger::debug(
-            sprintf(
-                '%sAdded users groups to the group attribute[%s]: %s',
-                $this->title,
-                $map['groups'],
-                implode('; ', $groups)
-            )
-        );
+        Logger::debug(sprintf(
+            '%s : Added users groups to the group attribute[%s]: %s',
+            $this->title,
+            $map['groups'],
+            implode('; ', $groups)
+        ));
     }
 
 
@@ -133,26 +131,106 @@ class AttributeAddUsersGroups extends BaseFilter
      */
     protected function getGroups(array $attributes): array
     {
+        // Reference the map, just to make the name shorter
+        $map = &$this->attribute_map;
+
         // Log the request
-        Logger::debug(
-            $this->title . 'Checking for groups based on the best method for the LDAP product.'
-        );
+        Logger::debug(sprintf(
+            '%s : Checking for groups based on the best method for the LDAP product.',
+            $this->title
+        ));
 
         $ldapUtils = new LdapUtils();
         $ldap = $ldapUtils->bind($this->ldapServers, $this->searchUsername, $this->searchPassword);
+
+        $options = [
+            'scope' => $this->config->getString('search.scope', Query::SCOPE_SUB),
+            'timeout' => $this->config->getInteger('timeout', 3),
+        ];
 
         // Based on the directory service, search LDAP for groups
         // If any attributes are needed, prepare them before calling search method
         switch ($this->product) {
             case 'ACTIVEDIRECTORY':
-                $groups = $this->getGroupsActiveDirectory($attributes);
+                $arrayUtils = new Utils\Arrays();
+
+                // Log the AD specific search
+                Logger::debug(sprintf(
+                    '%s : Searching LDAP using ActiveDirectory specific method.',
+                    $this->title
+                ));
+
+                // Make sure the defined dn attribute exists
+                if (!isset($attributes[$map['dn']])) {
+                    throw new Error\Exception(sprintf(
+                        "%s : The DN attribute [%s] is not defined in the user's Attributes: %s",
+                        $this->title,
+                        $map['dn'],
+                        implode(', ', array_keys($attributes)),
+                    ));
+                }
+
+                // DN attribute must have a value
+                if (!isset($attributes[$map['dn']][0]) || !$attributes[$map['dn']][0]) {
+                    throw new Error\Exception(sprintf(
+                        '%s : The DN attribute [%s] does not have a [0] value defined. %s',
+                        $this->title,
+                        $map['dn'],
+                        $this->varExport($attributes[$map['dn']])
+                    ));
+                }
+
+                // Log the search
+                Logger::debug(sprintf(
+                    '%s : Searching ActiveDirectory group membership.'
+                        . ' DN: %s DN Attribute: %s Member Attribute: %s Type Attribute: %s Type Value: %s Base: %s',
+                    $this->title,
+                    $attributes[$map['dn']][0],
+                    $map['dn'],
+                    $map['member'],
+                    $map['type'],
+                    $this->type_map['group'],
+                    implode('; ', $arrayUtils->arrayize($this->base_dn))
+                ));
+
+                $filter = sprintf(
+                    "(%s=%s)(%s=%s)",
+                    $map['type'],
+                    $this->type_map['group'],
+                    $map['member'] . ':1.2.840.113556.1.4.1941:',
+                    $attributes[$map['dn']][0]
+                );
+//                $groups = $this->getGroupsActiveDirectory($attributes);
                 break;
             case 'OPENLDAP':
-                $groups = $this->getGroupsOpenLdap($attributes);
+                // Log the OpenLDAP specific search
+                Logger::debug(sprintf(
+                    '%s : Searching LDAP using OpenLDAP specific method.',
+                    $this->title
+                ));
+
+                Logger::debug(sprintf(
+                    '%s : Searching for groups in base [%s] with filter (%s=%s) and attributes %s',
+                    $this->title,
+                    implode(', ', $this->searchBase),
+                    $map['memberof'],
+                    $attributes[$map['username']][0],
+                    $map['member']
+                ));
+
+                $filter = sprintf('(%s=%s)', $map['memberof'], $attributes[$map['username']][0]);
                 break;
             default:
-                // Reference the map, just to make the name shorter
-                $map = &$this->attribute_map;
+                Logger::debug(sprintf(
+                    '%s : Checking DNs for groups. DNs: %s Attributes: %s, %s Group Type: %s',
+                    $this->title,
+                    implode('; ', $memberof),
+                    $map['memberof'],
+                    $map['type'],
+                    $this->type_map['group']
+                ));
+
+/**
 
                 // Log the general search
                 Logger::debug(
@@ -173,16 +251,26 @@ class AttributeAddUsersGroups extends BaseFilter
                         $this->title . 'The memberof attribute [' . $map['memberof'] .
                         '] is not an array of group DNs. ' . $this->varExport($attributes[$map['memberof']])
                     );
-                }
+-                }
 
                 // Search for the users group membership, recursively
                 $groups = $this->search($attributes[$map['memberof']]);
+*/
         }
+
+        $entries = $ldapUtils->searchForMultiple(
+            $ldap,
+            $this->searchBase,
+            $filter,
+            $options,
+            true
+        );
 
         // All done
         Logger::debug(
             $this->title . 'User found to be a member of the groups:' . implode('; ', $groups)
         );
+
         return $groups;
     }
 
@@ -195,35 +283,13 @@ class AttributeAddUsersGroups extends BaseFilter
      * @throws \SimpleSAML\Error\Exception
      * @param array $attributes
      * @return array
-     */
     protected function getGroupsOpenLdap(array $attributes): array
     {
-        // Log the OpenLDAP specific search
-        Logger::debug(
-            $this->title . 'Searching LDAP using OpenLDAP specific method.'
-        );
-
-        // Reference the map, just to make the name shorter
-        $map = &$this->attribute_map;
-
-        // Print group search string and search for all group names
-        $openldap_base = $this->config->getString('ldap.basedn', 'ou=groups,dc=example,dc=com');
-        Logger::debug(
-            $this->title . "Searching for groups in ldap.basedn " . $openldap_base . " with filter (" .
-            $map['memberof'] . "=" . $attributes[$map['username']][0] . ") and attributes " . $map['member']
-        );
-
-        $username   = $this->config->getString('search.username');
-        $password   = $this->config->getString('search.password', null);
-
-        $ldapUtils = new LdapUtils();
-        $ldapUtils->bind($this->ldap, $username, $password);
-
         $groups = [];
         try {
-            /* Intention is to filter in 'ou=groups,dc=example,dc=com' for
-             * '(memberUid = <value of attribute.username>)' and take only the attributes 'cn' (=name of the group)
-             */
+            // Intention is to filter in 'ou=groups,dc=example,dc=com' for
+            // '(memberUid = <value of attribute.username>)' and take only the attributes 'cn' (=name of the group)
+            //
             $all_groups = $ldapUtils->searchForMultiple(
                 $openldap_base,
                 array_merge(
@@ -245,6 +311,7 @@ class AttributeAddUsersGroups extends BaseFilter
 
         return $groups;
     }
+     */
 
 
     /**
@@ -258,14 +325,9 @@ class AttributeAddUsersGroups extends BaseFilter
      */
     protected function getGroupsActiveDirectory(array $attributes): array
     {
-        // Log the AD specific search
-        Logger::debug(
-            $this->title . 'Searching LDAP using ActiveDirectory specific method.'
-        );
-
         // Reference the map, just to make the name shorter
-        $map = &$this->attribute_map;
-
+        //$map = &$this->attribute_map;
+/**
         // Make sure the defined dn attribute exists
         if (!isset($attributes[$map['dn']])) {
             throw new Error\Exception(
@@ -281,7 +343,7 @@ class AttributeAddUsersGroups extends BaseFilter
                 '] does not have a [0] value defined. ' . $this->varExport($attributes[$map['dn']])
             );
         }
-
+*/
         // Pass to the AD specific search
         return $this->searchActiveDirectory($attributes[$map['dn']][0]);
     }
@@ -305,16 +367,17 @@ class AttributeAddUsersGroups extends BaseFilter
         $groups = [];
 
         // Shorten the variable name
-        $map = &$this->attribute_map;
+        //$map = &$this->attribute_map;
 
         // Log the search
+/**
         Logger::debug(
             $this->title . 'Checking DNs for groups.' .
             ' DNs: ' . implode('; ', $memberof) .
             ' Attributes: ' . $map['memberof'] . ', ' . $map['type'] .
             ' Group Type: ' . $this->type_map['group']
         );
-
+*/
         // Work out what attributes to get for a group
         $use_group_name = false;
         $get_attributes = [$map['memberof'], $map['type']];
@@ -374,12 +437,13 @@ class AttributeAddUsersGroups extends BaseFilter
      */
     protected function searchActiveDirectory(string $dn): array
     {
-        $arrayUtils = new Utils\Arrays();
+//        $arrayUtils = new Utils\Arrays();
 
-        // Shorten the variable name
-        $map = &$this->attribute_map;
+//        // Shorten the variable name
+        //$map = &$this->attribute_map;
 
         // Log the search
+/*
         Logger::debug(
             $this->title . 'Searching ActiveDirectory group membership.' .
             ' DN: ' . $dn .
@@ -390,11 +454,13 @@ class AttributeAddUsersGroups extends BaseFilter
             ' Type Value: ' . $this->type_map['group'] .
             ' Base: ' . implode('; ', $arrayUtils->arrayize($this->base_dn))
         );
+*/
 
         // AD connections should have this set
-        $this->getLdap()->setOption(LDAP_OPT_REFERRALS, 0);
+        //$this->getLdap()->setOption(LDAP_OPT_REFERRALS, 0);
 
         // Search AD with the specific recursive flag
+/**
         try {
             $entries = $this->getLdap()->searchformultiple(
                 $this->base_dn,
@@ -413,7 +479,7 @@ class AttributeAddUsersGroups extends BaseFilter
         } catch (Error\UserNotFound $e) {
             return [];
         }
-
+*/
         //Init the groups
         $groups = [];
 
