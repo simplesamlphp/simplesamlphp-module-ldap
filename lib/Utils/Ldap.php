@@ -210,11 +210,11 @@ class Ldap
     /**
      * Escapes the given VALUES according to RFC 2254 so that they can be safely used in LDAP filters.
      *
-     * Any control characters with an ACII code < 32 as well as the characters with special meaning in
+     * Any control characters with an ASCII code < 32 as well as the characters with special meaning in
      * LDAP filters "*", "(", ")", and "\" (the backslash) are converted into the representation of a
      * backslash followed by two hex digits representing the hexadecimal value of the character.
      *
-     * @param string|array $values Array of values to escape
+     * @param string|string[] $values Array of values to escape
      * @param bool $singleValue
      * @return string|string[] Array $values, but escaped
      */
