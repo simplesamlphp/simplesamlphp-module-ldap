@@ -23,7 +23,7 @@ class AttributeAddUsersGroups extends BaseFilter
      *
      * @var array
      */
-    protected array $additional_filters;
+    protected $additional_filters;
 
 
     /**
