@@ -2,6 +2,7 @@
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
+use SimpleSAML\Logger;
 use SimpleSAML\Utils\Arrays;
 
 /**
@@ -391,7 +392,7 @@ class AttributeAddUsersGroups extends BaseFilter
             \SimpleSAML\Logger::notice(
                 $this->title . 'The return attribute [' .
                 implode(', ', [$map['return'], strtolower($map['return'])]) .
-                '] could not be found in the entry. ' . $this->varExport($entry)
+                '] could not be found in the entry. ' . $this->var_export($entry)
             );
         }
 
