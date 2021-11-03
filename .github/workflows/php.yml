@@ -65,8 +65,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          echo $NO_COVERAGE
-          ./vendor/bin/phpunit $NO_COVERAGE
+          ./vendor/bin/phpunit ${{ env.NO_COVERAGE }}
 
       - name: Save coverage data
         if: ${{ matrix.php-versions == '7.4' && matrix.operating-system == 'ubuntu-latest' }}
