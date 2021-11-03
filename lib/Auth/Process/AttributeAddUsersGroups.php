@@ -355,10 +355,13 @@ class AttributeAddUsersGroups extends BaseFilter
             $entries = $this->getLdap()->searchformultiple(
                 $this->base_dn,
                 array_merge(
-                    [
-                        $map['type'] => $this->type_map['group'],
-                        $map['member'] . ':1.2.840.113556.1.4.1941:' => $dn
-                    ],
+                    $this->getLdap()->escapeFilterValue(
+                        [
+                            $map['type'] => $this->type_map['group'],
+                            $map['member'] . ':1.2.840.113556.1.4.1941:' => $dn
+                        ],
+                        false
+                    ),
                     $this->additional_filters
                 ),
                 [$map['return']], // attributes
