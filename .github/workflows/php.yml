@@ -167,6 +167,7 @@ jobs:
         with:
           php-version: '7.4'
           extensions: ldap, mbstring, xml
+          tools: composer:v2
 
       - name: Setup problem matchers for PHP
         run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
@@ -197,7 +198,7 @@ jobs:
 
       - name: PHP Code Sniffer
         continue-on-error: true
-        run: php vendor/bin/phpcs src/
+        run: php vendor/bin/phpcs
 
       - name: Psalm
         continue-on-error: true
