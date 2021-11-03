@@ -23,6 +23,13 @@ class AttributeAddUsersGroups extends BaseFilter
      */
     protected $additional_filters;
 
+    /**
+     * A flag whether to escape the additional filter values or not. Defaults to TRUE
+     *
+     * @var bool
+     */
+    protected $escape;
+
 
     /**
      * This is run when the filter is processed by SimpleSAML.
@@ -45,6 +52,7 @@ class AttributeAddUsersGroups extends BaseFilter
         );
 
         $this->additional_filters = $this->config->getArray('additional_filters', []);
+        $this->escape = $this->config->getBoolean('escape', true);
 
         // Reference the attributes, just to make the names shorter
         $attributes = &$request['Attributes'];
@@ -356,7 +364,10 @@ class AttributeAddUsersGroups extends BaseFilter
                     ],
                     $this->additional_filters
                 ),
-                [$map['return']]
+                [$map['return']], // attributes
+                [], // binary attributes
+                true, // AND
+                $this->escape // escape filter values
             );
 
         // The search may throw an exception if no entries
