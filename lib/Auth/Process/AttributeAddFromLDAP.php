@@ -94,13 +94,13 @@ class AttributeAddFromLDAP extends BaseFilter
     /**
      * Add attributes from an LDAP server.
      *
-     * @param array &$request The current request
+     * @param array &$state The current request
      */
-    public function process(array &$request): void
+    public function process(array &$state): void
     {
-        Assert::keyExists($request, 'Attributes');
+        Assert::keyExists($state, 'Attributes');
 
-        $attributes = &$request['Attributes'];
+        $attributes = &$state['Attributes'];
 
         // perform a merge on the ldap_search_filter
         // loop over the attributes and build the search and replace arrays

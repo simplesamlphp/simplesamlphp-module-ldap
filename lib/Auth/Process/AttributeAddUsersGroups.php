@@ -35,11 +35,11 @@ class AttributeAddUsersGroups extends BaseFilter
      * are then added to the request attributes.
      *
      * @throws \SimpleSAML\Error\Exception
-     * @param array $request
+     * @param array &$state
      */
-    public function process(array &$request): void
+    public function process(array &$state): void
     {
-        Assert::keyExists($request, 'Attributes');
+        Assert::keyExists($state, 'Attributes');
 
         // Log the process
         Logger::debug(
@@ -49,7 +49,7 @@ class AttributeAddUsersGroups extends BaseFilter
         $this->additional_filters = $this->config->getArray('additional_filters', []);
 
         // Reference the attributes, just to make the names shorter
-        $attributes = &$request['Attributes'];
+        $attributes = &$state['Attributes'];
         $map = &$this->attribute_map;
 
         // Get the users groups from LDAP
