@@ -146,9 +146,11 @@ class AttributeAddUsersGroups extends BaseFilter
 
         // Reference the map, just to make the name shorter
         $map = &$this->attribute_map;
-        Assert::keyExists($map, 'dn', Error\ConfigurationError::class);
+
+
+        // All map-properties are guaranteed to exist and have a default value
         $dn_attribute = $map['dn'];
-//        $distinguishedName = $attributes[$dn_attribute][0];
+        $return_attribute = $map['return'];
 
         // Based on the directory service, search LDAP for groups
         // If any attributes are needed, prepare them before calling search method
@@ -200,13 +202,13 @@ class AttributeAddUsersGroups extends BaseFilter
                 ));
 
                 $filter = sprintf(
-                    "(%s=%s)(%s=%s)",
+                    "(&(%s=%s)(%s=%s))",
                     $map['type'],
                     $this->type_map['group'],
                     $map['member'] . ':1.2.840.113556.1.4.1941:',
-                    $attributes[$dn_attribute][0]
+                    $attributes[$dn_attribute][0],
                 );
-//                $groups = $this->getGroupsActiveDirectory($attributes);
+
                 break;
             case 'OpenLDAP':
                 // Log the OpenLDAP specific search
@@ -224,9 +226,18 @@ class AttributeAddUsersGroups extends BaseFilter
                     $map['member']
                 ));
 
-                $filter = sprintf('(%s=%s)', $map['memberof'], $attributes[$map['username']][0]);
+                $filter = sprintf(
+                    '(&(%s=%s))',
+                    $map['memberof'],
+                    $attributes[$map['username']][0]
+                );
                 break;
             default:
+                // Log the generic search
+                Logger::debug(
+                    $this->title . 'Searching LDAP using the generic search method.'
+                );
+
                 Logger::debug(sprintf(
                     '%s : Checking DNs for groups. DNs: %s Attributes: %s, %s Group Type: %s',
                     $this->title,
@@ -237,31 +248,11 @@ class AttributeAddUsersGroups extends BaseFilter
                 ));
 
 /**
-
-                // Log the general search
-                Logger::debug(
-                    $this->title . 'Searching LDAP using the default search method.'
-                );
-
-                // Make sure the defined memberOf attribute exists
-                if (!isset($attributes[$map['memberof']])) {
-                    throw new Error\Exception(
-                        $this->title . 'The memberof attribute [' . $map['memberof'] .
-                        '] is not defined in the user\'s Attributes: ' . implode(', ', array_keys($attributes))
-                    );
-                }
-
-                // MemberOf must be an array of group DN's
-                if (!is_array($attributes[$map['memberof']])) {
-                    throw new Error\Exception(
-                        $this->title . 'The memberof attribute [' . $map['memberof'] .
-                        '] is not an array of group DNs. ' . $this->varExport($attributes[$map['memberof']])
-                    );
--                }
-
-                // Search for the users group membership, recursively
-                $groups = $this->search($attributes[$map['memberof']]);
-*/
+ * @ TODO: finish generic search  method
+ *
+ *               // Search for the users group membership, recursively
+ *               $groups = $this->search($attributes[$map['memberof']]);
+ */
         }
 
         $entries = $ldapUtils->searchForMultiple(
@@ -271,6 +262,27 @@ class AttributeAddUsersGroups extends BaseFilter
             $options,
             true
         );
+
+        $groups = [];
+        foreach ($entries as $entry) {
+/**
+            $tmp = array_intersect_key(
+                $entry->getAttributes(),
+                array_fill_keys(array_values($this->searchAttributes), null)
+            );
+
+            $binaries = array_intersect(
+                array_keys($tmp),
+                $this->binaryAttributes,
+            );
+            foreach ($binaries as $binary) {
+                $tmp[$binary] = array_map('base64_encode', $entry->getAttribute($binary));
+            }
+*/
+            $groups[] = array_pop($entry->getAttribute($return_attribute));
+        }
+
+Logger::debug("TMP:  " . var_export($groups));
 
         // All done
         Logger::debug(
