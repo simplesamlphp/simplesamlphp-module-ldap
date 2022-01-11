@@ -153,7 +153,7 @@ class AttributeAddUsersGroups extends BaseFilter
         // Based on the directory service, search LDAP for groups
         // If any attributes are needed, prepare them before calling search method
         switch ($this->product) {
-            case 'ACTIVEDIRECTORY':
+            case 'ActiveDirectory':
                 $arrayUtils = new Utils\Arrays();
 
                 // Log the AD specific search
@@ -208,7 +208,7 @@ class AttributeAddUsersGroups extends BaseFilter
                 );
 //                $groups = $this->getGroupsActiveDirectory($attributes);
                 break;
-            case 'OPENLDAP':
+            case 'OpenLDAP':
                 // Log the OpenLDAP specific search
                 Logger::debug(sprintf(
                     '%s : Searching LDAP using OpenLDAP specific method.',
