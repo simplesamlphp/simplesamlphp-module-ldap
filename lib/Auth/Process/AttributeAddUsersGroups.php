@@ -81,10 +81,9 @@ class AttributeAddUsersGroups extends BaseFilter
         // Reference the attributes, just to make the names shorter
         $attributes = &$state['Attributes'];
         $map = &$this->attribute_map;
-        $distinguishedName = $attributes[$map['dn']][0];
 
         // Get the users groups from LDAP
-        $groups = $this->getGroups($distinguishedName);
+        $groups = $this->getGroups($attributes);
 
         // If there are none, do not proceed
         if (empty($groups)) {
@@ -131,9 +130,6 @@ class AttributeAddUsersGroups extends BaseFilter
      */
     protected function getGroups(array $attributes): array
     {
-        // Reference the map, just to make the name shorter
-        $map = &$this->attribute_map;
-
         // Log the request
         Logger::debug(sprintf(
             '%s : Checking for groups based on the best method for the LDAP product.',
@@ -148,6 +144,12 @@ class AttributeAddUsersGroups extends BaseFilter
             'timeout' => $this->config->getInteger('timeout', 3),
         ];
 
+        // Reference the map, just to make the name shorter
+        $map = &$this->attribute_map;
+        Assert::keyExists($map, 'dn', Error\ConfigurationError::class);
+        $dn_attribute = $map['dn'];
+//        $distinguishedName = $attributes[$dn_attribute][0];
+
         // Based on the directory service, search LDAP for groups
         // If any attributes are needed, prepare them before calling search method
         switch ($this->product) {
@@ -160,24 +162,28 @@ class AttributeAddUsersGroups extends BaseFilter
                     $this->title
                 ));
 
-                // Make sure the defined dn attribute exists
-                if (!isset($attributes[$map['dn']])) {
-                    throw new Error\Exception(sprintf(
+                // Make sure the defined DN attribute exists
+                if (!isset($attributes[$dn_attribute])) {
+                    Logger::warning(sprintf(
                         "%s : The DN attribute [%s] is not defined in the user's Attributes: %s",
                         $this->title,
-                        $map['dn'],
+                        $dn_attribute,
                         implode(', ', array_keys($attributes)),
                     ));
+
+                    return [];
                 }
 
-                // DN attribute must have a value
-                if (!isset($attributes[$map['dn']][0]) || !$attributes[$map['dn']][0]) {
-                    throw new Error\Exception(sprintf(
+                // Make sure the defined DN attribute has a value
+                if (!isset($attributes[$dn_attribute][0]) || !$attributes[$dn_attribute][0]) {
+                    Logger::warning(sprintf(
                         '%s : The DN attribute [%s] does not have a [0] value defined. %s',
                         $this->title,
-                        $map['dn'],
-                        $this->varExport($attributes[$map['dn']])
+                        $dn_attribute,
+                        $this->varExport($attributes[$dn_attribute])
                     ));
+
+                    return [];
                 }
 
                 // Log the search
@@ -185,8 +191,8 @@ class AttributeAddUsersGroups extends BaseFilter
                     '%s : Searching ActiveDirectory group membership.'
                         . ' DN: %s DN Attribute: %s Member Attribute: %s Type Attribute: %s Type Value: %s Base: %s',
                     $this->title,
-                    $attributes[$map['dn']][0],
-                    $map['dn'],
+                    $attributes[$dn_attribute][0],
+                    $dn_attribute,
                     $map['member'],
                     $map['type'],
                     $this->type_map['group'],
@@ -198,7 +204,7 @@ class AttributeAddUsersGroups extends BaseFilter
                     $map['type'],
                     $this->type_map['group'],
                     $map['member'] . ':1.2.840.113556.1.4.1941:',
-                    $attributes[$map['dn']][0]
+                    $attributes[$dn_attribute][0]
                 );
 //                $groups = $this->getGroupsActiveDirectory($attributes);
                 break;
