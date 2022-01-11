@@ -36,7 +36,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
      *
      * @var array
      */
-    protected $searchBase;
+    protected array $searchBase;
 
     /**
      * The construct method will change the filter config into

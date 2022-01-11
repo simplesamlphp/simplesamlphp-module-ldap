@@ -196,7 +196,7 @@ class AttributeAddUsersGroups extends BaseFilter
                     $map['member'],
                     $map['type'],
                     $this->type_map['group'],
-                    implode('; ', $arrayUtils->arrayize($this->base_dn))
+                    implode('; ', $arrayUtils->arrayize($this->searchBase))
                 ));
 
                 $filter = sprintf(
