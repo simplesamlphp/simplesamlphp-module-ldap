@@ -109,7 +109,7 @@ class AttributeAddFromLDAP extends BaseFilter
         $filter = str_replace($arrSearch, $arrReplace, $this->searchFilter);
         if (strpos($filter, '%') !== false) {
             Logger::info(sprintf(
-                '%s: AttributeAddFromLDAP: There are non-existing attributes in the search filter. (%s)',
+                '%s: There are non-existing attributes in the search filter. (%s)',
                 $this->title,
                 $filter
             ));
