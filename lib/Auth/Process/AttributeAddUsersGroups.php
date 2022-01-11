@@ -265,105 +265,36 @@ class AttributeAddUsersGroups extends BaseFilter
 
         $groups = [];
         foreach ($entries as $entry) {
-/**
-            $tmp = array_intersect_key(
-                $entry->getAttributes(),
-                array_fill_keys(array_values($this->searchAttributes), null)
-            );
-
-            $binaries = array_intersect(
-                array_keys($tmp),
-                $this->binaryAttributes,
-            );
-            foreach ($binaries as $binary) {
-                $tmp[$binary] = array_map('base64_encode', $entry->getAttribute($binary));
+            if ($entry->hasAttribute($return_attribute)) {
+                $groups[] = array_pop($entry->getAttribute($return_attribute));
+                continue;
+            } elseif ($entry->hasAttribute(strtolower($return_attribute))) {
+                // Some backends return lowercase attributes
+                $groups[] = array_pop($entry->getAttribute(strtolower($return_attribute)));
+                continue;
+            } elseif ($entry->hasAttribute('dn')) {
+                // AD queries also seem to return the objects dn by default
+                $groups[] = array_pop($entry->getAttribute('dn'));
+                continue;
             }
-*/
-            $groups[] = array_pop($entry->getAttribute($return_attribute));
-        }
 
-Logger::debug("TMP:  " . var_export($groups));
+            // Could not find DN, log and continue
+            Logger::notice(sprintf(
+                '%s : The return attribute [%s] could not be found in the entry. %s',
+                $this->title,
+                implode(', ', [$map['return'], strtolower($map['return'], 'dn')]),
+                $this->varExport($entry),
+            ));
+        }
 
         // All done
-        Logger::debug(
-            $this->title . 'User found to be a member of the groups:' . implode('; ', $groups)
-        );
+        Logger::debug(sprintf(
+            '%s : User found to be a member of the groups: %s',
+            implode('; ', $groups),
+            $this->title,
+        ));
 
         return $groups;
-    }
-
-
-    /**
-     * OpenLDAP optimized search
-     * using the required attribute values from the user to
-     * get their group membership, recursively.
-     *
-     * @throws \SimpleSAML\Error\Exception
-     * @param array $attributes
-     * @return array
-    protected function getGroupsOpenLdap(array $attributes): array
-    {
-        $groups = [];
-        try {
-            // Intention is to filter in 'ou=groups,dc=example,dc=com' for
-            // '(memberUid = <value of attribute.username>)' and take only the attributes 'cn' (=name of the group)
-            //
-            $all_groups = $ldapUtils->searchForMultiple(
-                $openldap_base,
-                array_merge(
-                    [
-                        $map['memberof'] => $attributes[$map['username']][0]
-                    ],
-                    $this->additional_filters
-                ),
-                [$map['return']]
-            );
-        } catch (Error\UserNotFound $e) {
-            return $groups; // if no groups found return with empty (still just initialized) groups array
-        }
-
-        // run through all groups and add each to our groups array
-        foreach ($all_groups as $group_entry) {
-            $groups[] = $group_entry[$map['return']][0];
-        }
-
-        return $groups;
-    }
-     */
-
-
-    /**
-     * Active Directory optimized search
-     * using the required attribute values from the user to
-     * get their group membership, recursively.
-     *
-     * @throws \SimpleSAML\Error\Exception
-     * @param array $attributes
-     * @return array
-     */
-    protected function getGroupsActiveDirectory(array $attributes): array
-    {
-        // Reference the map, just to make the name shorter
-        //$map = &$this->attribute_map;
-/**
-        // Make sure the defined dn attribute exists
-        if (!isset($attributes[$map['dn']])) {
-            throw new Error\Exception(
-                $this->title . 'The DN attribute [' . $map['dn'] .
-                '] is not defined in the user\'s Attributes: ' . implode(', ', array_keys($attributes))
-            );
-        }
-
-        // DN attribute must have a value
-        if (!isset($attributes[$map['dn']][0]) || !$attributes[$map['dn']][0]) {
-            throw new Error\Exception(
-                $this->title . 'The DN attribute [' . $map['dn'] .
-                '] does not have a [0] value defined. ' . $this->varExport($attributes[$map['dn']])
-            );
-        }
-*/
-        // Pass to the AD specific search
-        return $this->searchActiveDirectory($attributes[$map['dn']][0]);
     }
 
 
@@ -387,15 +318,6 @@ Logger::debug("TMP:  " . var_export($groups));
         // Shorten the variable name
         //$map = &$this->attribute_map;
 
-        // Log the search
-/**
-        Logger::debug(
-            $this->title . 'Checking DNs for groups.' .
-            ' DNs: ' . implode('; ', $memberof) .
-            ' Attributes: ' . $map['memberof'] . ', ' . $map['type'] .
-            ' Group Type: ' . $this->type_map['group']
-        );
-*/
         // Work out what attributes to get for a group
         $use_group_name = false;
         $get_attributes = [$map['memberof'], $map['type']];
@@ -440,96 +362,6 @@ Logger::debug("TMP:  " . var_export($groups));
             }
         }
 
-        // Return only the unique group names
-        return array_unique($groups);
-    }
-
-
-    /**
-     * Searches LDAP using a ActiveDirectory specific filter,
-     * looking for group membership for the users DN. Returns
-     * the list of group DNs retrieved.
-     *
-     * @param string $dn
-     * @return array
-     */
-    protected function searchActiveDirectory(string $dn): array
-    {
-//        $arrayUtils = new Utils\Arrays();
-
-//        // Shorten the variable name
-        //$map = &$this->attribute_map;
-
-        // Log the search
-/*
-        Logger::debug(
-            $this->title . 'Searching ActiveDirectory group membership.' .
-            ' DN: ' . $dn .
-            ' DN Attribute: ' . $map['dn'] .
-            ' Return Attribute: ' . $map['return'] .
-            ' Member Attribute: ' . $map['member'] .
-            ' Type Attribute: ' . $map['type'] .
-            ' Type Value: ' . $this->type_map['group'] .
-            ' Base: ' . implode('; ', $arrayUtils->arrayize($this->base_dn))
-        );
-*/
-
-        // AD connections should have this set
-        //$this->getLdap()->setOption(LDAP_OPT_REFERRALS, 0);
-
-        // Search AD with the specific recursive flag
-/**
-        try {
-            $entries = $this->getLdap()->searchformultiple(
-                $this->base_dn,
-                array_merge(
-                    [
-                        $map['type'] => $this->type_map['group'],
-                        $map['member'] . ':1.2.840.113556.1.4.1941:' => $dn
-                    ],
-                    $this->additional_filters
-                ),
-                [$map['return']]
-            );
-
-        // The search may throw an exception if no entries
-        // are found, unlikely but possible.
-        } catch (Error\UserNotFound $e) {
-            return [];
-        }
-*/
-        //Init the groups
-        $groups = [];
-
-        // Check each entry..
-        foreach ($entries as $entry) {
-            // Check for the DN using the original attribute name
-            if (isset($entry[$map['return']][0])) {
-                $groups[] = $entry[$map['return']][0];
-                continue;
-            }
-
-            // Sometimes the returned attribute names are lowercase
-            if (isset($entry[strtolower($map['return'])][0])) {
-                $groups[] = $entry[strtolower($map['return'])][0];
-                continue;
-            }
-
-            // AD queries also seem to return the objects dn by default
-            if (isset($entry['dn'])) {
-                $groups[] = $entry['dn'];
-                continue;
-            }
-
-            // Could not find DN, log and continue
-            Logger::notice(
-                $this->title . 'The return attribute [' .
-                implode(', ', [$map['return'], strtolower($map['return'])]) .
-                '] could not be found in the entry. ' . $this->varExport($entry)
-            );
-        }
-
-        // All done
         return $groups;
     }
 }
