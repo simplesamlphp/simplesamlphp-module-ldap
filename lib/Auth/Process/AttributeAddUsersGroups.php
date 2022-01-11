@@ -5,7 +5,7 @@
  * looking for groups it is a member of and adds them to
  * a defined attribute, in DN format.
  *
- * @package SimpleSAMLphp
+ * @package simplesamlphp/simplesamlphp-module-ldap
  */
 
 declare(strict_types=1);

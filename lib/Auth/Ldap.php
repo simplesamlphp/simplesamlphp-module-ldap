@@ -3,7 +3,7 @@
 /**
  * The LDAP class holds helper functions to access an LDAP database.
  *
- * @package SimpleSAMLphp
+ * @package simplesamlphp/simplesamlphp-module-ldap
  */
 
 declare(strict_types=1);

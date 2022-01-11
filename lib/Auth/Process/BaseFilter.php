@@ -1,14 +1,10 @@
 <?php
 
 /**
- * This base LDAP filter class can be extended to enable real
- * filter classes direct access to the authsource ldap config
- * and connects to the ldap server.
+ * This base LDAP filter class can be extended to enable real filter classes direct access
+ * access to the authsource ldap config and connects to the ldap server.
  *
- * Updated: 20161223 Remy Blom
- *          - Wrapped the building of authsource config with issets
- *
- * @package SimpleSAMLphp
+ * @package simplesamlphp/simplesamlphp-module-ldap
  */
 
 declare(strict_types=1);

@@ -8,7 +8,7 @@
  *
  * This class is based on www/auth/login.php.
  *
- * @package SimpleSAMLphp
+ * @package simplesamlphp/simplesamlphp-module-ldap
  */
 
 declare(strict_types=1);
