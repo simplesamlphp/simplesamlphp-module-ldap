@@ -266,15 +266,18 @@ class AttributeAddUsersGroups extends BaseFilter
         $groups = [];
         foreach ($entries as $entry) {
             if ($entry->hasAttribute($return_attribute)) {
-                $groups[] = array_pop($entry->getAttribute($return_attribute));
+                $values = $entry->getAttribute($return_attribute);
+                $groups[] = array_pop($values);
                 continue;
             } elseif ($entry->hasAttribute(strtolower($return_attribute))) {
                 // Some backends return lowercase attributes
-                $groups[] = array_pop($entry->getAttribute(strtolower($return_attribute)));
+                $values = $entry->getAttribute(strtolower($return_attribute));
+                $groups[] = array_pop($values);
                 continue;
             } elseif ($entry->hasAttribute('dn')) {
                 // AD queries also seem to return the objects dn by default
-                $groups[] = array_pop($entry->getAttribute('dn'));
+                $values = $entry->getAttribute('dn');
+                $groups[] = array_pop($values);
                 continue;
             }
 
