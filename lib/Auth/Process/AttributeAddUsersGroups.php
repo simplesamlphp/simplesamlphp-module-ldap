@@ -293,8 +293,8 @@ class AttributeAddUsersGroups extends BaseFilter
         // All done
         Logger::debug(sprintf(
             '%s : User found to be a member of the groups: %s',
-            implode('; ', $groups),
             $this->title,
+            implode('; ', $groups),
         ));
 
         return $groups;
