@@ -241,7 +241,7 @@ class AttributeAddUsersGroups extends BaseFilter
                 Logger::debug(sprintf(
                     '%s : Checking DNs for groups. DNs: %s Attributes: %s, %s Group Type: %s',
                     $this->title,
-                    implode('; ', $memberof),
+                    implode('; ', $attributes[$map['memberof']]),
                     $map['memberof'],
                     $map['type'],
                     $this->type_map['group']
