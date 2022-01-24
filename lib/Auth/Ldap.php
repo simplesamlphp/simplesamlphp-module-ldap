@@ -857,7 +857,11 @@ class Ldap
             throw $this->makeException('LDAP whoami exop failure');
         }
 
-        $dn = $this->authzidToDn($searchBase, $searchAttributes, $authz_id);
+        /**
+         * Scrutinizer is not smart enough to know ldap_exop_whoami() can only return string|false
+         * and complains about possible `true`-type being passed.
+         */
+        $dn = $this->authzidToDn($searchBase, $searchAttributes, /** @scrutinizer ignore-type */$authz_id);
         if (empty($dn)) {
             throw $this->makeException('Cannot figure userID');
         }
