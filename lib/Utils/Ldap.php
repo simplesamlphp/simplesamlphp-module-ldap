@@ -136,7 +136,6 @@ class Ldap
                 Logger::debug(
                     sprintf(
                         "Library - LDAP search(): Found no entries searching base '%s' for '%s'",
-                        count($result),
                         $base,
                         $filter,
                     )
