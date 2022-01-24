@@ -86,7 +86,8 @@ class Ldap
                 $ldap->bind($username, strval($password));
                 return $ldap;
             } catch (ConnectionException $e) {
-                // Try next server
+                // Log exception and try next server
+                Logger::warning(sprintf("%s (%s)", $e->getMessage(), $e->getCode()));
             }
         }
 
