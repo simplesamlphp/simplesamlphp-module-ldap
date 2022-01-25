@@ -14,7 +14,6 @@ namespace SimpleSAML\Module\ldap\Auth\Process;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
-use SimpleSAML\Module\ldap\Auth\Ldap;
 use SimpleSAML\Module\ldap\Utils;
 use Symfony\Component\Ldap\Ldap as LdapObject;
 
