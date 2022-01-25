@@ -116,7 +116,7 @@ class AttributeAddFromLDAP extends BaseFilter
             return;
         }
 
-        $ldap = $ldapUtils->bind($this->ldapServers, $this->searchUsername, $this->searchPassword);
+        $ldapUtils->bind($this->ldapObject, $this->searchUsername, $this->searchPassword);
 
         $options = [
             'scope' => $this->config->getString('search.scope', Query::SCOPE_SUB),
@@ -124,7 +124,7 @@ class AttributeAddFromLDAP extends BaseFilter
         ];
 
         $entries = $ldapUtils->searchForMultiple(
-            $ldap,
+            $this->ldapObject,
             $this->searchBase,
             $filter,
             $options,

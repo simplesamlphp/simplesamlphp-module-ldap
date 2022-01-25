@@ -73,8 +73,8 @@ class Ldap extends UserPassBase
         Assert::positiveInteger($timeout);
 
         $ldapUtils = new Utils\Ldap();
-        $ldapServers = $ldapUtils->create(
-            explode(' ', $this->ldapConfig->getString('connection_string')),
+        $ldapObject = $ldapUtils->create(
+            $this->ldapConfig->getString('connection_string'),
             $encryption,
             $version,
             $this->ldapConfig->getString('extension', 'ext_ldap'),
@@ -109,7 +109,7 @@ class Ldap extends UserPassBase
             $searchAttributes = $this->ldapConfig->getArray('search.attributes');
             $searchFilter = $this->ldapConfig->getString('search.filter', null);
 
-            $ldap = $ldapUtils->bind($ldapServers, $searchUsername, $searchPassword);
+            $ldapUtils->bind($ldapObject, $searchUsername, $searchPassword);
 
             $filter = '';
             foreach ($searchAttributes as $attr) {
@@ -123,15 +123,15 @@ class Ldap extends UserPassBase
             }
 
             /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-            $entry = $ldapUtils->search($ldap, $searchBase, $filter, $options, false);
+            $entry = $ldapUtils->search($ldapObject, $searchBase, $filter, $options, false);
             $dn = $entry->getDn();
         }
 
-        $ldap = $ldapUtils->bind($ldapServers, $dn, $password);
+        $ldapUtils->bind($ldapObject, $dn, $password);
         $filter = sprintf('(distinguishedName=%s)', $dn);
 
         /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-        $entry = $ldapUtils->search($ldap, $searchBase, $filter, $options, false);
+        $entry = $ldapUtils->search($ldapObject, $searchBase, $filter, $options, false);
 
         $attributes = $this->ldapConfig->getValue('attributes', []);
         if ($attributes === null) {

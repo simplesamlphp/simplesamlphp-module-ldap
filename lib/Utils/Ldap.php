@@ -34,61 +34,53 @@ class Ldap
     /**
      * Create Ldap resource objects
      *
-     * @param array $connection_strings
+     * @param string $connection_strings
      * @param string $encryption
      * @param int $version
      * @param string $extension
      * @param bool $debug
      * @param array $options
-     * @return \Symfony\Component\Ldap\Ldap[]
+     * @return \Symfony\Component\Ldap\Ldap
      */
     public function create(
-        array $connection_strings,
+        string $connection_strings,
         string $encryption = 'ssl',
         int $version = 3,
         string $extension = 'ext_ldap',
         bool $debug = false,
         array $options = ['referrals' => false, 'network_timeout' => 3]
-    ): array {
-        $ldapServers = [];
-
-        foreach ($connection_strings as $connection_string) {
+    ): LdapObject {
+        foreach (explode(' ', $connection_strings) as $connection_string) {
             Assert::regex($connection_string, '#^ldap[s]?:\/\/#');
-
-            $ldapServers[] = LdapObject::create(
-                $extension,
-                [
-                    'connection_string' => $connection_string,
-                    'encryption' => $encryption,
-                    'version' => $version,
-                    'debug' => $debug,
-                    'options' => $options,
-                ]
-            );
         }
 
-        return $ldapServers;
+        return LdapObject::create(
+            $extension,
+            [
+                'connection_string' => $connection_strings,
+                'encryption' => $encryption,
+                'version' => $version,
+                'debug' => $debug,
+                'options' => $options,
+            ]
+        );
     }
 
 
     /**
      * Bind to an LDAP-server
      *
-     * @param \Symfony\Component\Ldap\Ldap[] $ldapServers
+     * @param \Symfony\Component\Ldap\Ldap $ldapObject
      * @param string $username
      * @param string|null $password  Null for passwordless logon
      * @throws \SimpleSAML\Error\Exception if none of the LDAP-servers could be contacted
      */
-    public function bind(array $ldapServers, string $username, ?string $password): LdapObject
+    public function bind(LdapObject $ldapObject, string $username, ?string $password): void
     {
-        foreach ($ldapServers as $ldap) {
-            try {
-                $ldap->bind($username, strval($password));
-                return $ldap;
-            } catch (ConnectionException $e) {
-                // Log exception and try next server
-                Logger::warning(sprintf("%s (%s)", $e->getMessage(), $e->getCode()));
-            }
+        try {
+            $ldapObject->bind($username, strval($password));
+        } catch (ConnectionException $e) {
+            Logger::error(sprintf("LDAP bind failed:  %s", $e->getMessage()));
         }
 
         throw new Error\Exception("Unable to bind to any of the configured LDAP servers.");

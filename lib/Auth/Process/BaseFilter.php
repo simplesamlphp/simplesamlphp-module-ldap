@@ -16,6 +16,7 @@ use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\ldap\Auth\Ldap;
 use SimpleSAML\Module\ldap\Utils;
+use Symfony\Component\Ldap\Ldap as LdapObject;
 
 abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
 {
@@ -50,9 +51,9 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
     /**
      * Array of LDAP connection objects. Stored here to be accessed later during processing.
      *
-     * @var \Symfony\Component\Ldap\Ldap[]
+     * @var \Symfony\Component\Ldap\Ldap
      */
-    protected array $ldapServers;
+    protected LdapObject $ldapObject;
 
     /**
      * The class "title" used in logging and exception messages.
@@ -116,7 +117,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         $this->config = Configuration::loadFromArray($config, 'ldap:AuthProcess');
 
         // Initialize the Ldap-object
-        $this->ldapServers = $this->initializeLdap();
+        $this->ldapObject = $this->initializeLdap();
 
         // Set all the filter values, setting defaults if needed
         $this->searchBase = $this->config->getArrayizeString('search.base', '');
@@ -263,14 +264,14 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
     /**
      * Initialize the Ldap-object
      *
-     * @return array
+     * @return \Symfony\Component\Ldap\Ldap
      */
-    private function initializeLdap(): array
+    private function initializeLdap(): LdapObject
     {
         $ldapUtils = new Utils\Ldap();
 
         return $ldapUtils->create(
-            explode(' ', $this->config->getString('connection_string')),
+            $this->config->getString('connection_string'),
             $this->config->getString('encryption', 'ssl'),
             $this->config->getInteger('version', 3),
             $this->config->getString('extension', 'ext_ldap'),
