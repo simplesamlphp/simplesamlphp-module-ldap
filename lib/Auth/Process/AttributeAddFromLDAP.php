@@ -99,7 +99,7 @@ class AttributeAddFromLDAP extends BaseFilter
             $arrSearch[] = '%' . $attr . '%';
 
             if (strlen($val[0]) > 0) {
-                $arrReplace[] = $ldapUtils->escapeFilterValue($val[0]);
+                $arrReplace[] = $ldapUtils->escapeFilterValue($val[0], true);
             } else {
                 $arrReplace[] = '';
             }
