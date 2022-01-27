@@ -150,7 +150,7 @@ class AttributeAddFromLDAP extends BaseFilter
         }
 
         // handle [multiple] values
-        foreach ($results as $entry) {
+        foreach ($results as $result) {
             foreach ($this->searchAttributes as $target => $name) {
                 // If there is no mapping defined, just use the name of the LDAP-attribute as a target
                 if (is_int($target)) {
@@ -161,9 +161,9 @@ class AttributeAddFromLDAP extends BaseFilter
                     unset($attributes[$target]);
                 }
 
-                if (isset($entry[$name])) {
+                if (isset($result[$name])) {
                     if (isset($attributes[$target])) {
-                        foreach (array_values($entry[$name]) as $value) {
+                        foreach (array_values($result[$name]) as $value) {
                             if ($this->attrPolicy === 'merge') {
                                 if (!in_array($value, $attributes[$target], true)) {
                                     $attributes[$target][] = $value;
@@ -173,7 +173,7 @@ class AttributeAddFromLDAP extends BaseFilter
                             }
                         }
                     } else {
-                        $attributes[$target] = array_values($entry[$name]);
+                        $attributes[$target] = array_values($result[$name]);
                     }
                 }
             }
