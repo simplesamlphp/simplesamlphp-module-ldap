@@ -520,7 +520,7 @@ a listing of all configuration options and their details.
         'attribute.dn' => 'distinguishedName',
         'attribute.groups' => 'groups', // Also noted above
         'attribute.member' => 'member',
-        'attribute.memberof' => 'memberOf',
+        'attribute.memberOf' => 'memberOf',
         'attribute.groupname' => 'name',
         'attribute.return' => 'distinguishedName',
         'attribute.type' => 'objectClass',
@@ -591,5 +591,5 @@ Intention is to filter in `ou=groups,dc=example,dc=com` for
         'ldap.basedn' => ['ou=groups,dc=example,dc=org'],
         'attribute.username' => 'uid',
         'attribute.member' => 'cn',
-        'attribute.memberof' => 'memberUid',
+        'attribute.memberOf' => 'memberUid',
     ],

@@ -44,7 +44,7 @@ class AttributeAddUsersGroups extends BaseFilter
         // Get filter specific config options
         $this->searchUsername = $this->config->getString('search.username');
         $this->searchPassword = $this->config->getString('search.password', null);
-        $this->product = $this->config->getString('product', 'ActiveDirectory');
+        $this->product = $this->config->getString('ldap.product', 'ActiveDirectory');
     }
 
 
@@ -156,8 +156,6 @@ class AttributeAddUsersGroups extends BaseFilter
         // If any attributes are needed, prepare them before calling search method
         switch ($this->product) {
             case 'ActiveDirectory':
-                $arrayUtils = new Utils\Arrays();
-
                 // Log the AD specific search
                 Logger::debug(sprintf(
                     '%s : Searching LDAP using ActiveDirectory specific method.',
@@ -189,6 +187,7 @@ class AttributeAddUsersGroups extends BaseFilter
                 }
 
                 // Log the search
+                $arrayUtils = new Utils\Arrays();
                 Logger::debug(sprintf(
                     '%s : Searching ActiveDirectory group membership.'
                         . ' DN: %s DN Attribute: %s Member Attribute: %s Type Attribute: %s Type Value: %s Base: %s',
@@ -209,6 +208,14 @@ class AttributeAddUsersGroups extends BaseFilter
                     $attributes[$dn_attribute][0],
                 );
 
+                $entries = $ldapUtils->searchForMultiple(
+                    $this->ldapObject,
+                    $this->searchBase,
+                    $filter,
+                    $options,
+                    true
+                );
+
                 break;
             case 'OpenLDAP':
                 // Log the OpenLDAP specific search
@@ -221,16 +228,25 @@ class AttributeAddUsersGroups extends BaseFilter
                     '%s : Searching for groups in base [%s] with filter (%s=%s) and attributes %s',
                     $this->title,
                     implode(', ', $this->searchBase),
-                    $map['memberof'],
+                    $map['memberOf'],
                     $attributes[$map['username']][0],
                     $map['member']
                 ));
 
                 $filter = sprintf(
                     '(&(%s=%s))',
-                    $map['memberof'],
+                    $map['memberOf'],
                     $attributes[$map['username']][0]
                 );
+
+                $entries = $ldapUtils->searchForMultiple(
+                    $this->ldapObject,
+                    $this->searchBase,
+                    $filter,
+                    $options,
+                    true
+                );
+
                 break;
             default:
                 // Log the generic search
@@ -238,30 +254,43 @@ class AttributeAddUsersGroups extends BaseFilter
                     $this->title . 'Searching LDAP using the generic search method.'
                 );
 
+                // Make sure the defined memberOf attribute exists
+                Assert::keyExists(
+                    $attributes,
+                    $map['memberOf'],
+                    sprintf(
+                        "%s : The memberOf attribute [%s] is not defined in the user's attributes: [%s]",
+                        $this->title,
+                        $map['memberOf'],
+                        implode(', ', array_keys($attributes))
+                    ),
+                    Error\Exception::class,
+                );
+
+                // MemberOf must be an array of group DN's
+                Assert::isArray(
+                    $attributes[$map['memberOf']],
+                    sprintf(
+                        '%s : The memberOf attribute [%s] is not an array of group DNs;  %s',
+                        $this->title,
+                        $map['memberOf'],
+                        $this->varExport($attributes[$map['memberOf']]),
+                    ),
+                    Error\Exception::class,
+                );
+
                 Logger::debug(sprintf(
                     '%s : Checking DNs for groups. DNs: %s Attributes: %s, %s Group Type: %s',
                     $this->title,
-                    implode('; ', $attributes[$map['memberof']]),
-                    $map['memberof'],
+                    implode('; ', $attributes[$map['memberOf']]),
+                    $map['memberOf'],
                     $map['type'],
                     $this->type_map['group']
                 ));
 
-/**
- * @ TODO: finish generic search  method
- *
- *               // Search for the users group membership, recursively
- *               $groups = $this->search($attributes[$map['memberof']]);
- */
+                // Search for the users group membership, recursively
+                $entries = $this->search($attributes[$map['memberOf']], $options);
         }
-
-        $entries = $ldapUtils->searchForMultiple(
-            $this->ldapObject,
-            $this->searchBase,
-            $filter,
-            $options,
-            true
-        );
 
         $groups = [];
         foreach ($entries as $entry) {
@@ -307,30 +336,24 @@ class AttributeAddUsersGroups extends BaseFilter
      * Avoids loops by only searching a DN once. Returns
      * the list of groups found.
      *
-     * @param array $memberof
+     * @param array $memberOf
+     * @param array $options
      * @return array
      */
-    protected function search(array $memberof): array
+    protected function search(array $memberOf, array $options): array
     {
+        // Shorten the variable name
+        $map = &$this->attribute_map;
+
         // Used to determine what DN's have already been searched
         static $searched = [];
 
         // Init the groups variable
-        $groups = [];
-
-        // Shorten the variable name
-        //$map = &$this->attribute_map;
-
-        // Work out what attributes to get for a group
-        $use_group_name = false;
-        $get_attributes = [$map['memberof'], $map['type']];
-        if (isset($map['name']) && $map['name']) {
-            $get_attributes[] = $map['name'];
-            $use_group_name = true;
-        }
+        $entries = [];
+        $ldapUtils = new LdapUtils();
 
         // Check each DN of the passed memberOf
-        foreach ($memberof as $dn) {
+        foreach ($memberOf as $dn) {
             // Avoid infinite loops, only need to check a DN once
             if (isset($searched[$dn])) {
                 continue;
@@ -341,30 +364,29 @@ class AttributeAddUsersGroups extends BaseFilter
             $searched[$dn] = $dn;
 
             // Query LDAP for the attribute values for the DN
-            try {
-                $attributes = $this->getLdap()->getAttributes($dn, $get_attributes);
-            } catch (Error\AuthSource $e) {
-                continue; // DN must not exist, just continue. Logged by the LDAP object
-            }
+            $entry = $ldapUtils->search(
+                $this->ldapObject,
+                $this->searchBase,
+                sprintf("(&(%s=%s)(distinguishedName=%s))", $map['type'], $this->type_map['group'], $dn),
+                $options,
+                true,
+            );
 
-            // Only look for groups
-            if (!in_array($this->type_map['group'], $attributes[$map['type']], true)) {
+            if ($entry === null) {
+                // Probably the DN does not exist within the given search base
                 continue;
             }
 
             // Add to found groups array
-            if ($use_group_name && isset($attributes[$map['name']]) && is_array($attributes[$map['name']])) {
-                $groups[] = $attributes[$map['name']][0];
-            } else {
-                $groups[] = $dn;
-            }
+            $entries[] = $entry;
 
             // Recursively search "sub" groups
-            if (!empty($attributes[$map['memberof']])) {
-                $groups = array_merge($groups, $this->search($attributes[$map['memberof']]));
+            $subGroups = $entry->getAttribute($map['memberOf']);
+            if (!empty($subGroups)) {
+                $entries = array_merge($entries, $this->search($subGroups, $options));
             }
         }
 
-        return $groups;
+        return $entries;
     }
 }
