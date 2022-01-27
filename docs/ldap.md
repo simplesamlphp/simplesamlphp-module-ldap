@@ -469,7 +469,7 @@ a listing of all configuration options and their details.
 
         /**
          * By specifying the directory service product name, the number
-         * of LDAP queries can be dramatically reduced. The reason is
+         * of LDAP queries can be drastically reduced. The reason is
          * that most products have a special query to recursively search
          * group membership.
          *
