@@ -6,6 +6,7 @@ namespace SimpleSAML\Module\ldap\Auth\Source;
 
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
+use SimpleSAML\Error;
 use SimpleSAML\Module\core\Auth\UserPassBase;
 use SimpleSAML\Module\ldap\Utils;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
@@ -123,8 +124,12 @@ class Ldap extends UserPassBase
             }
 
             /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-            $entry = $ldapUtils->search($ldapObject, $searchBase, $filter, $options, false);
-            $dn = $entry->getDn();
+            try {
+                $entry = $ldapUtils->search($ldapObject, $searchBase, $filter, $options, false);
+                $dn = $entry->getDn();
+            } catch (Error\Exception $e) {
+                throw new Error\Error('WRONGUSERPASS');
+            }
         }
 
         $ldapUtils->bind($ldapObject, $dn, $password);
