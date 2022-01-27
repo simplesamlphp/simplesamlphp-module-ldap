@@ -119,7 +119,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         $this->ldapObject = $this->initializeLdap();
 
         // Set all the filter values, setting defaults if needed
-        $this->searchBase = $this->config->getArrayizeString('search.base', '');
+        $this->searchBase = $this->config->getArray('search.base', []);
 
         // Log the member values retrieved above
         Logger::debug(sprintf(

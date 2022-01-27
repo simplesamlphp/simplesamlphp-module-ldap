@@ -71,11 +71,12 @@ authentication source:
         'search.enable' => false,
 
         /*
-         * The DN which will be used as a base for the search.
-         * This can be a single string, in which case only that DN is searched, or an
-         * array of strings, in which case they will be searched in the order given.
+         * An array on DNs which will be used as a base for the search.
+         * In case of multiple strings, they will be searched in the order given.
          */
-        'search.base' => 'ou=people,dc=example,dc=org',
+        'search.base' => [
+            'ou=people,dc=example,dc=org',
+        ],
 
         /*
          * The scope of the search. Valid values are 'sub' and 'one' and 'base',
@@ -339,7 +340,7 @@ required, see the config options for ldap:AttributeAddFromLDAP above.
         'ldap.hostname' => 'ldap.example.org',
         'ldap.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
         'ldap.password' => 'Abc123',
-        'ldap.basedn' => 'DC=example,DC=org',
+        'ldap.basedn' => ['DC=example,DC=org'],
         'attributes' => ['displayName' => 'cn', 'jpegPhoto'],
         'search.filter' => '(uid=%uid%)',
     ]
@@ -391,17 +392,13 @@ a listing of all configuration options and their details.
 
 
         /**
-         * The base DN used to search LDAP. May not be needed if searching
+         * The base DNs used to search LDAP. May not be needed if searching
          * LDAP using the standard method, meaning that no Product is specified.
-         * Can be listed as a single string for one base, else an array of
-         * strings for multiple bases.
          *
-         * Default: ''
+         * Default: []
          * Required: No
          * AuthSource: search.base
          */
-        'ldap.basedn' => '',
-        'ldap.basedn' => 'DC=example,DC=org',
         'ldap.basedn' => [
             'OU=Staff,DC=example,DC=org',
             'OU=Students,DC=example,DC=org'
@@ -581,7 +578,7 @@ required, see the config info above for details.
         'ldap.hostname' => 'ldap.example.org',
         'ldap.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
         'ldap.password' => 'Abc123',
-        'ldap.basedn' => 'DC=example,DC=org'
+        'ldap.basedn' => ['DC=example,DC=org'],
     ]
 
 Example for unsupported OpenLDAP usage. 
@@ -591,7 +588,7 @@ Intention is to filter in `ou=groups,dc=example,dc=com` for
     50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
         'ldap.product' => 'OpenLDAP',
-        'ldap.basedn' => 'ou=groups,dc=example,dc=org',
+        'ldap.basedn' => ['ou=groups,dc=example,dc=org'],
         'attribute.username' => 'uid',
         'attribute.member' => 'cn',
         'attribute.memberof' => 'memberUid',
