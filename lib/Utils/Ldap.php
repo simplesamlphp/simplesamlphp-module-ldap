@@ -80,15 +80,9 @@ class Ldap
     {
         try {
             $ldapObject->bind($username, strval($password));
-            return;
         } catch (InvalidCredentialsException $e) {
             throw new Error\Error('WRONGUSERPASS');
-        } catch (ConnectionException $e) {
-            Logger::error(sprintf("LDAP bind failed:  %s", $e->getMessage()));
-            throw $e;
         }
-
-        throw new Error\Exception("Unable to bind to any of the configured LDAP servers.");
     }
 
 
