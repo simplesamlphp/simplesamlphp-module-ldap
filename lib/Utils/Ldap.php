@@ -79,6 +79,7 @@ class Ldap
     {
         try {
             $ldapObject->bind($username, strval($password));
+            return;
         } catch (ConnectionException $e) {
             Logger::error(sprintf("LDAP bind failed:  %s", $e->getMessage()));
         }
