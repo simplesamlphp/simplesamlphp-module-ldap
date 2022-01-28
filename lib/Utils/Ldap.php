@@ -251,11 +251,7 @@ class Ldap
             $char = substr($string, $i, 1);
 
             if (ord($char) < 32) {
-                $hex = dechex(ord($char));
-                if (strlen($hex) == 1) {
-                    $hex = '0' . $hex;
-                }
-
+                $hex = str_pad(dechex(ord($char)), 2, '0', STR_PAD_LEFT);
                 $string = str_replace($char, '\\' . $hex, $string);
             }
         }
