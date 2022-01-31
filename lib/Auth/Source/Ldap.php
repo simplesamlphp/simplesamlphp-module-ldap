@@ -110,7 +110,11 @@ class Ldap extends UserPassBase
             $searchAttributes = $this->ldapConfig->getArray('search.attributes');
             $searchFilter = $this->ldapConfig->getString('search.filter', null);
 
-            $ldapUtils->bind($ldapObject, $searchUsername, $searchPassword);
+            try {
+                $ldapUtils->bind($ldapObject, $searchUsername, $searchPassword);
+            } catch (Error\Error $e) {
+                throw new Error\Exception("Unable to bind using the configured search.username and search.password.");
+            }
 
             $filter = '';
             foreach ($searchAttributes as $attr) {
