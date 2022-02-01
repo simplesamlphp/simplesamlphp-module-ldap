@@ -17,6 +17,7 @@ use function array_pop;
 use function count;
 use function dechex;
 use function is_array;
+use function is_iterable;
 use function ord;
 use function sprintf;
 use function strlen;
@@ -109,8 +110,7 @@ class Ldap
 
         foreach ($searchBase as $base) {
             $query = $ldap->query($base, $filter, $options);
-            $result = $query->execute();
-            $result = is_array($result) ? $result : $result->toArray();
+            $result = $query->execute()->toArray();
 
             if (count($result) > 1) {
                 throw new Error\Exception(
@@ -172,8 +172,8 @@ class Ldap
 
         foreach ($searchBase as $base) {
             $query = $ldap->query($base, $filter, $options);
-            $result = $query->execute();
-            $results = array_merge($results, is_array($result) ? $result : $result->toArray());
+            $result = $query->execute()->toArray();
+            $results = array_merge($results, $result);
 
             sprintf(
                 "Library - LDAP search(): Found %d entries searching base '%s' for '%s'",
