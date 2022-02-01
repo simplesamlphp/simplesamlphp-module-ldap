@@ -44,7 +44,7 @@ class AttributeAddUsersGroups extends BaseFilter
         // Get filter specific config options
         $this->searchUsername = $this->config->getString('search.username');
         $this->searchPassword = $this->config->getString('search.password', null);
-        $this->product = $this->config->getString('ldap.product', 'ActiveDirectory');
+        $this->product = $this->config->getString('ldap.product', null);
     }
 
 
