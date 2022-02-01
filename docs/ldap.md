@@ -39,10 +39,18 @@ authentication source:
         'version' => 3,
 
         /*
-         * Set whether to follow referrals. AD Controllers may require 0x00 to function.
-         * Possible values are 0x00 (NEVER), 0x01 (SEARCHING), 0x02 (FINDING) or 0x03 (ALWAYS).
+         * The LDAP-options to pass when setting up a connection
+         * See https://github.com/symfony/symfony/blob/6.0/src/Symfony/Component/Ldap/Adapter/ExtLdap/ConnectionOptions.php
          */
-        'referrals' => 0x00,
+        'options' => [
+            /*
+             * Set whether to follow referrals. AD Controllers may require 0x00 to function.
+             * Possible values are 0x00 (NEVER), 0x01 (SEARCHING), 0x02 (FINDING) or 0x03 (ALWAYS).
+             */
+            'referrals' => 0x00,
+
+            'network_timeout' => 3,
+        ],
 
         /*
          * Which attributes should be retrieved from the LDAP server.

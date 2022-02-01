@@ -80,10 +80,7 @@ class Ldap extends UserPassBase
             $version,
             $this->ldapConfig->getString('extension', 'ext_ldap'),
             $this->ldapConfig->getBoolean('debug', false),
-            [
-                'network_timeout' => $timeout,
-                'referrals' => $this->ldapConfig->getBoolean('referrals', false),
-            ]
+            $this->ldapConfig->getArray('options', []),
         );
 
         $searchScope = $this->ldapConfig->getString('search.scope', Query::SCOPE_SUB);
