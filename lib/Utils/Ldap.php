@@ -56,6 +56,16 @@ class Ldap
             Assert::regex($connection_string, '#^ldap[s]?:\/\/#');
         }
 
+        Logger::debug(sprintf(
+            "Setting up LDAP connection: host='%s', encryption=%s, version=%d, debug=%s, timeout=%d, referrals=%s.",
+            $connection_strings,
+            $encryption,
+            $version,
+            var_export($debug, true),
+            $options['timeout'] ?? ini_get('default_socket_timeout'),
+            var_export($options['referrals'] ?? false, true),
+        ));
+
         return LdapObject::create(
             $extension,
             [
@@ -84,6 +94,8 @@ class Ldap
         } catch (InvalidCredentialsException $e) {
             throw new Error\Error('WRONGUSERPASS');
         }
+
+        Logger::debug(sprintf("LDAP bind(): Bind successful for DN '%s'.", $username));
     }
 
 
@@ -115,7 +127,7 @@ class Ldap
             if (count($result) > 1) {
                 throw new Error\Exception(
                     sprintf(
-                        "Library - LDAP search(): Found %d entries searching base '%s' for '%s'",
+                        "LDAP search(): Found %d entries searching base '%s' for '%s'",
                         count($result),
                         $base,
                         $filter,
@@ -127,7 +139,7 @@ class Ldap
             } else {
                 Logger::debug(
                     sprintf(
-                        "Library - LDAP search(): Found no entries searching base '%s' for '%s'",
+                        "LDAP search(): Found no entries searching base '%s' for '%s'",
                         $base,
                         $filter,
                     )
@@ -175,12 +187,12 @@ class Ldap
             $result = $query->execute()->toArray();
             $results = array_merge($results, $result);
 
-            sprintf(
+            Logger::debug(sprintf(
                 "Library - LDAP search(): Found %d entries searching base '%s' for '%s'",
                 count($result),
                 $base,
                 $filter,
-            );
+            ));
         }
 
         if (empty($results) && ($allowMissing === false)) {
