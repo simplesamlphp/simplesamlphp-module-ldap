@@ -106,6 +106,7 @@ class AttributeAddFromLDAP extends BaseFilter
         }
 
         // merge the attributes into the ldap_search_filter
+        /** @psalm-var string[] $arrReplace */
         $filter = str_replace($arrSearch, $arrReplace, $this->searchFilter);
         if (strpos($filter, '%') !== false) {
             Logger::info(sprintf(
@@ -143,7 +144,9 @@ class AttributeAddFromLDAP extends BaseFilter
                 $this->binaryAttributes,
             );
             foreach ($binaries as $binary) {
-                $tmp[$binary] = array_map('base64_encode', $entry->getAttribute($binary));
+                /** @psalm-var array $attr */
+                $attr = $entry->getAttribute($binary);
+                $tmp[$binary] = array_map('base64_encode', $attr);
             }
 
             $results[] = $tmp;

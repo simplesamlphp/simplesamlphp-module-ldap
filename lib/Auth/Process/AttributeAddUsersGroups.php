@@ -295,16 +295,19 @@ class AttributeAddUsersGroups extends BaseFilter
         $groups = [];
         foreach ($entries as $entry) {
             if ($entry->hasAttribute($return_attribute)) {
+                /** @psalm-var array $values */
                 $values = $entry->getAttribute($return_attribute);
                 $groups[] = array_pop($values);
                 continue;
             } elseif ($entry->hasAttribute(strtolower($return_attribute))) {
                 // Some backends return lowercase attributes
+                /** @psalm-var array $values */
                 $values = $entry->getAttribute(strtolower($return_attribute));
                 $groups[] = array_pop($values);
                 continue;
             } elseif ($entry->hasAttribute('dn')) {
                 // AD queries also seem to return the objects dn by default
+                /** @psalm-var array $values */
                 $values = $entry->getAttribute('dn');
                 $groups[] = array_pop($values);
                 continue;
