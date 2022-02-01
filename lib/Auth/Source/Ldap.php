@@ -124,8 +124,8 @@ class Ldap extends UserPassBase
                 $filter = "(&" . $filter . $searchFilter . ")";
             }
 
-            /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
             try {
+                /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
                 $entry = $ldapUtils->search($ldapObject, $searchBase, $filter, $options, false);
                 $dn = $entry->getDn();
             } catch (Error\Exception $e) {
