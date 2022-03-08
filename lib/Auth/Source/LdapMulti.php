@@ -123,7 +123,7 @@ class LdapMulti extends UserPassOrgBase
 
         $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap
         {
-            public function loginOverload(string $username, string $password)
+            public function loginOverload(string $username, string $password): array
             {
                 return $this->login($username, $password);
             }
