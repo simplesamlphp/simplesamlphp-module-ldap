@@ -20,10 +20,11 @@ jobs:
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
         with:
+          coverage: xdebug
+          ini-values: error_reporting=E_ALL
+          extensions: intl, ldap, mbstring, xml
           php-version: ${{ matrix.php-versions }}
-          extensions: ldap, mbstring, xml
           tools: composer:v2
-          coverage: pcov
 
       - name: Setup problem matchers for PHP
         run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
@@ -198,8 +199,14 @@ jobs:
 
       - name: Psalm
         continue-on-error: true
-        run: php vendor/bin/psalm --show-info=true
+        run: php vendor/bin/psalm --show-info=true --shepherd
 
       - name: Psalter
         continue-on-error: true
         run: php vendor/bin/psalter --issues=UnnecessaryVarAnnotation --dry-run
+
+      - name: Lint markdown files
+        uses: nosborn/github-action-markdown-cli@v3.0.1
+        with:
+          files: .
+          ignore_path: .markdownlintignore
