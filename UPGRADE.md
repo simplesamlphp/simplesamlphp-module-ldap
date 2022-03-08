@@ -1,19 +1,17 @@
-Upgrade notes for SimpleSAMLphp LDAP-module 2.0
-===============================================
+# Upgrade notes for SimpleSAMLphp LDAP-module 2.0
+
 SimpleSAMLphp LDAP-module 2.0 is a major new release which has cleaned up
 support for a lot of things that have been marked deprecated in previous
 SimpleSAMLphp releases.
 
 The following changes are relevant for installers and/or developers.
 
-Software requirements
----------------------
- - The minimum PHP version required is now PHP 7.4.
- - The module now depends on symfony/ldap.
+## Software requirements
 
+- The minimum PHP version required is now PHP 7.4.
+- The module now depends on symfony/ldap.
 
-Configuration
--------------
+## Configuration
 
 Some settings for the authsources and authproc-filters have been renamed
 to follow the Symfony naming convention:
@@ -24,7 +22,6 @@ to follow the Symfony naming convention:
   following symfony naming convention.
 - 'search.base' is not always an array of OUs.
 - 'search.scope' can now be set to 'base', 'one' or 'sub'.
-
 
 Some new settings have been added for the authsources:
 

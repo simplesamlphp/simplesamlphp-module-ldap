@@ -1,10 +1,8 @@
-LDAP module
-===========
+# LDAP module
 
 The LDAP module provides a method for authenticating users against an
 LDAP server. There are two separate authentication modules and two
 authentication processing filters:
-
 
 `ldap:Ldap`
 : Authenticate the user against a single LDAP server.
@@ -18,104 +16,129 @@ authentication processing filters:
 `ldap:AttributeAddUsersGroups`
 : Add an attribute to the request with all the user's group memberships
 
-`ldap:Ldap`
------------
+## `ldap:Ldap`
 
 This module is used when you have an organization with a single LDAP
 server with all the users. To create an LDAP authentication source, open
 `config/authsources.php` in a text editor, and add an entry for the
 authentication source:
 
+```php
     'example-ldap' => [
         'ldap:Ldap',
 
-        /* The connection string for the LDAP-server. You can add multiple by separating them with a space. */
+        /**
+         * The connection string for the LDAP-server.
+         * You can add multiple by separating them with a space.
+         */
         'connection_string' => 'ldap.example.org',
 
-        /* Whether SSL/TLS should be used when contacting the LDAP server. Possible values are 'ssl', 'tls' or 'none' */
+        /**
+         * Whether SSL/TLS should be used when contacting the LDAP server.
+         * Possible values are 'ssl', 'tls' or 'none'
+         */
         'encryption' => 'ssl',
 
-        /* The LDAP version to use when interfacing the LDAP-server. Defaults to 3 */
+        /**
+         * The LDAP version to use when interfacing the LDAP-server.
+         * Defaults to 3
+         */
         'version' => 3,
 
-        /*
+        /**
          * The LDAP-options to pass when setting up a connection
-         * See https://github.com/symfony/symfony/blob/6.0/src/Symfony/Component/Ldap/Adapter/ExtLdap/ConnectionOptions.php
+         * See [Symfony documentation][1]
          */
         'options' => [
-            /*
-             * Set whether to follow referrals. AD Controllers may require 0x00 to function.
-             * Possible values are 0x00 (NEVER), 0x01 (SEARCHING), 0x02 (FINDING) or 0x03 (ALWAYS).
+            /**
+             * Set whether to follow referrals.
+             * AD Controllers may require 0x00 to function.
+             * Possible values are 0x00 (NEVER), 0x01 (SEARCHING),
+             *   0x02 (FINDING) or 0x03 (ALWAYS).
              */
             'referrals' => 0x00,
 
             'network_timeout' => 3,
         ],
 
-        /*
+        /**
          * Which attributes should be retrieved from the LDAP server.
          * This can be an array of attribute names, or NULL, in which case
          * all attributes are fetched.
          */
         'attributes' => null,
 
-        /*
-         * Which attributes should be base64 encoded after retrieval from the LDAP server.
+        /**
+         * Which attributes should be base64 encoded after retrieval from
+         * the LDAP server.
          */
-        'attributes.binary' => ['jpegPhoto', 'objectGUID', 'objectSid', 'mS-DS-ConsistencyGuid'],
+        'attributes.binary' => [
+            'jpegPhoto',
+            'objectGUID',
+            'objectSid',
+            'mS-DS-ConsistencyGuid'
+        ],
 
-        /*
-         * The pattern which should be used to create the user's DN given the username.
-         * %username% in this pattern will be replaced with the user's username.
+        /**
+         * The pattern which should be used to create the user's DN given
+         * the username. %username% in this pattern will be replaced with
+         * the user's username.
          *
          * This option is not used if the search.enable option is set to TRUE.
          */
         'dnpattern' => 'uid=%username%,ou=people,dc=example,dc=org',
 
-        /*
-         * As an alternative to specifying a pattern for the users DN, it is possible to
-         * search for the username in a set of attributes. This is enabled by this option.
+        /**
+         * As an alternative to specifying a pattern for the users DN, it is
+         * possible to search for the username in a set of attributes. This is
+         * enabled by this option.
          */
         'search.enable' => false,
 
-        /*
-         * An array on DNs which will be used as a base for the search.
-         * In case of multiple strings, they will be searched in the order given.
+        /**
+         * An array on DNs which will be used as a base for the search. In
+         * case of multiple strings, they will be searched in the order given.
          */
         'search.base' => [
             'ou=people,dc=example,dc=org',
         ],
 
-        /*
-         * The scope of the search. Valid values are 'sub' and 'one' and 'base',
-         * first one being the default if no value is set.
+        /**
+         * The scope of the search. Valid values are 'sub' and 'one' and
+         * 'base', first one being the default if no value is set.
          */
         'search.scope' => 'sub',
 
-        /*
+        /**
          * The attribute(s) the username should match against.
          *
-         * This is an array with one or more attribute names. Any of the attributes in
-         * the array may match the value the username.
+         * This is an array with one or more attribute names. Any of the
+         * attributes in the array may match the value the username.
          */
         'search.attributes' => ['uid', 'mail'],
 
-        /*
-         * Additional filters that must match for the entire LDAP search to be TRUE
+        /**
+         * Additional filters that must match for the entire LDAP search to
+         * be true.
          *
-         * This should be a single string conforming to (RFC 1960, 2544)
-         * The string is appended to the search attributes
+         * This should be a single string conforming to [RFC 1960][2]
+         * and [RFC 2544][3]. The string is appended to the search attributes
          */
         'search.filter' => '(&(objectClass=Person)(|(sn=Doe)(cn=John *)))',
 
-        /*
-         * The username & password where SimpleSAMLphp should bind to before searching. If
-         * this is left NULL, no bind will be performed before searching.
+        /**
+         * The username & password where SimpleSAMLphp should bind to before
+         * searching. If this is left NULL, no bind will be performed before
+         * searching.
          */
         'search.username' => null,
         'search.password' => null,
     ],
+```
 
+[1]: https://github.com/symfony/symfony/blob/5.4/src/Symfony/Component/Ldap/Adapter/ExtLdap/ConnectionOptions.php
+[2]: https://datatracker.ietf.org/doc/html/rfc1960
+[3]: https://datatracker.ietf.org/doc/html/rfc2544
 
 You should update the name of this authentication source
 (`example-ldap`) to have a name which makes sense to your organization.
@@ -126,7 +149,7 @@ of a user with a given username.
 
 All other options have default values, and are not required.
 
-### Searching for a user ###
+## Searching for a user
 
 Sometimes you cannot generate the user's `dn` from the username, or you
 may want to allow the user to authenticate with for example their email
@@ -152,24 +175,27 @@ and `search.password` options. The `search.username` option is a `dn`
 which can be used to perform a search, and the `search.password` option
 is the password for that `dn`.
 
-### Configuring failover ###
+## Configuring failover
 
-You can configure multiple LDAP servers in the hostname option by separating the individual hosts with a space.
-This enables the builtin LDAP failover in OpenLDAP.
+You can configure multiple LDAP servers in the hostname option by separating
+the individual hosts with a space. This enables the builtin LDAP failover
+in OpenLDAP.
 
-Note that OpenLDAP waits for a timeout from the first server before attempting to connect to the other.
-To avoid a very long wait, it is recommended to change the timeouts.
-This can be done in the system-wide ldap configuration file.
+Note that OpenLDAP waits for a timeout from the first server before attempting
+to connect to the other. To avoid a very long wait, it is recommended to change
+the timeouts. This can be done in the system-wide ldap configuration file.
 
-    NETWORK_TIMEOUT 10
-    TIMELIMIT       15
-    TIMEOUT         20
+NETWORK_TIMEOUT 10
+TIMELIMIT       15
+TIMEOUT         20
 
-In this case, if we are unable to connect to the first LDAP server within 10 seconds, we will attempt the next.
+In this case, if we are unable to connect to the first LDAP server within
+10 seconds, we will attempt the next.
 (Note: the NETWORK_TIMEOUT option was introduced with OpenLDAP version 2.4.)
 
-#### Example ####
+Example:
 
+```php
     /* Configuration that uses two ldap servers. */
     'example-ldap' => [
         'ldap:Ldap',
@@ -177,16 +203,16 @@ In this case, if we are unable to connect to the first LDAP server within 10 sec
         'connect_string' => 'ldaps://ldap1.example.org ldaps://ldap2.example.org',
         'dnpattern' => 'uid=%username%,ou=people,dc=example,dc=org',
     ],
+```
 
-
-`ldap:LdapMulti`
-----------------
+### `ldap:LdapMulti`
 
 This module can be used if your organization has separate groups with
 separate LDAP servers or separate LDAP configurations. To use this
 authentication module, open `config/authsources.php` in a text editor,
 and add an entry which uses this module:
 
+```php
     'example-ldapmulti' => [
         'ldap:LdapMulti',
 
@@ -225,11 +251,12 @@ and add an entry which uses this module:
          */
         'mapping' => [
             'employees' => [
-                /*
-                 * A short name/description for this group. Will be shown in a dropdown list
-                 * when the user logs on.
+                /**
+                 * A short name/description for this group. Will be shown in a
+                 * dropdown list when the user logs on.
                  *
-                 * This option can be a string or an array with language => text mappings.
+                 * This option can be a string or an array with
+                 * language => text mappings.
                  */
                 'description' => 'Employees',
                 'authsource' => ''example-ldap,
@@ -242,6 +269,7 @@ and add an entry which uses this module:
         ],
 
     ],
+```
 
 The name of the authentication source (`example-ldapmulti`) should be
 changed to something that makes sense for your organization. Each entry
@@ -252,25 +280,25 @@ and will be shown to the user in a dropdown list on the login page.
 The `description`-option can also be an array with descriptions in
 different languages:
 
+```php
     'description' => [
         'en' => 'Employees',
         'no' => 'Ansatte',
     ],
+```
 
 All options from the `ldap:Ldap` configuration can be used in each
 group, and you should refer to the documentation for that module for
 more information about available options.
 
-
-`ldap:AttributeAddFromLDAP`
----------------------------
+### `ldap:AttributeAddFromLDAP`
 
 Filter to add attributes to the identity by executing a query against
 an LDAP directory. In addition to all the configuration options available
 in the ldap:AttributeAddUsersGroups filter (below), these are the filter
 specific configuration options:
 
-
+```php
     50 => [
         'class' => 'ldap:AttributeAddFromLDAP',
 
@@ -315,34 +343,36 @@ specific configuration options:
          */
         'search.filter' => '(uid=%uid%)',
     ];
+```
 
+## Backwards Compatibility
 
-### Backwards Compatibility ###
+Previous versions of this filter allowed just one attribute to be fetched from
+the LDAP at a time. The options 'attribute.new' and 'search.attribute' were used
+instead of the new option 'attributes'. Fortunately, the filter is backwards
+compatible, so your old configuration will still work, but keep in mind that the
+old configuration style is deprecated now and will be removed in 2.0.
 
-Previous versions of this filter allowed just one attribute to be fetched from the
-LDAP at a time. The options 'attribute.new' and 'search.attribute' were used instead
-of the new option 'attributes'. Fortunately, the filter is backwards compatible, so
-your old configuration will still work, but keep in mind that the old configuration
-style is deprecated now and will be removed in 2.0.
-
-
-### Example ###
+Example:
 
 This is the most basic configuration possible. It will look at the
 authsource for all LDAP connection information and queries LDAP for
 the specific attributes requested.
 
+```php
     50 => [
         'class' => 'ldap:AttributeAddFromLDAP',
         'authsource' => 'example-ldap',
         'attributes' => ['displayName' => 'cn', 'jpegPhoto'],
         'search.filter' => '(uid=%uid%)',
     ]
+```
 
 If no authsource is available then you can specify the connection info
 using the filter configuration. Note: Not all of the options below are
 required, see the config options for ldap:AttributeAddFromLDAP above.
 
+```php
     50 => [
         'class' => 'ldap:AttributeAddFromLDAP',
         'ldap.hostname' => 'ldap.example.org',
@@ -352,12 +382,9 @@ required, see the config options for ldap:AttributeAddFromLDAP above.
         'attributes' => ['displayName' => 'cn', 'jpegPhoto'],
         'search.filter' => '(uid=%uid%)',
     ]
+```
 
-
-
-
-`ldap:AttributeAddUsersGroups`
-------------------------------
+### `ldap:AttributeAddUsersGroups`
 
 This filter will add the logged in user's LDAP group memberships to
 a specified request attribute. Although most LDAP products have a
@@ -367,7 +394,7 @@ checking the hierarchy for all groups the user would technically be
 a member of. This can be helpful for other filters to know. Below is
 a listing of all configuration options and their details.
 
-
+```php
     50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
 
@@ -549,38 +576,43 @@ a listing of all configuration options and their details.
 
 
         /**
-         * LDAP search filters to be added to the base filters for this authproc-filter.
-         * It's an array of key => value pairs that will be translated to (key=value) in the ldap query.
-         *
+         * LDAP search filters to be added to the base filters for this
+         * authproc-filter. It's an array of key => value pairs that will
+         * be translated to (key=value) in the ldap query.
          */
         'additional_filters' => [],
     ]
+```
 
-
-### Example ###
+### Example
 
 This is the most basic configuration possible. It will look at the
 authsource for all LDAP connection information and manually search
 the hierarchy for the users group memberships.
 
+```php
     50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
         'authsource' => 'example-ldap'
     ]
+```
 
 By making one small change we can optimize the filter to use better
 group search methods and eliminate un-needed LDAP queries.
 
+```php
     50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
         'authsource' => 'example-ldap',
         'ldap.product' => 'ActiveDirectory'
     ]
+```
 
 If no authsource is available then you can specify the connection info
 using the filter configuration. Note: Not all of the options below are
 required, see the config info above for details.
 
+```php
     50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
         'ldap.hostname' => 'ldap.example.org',
@@ -588,11 +620,13 @@ required, see the config info above for details.
         'ldap.password' => 'Abc123',
         'ldap.basedn' => ['DC=example,DC=org'],
     ]
+```
 
-Example for unsupported OpenLDAP usage. 
+Example for unsupported OpenLDAP usage.
 Intention is to filter in `ou=groups,dc=example,dc=com` for
 `(memberUid = <UID>)` and take only the attribute `cn` (=name of the group).
 
+```php
     50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
         'ldap.product' => 'OpenLDAP',
@@ -601,3 +635,4 @@ Intention is to filter in `ou=groups,dc=example,dc=com` for
         'attribute.member' => 'cn',
         'attribute.memberOf' => 'memberUid',
     ],
+```
