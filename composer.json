@@ -38,16 +38,13 @@
         "php": ">=7.4 || ^8.0",
         "ext-ldap": "*",
 
-        "simplesamlphp/assert": "~0.2.10",
+        "simplesamlphp/assert": "~0.2.13",
         "simplesamlphp/composer-module-installer": "~1.1",
-        "simplesamlphp/simplesamlphp": "^2.0.0-beta.2",
-        "symfony/ldap": "^4.0 || ^5.0"
+        "simplesamlphp/simplesamlphp": "^2.0.0-beta.7",
+        "symfony/ldap": "^5.4"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp-test-framework": "^1.1.5"
-    },
-    "suggest": {
-        "ext-ldap": "*"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-ldap/issues",
