@@ -22,7 +22,7 @@ jobs:
         with:
           coverage: xdebug
           ini-values: error_reporting=E_ALL
-          extensions: ldap, mbstring, xml
+          extensions: intl, ldap, mbstring, xml
           php-version: ${{ matrix.php-versions }}
           tools: composer:v2
 
