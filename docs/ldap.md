@@ -174,7 +174,7 @@ In this case, if we are unable to connect to the first LDAP server within 10 sec
     'example-ldap' => [
         'ldap:Ldap',
         /* The hostname of the LDAP server. */
-        'hostname' => 'ldaps://ldap1.example.org ldaps://ldap2.example.org',
+        'connect_string' => 'ldaps://ldap1.example.org ldaps://ldap2.example.org',
         'dnpattern' => 'uid=%username%,ou=people,dc=example,dc=org',
     ],
 
