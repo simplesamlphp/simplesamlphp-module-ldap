@@ -12,6 +12,7 @@ use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Ldap\Exception\ConnectionException;
 use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
 use Symfony\Component\Ldap\Ldap as LdapObject;
+use Symfony\Component\Ldap\LdapInterface;
 
 use function array_pop;
 use function count;
@@ -42,7 +43,7 @@ class Ldap
      * @param string $extension
      * @param bool $debug
      * @param array $options
-     * @return \Symfony\Component\Ldap\Ldap
+     * @return \Symfony\Component\Ldap\LdapInterface
      */
     public function create(
         string $connection_strings,
@@ -51,7 +52,7 @@ class Ldap
         string $extension = 'ext_ldap',
         bool $debug = false,
         array $options = ['referrals' => false, 'network_timeout' => 3]
-    ): LdapObject {
+    ): LdapInterface {
         foreach (explode(' ', $connection_strings) as $connection_string) {
             Assert::regex($connection_string, '#^ldap[s]?:\/\/#');
         }
@@ -82,12 +83,12 @@ class Ldap
     /**
      * Bind to an LDAP-server
      *
-     * @param \Symfony\Component\Ldap\Ldap $ldapObject
+     * @param \Symfony\Component\Ldap\LdapInterface $ldapObject
      * @param string $username
      * @param string|null $password  Null for passwordless logon
      * @throws \SimpleSAML\Error\Exception if none of the LDAP-servers could be contacted
      */
-    public function bind(LdapObject $ldapObject, string $username, ?string $password): void
+    public function bind(LdapInterface $ldapObject, string $username, ?string $password): void
     {
         try {
             $ldapObject->bind($username, strval($password));
@@ -102,7 +103,7 @@ class Ldap
     /**
      * Search the LDAP-directory for a specific object
      *
-     * @param \Symfony\Component\Ldap\Ldap $ldap
+     * @param \Symfony\Component\Ldap\LdapInterface $ldap
      * @param array $searchBase
      * @param string $filter
      * @param array $options
@@ -112,7 +113,7 @@ class Ldap
      * @throws \SimpleSAML\Error\Exception if the object cannot be found using the given search base and filter
      */
     public function search(
-        LdapObject $ldap,
+        LdapInterface $ldap,
         array $searchBase,
         string $filter,
         array $options,
@@ -164,7 +165,7 @@ class Ldap
     /**
      * Search the LDAP-directory for any object matching the search filter
      *
-     * @param \Symfony\Component\Ldap\Ldap $ldap
+     * @param \Symfony\Component\Ldap\LdapInterface $ldap
      * @param array $searchBase
      * @param string $filter
      * @param array $options
@@ -174,7 +175,7 @@ class Ldap
      * @throws \SimpleSAML\Error\Exception if the object cannot be found using the given search base and filter
      */
     public function searchForMultiple(
-        LdapObject $ldap,
+        LdapInterface $ldap,
         array $searchBase,
         string $filter,
         array $options,

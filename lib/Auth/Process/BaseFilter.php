@@ -11,13 +11,11 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
-use SimpleSAML\Configuration;
-use SimpleSAML\Error;
-use SimpleSAML\Logger;
+use SimpleSAML\{Auth, Configuration, Error, Logger};
 use SimpleSAML\Module\ldap\Utils;
-use Symfony\Component\Ldap\Ldap as LdapObject;
+use Symfony\Component\Ldap\LdapInterface;
 
-abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
+abstract class BaseFilter extends Auth\ProcessingFilter
 {
     // TODO: Support ldap:LDAPMulti, if possible
     protected static array $ldapsources = ['ldap:Ldap', 'authX509:X509userCert'];
@@ -50,9 +48,9 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
     /**
      * Array of LDAP connection objects. Stored here to be accessed later during processing.
      *
-     * @var \Symfony\Component\Ldap\Ldap
+     * @var \Symfony\Component\Ldap\LdapInterface
      */
-    protected LdapObject $ldapObject;
+    protected LdapInterface $ldapObject;
 
     /**
      * The class "title" used in logging and exception messages.
@@ -263,9 +261,9 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
     /**
      * Initialize the Ldap-object
      *
-     * @return \Symfony\Component\Ldap\Ldap
+     * @return \Symfony\Component\Ldap\LdapInterface
      */
-    private function initializeLdap(): LdapObject
+    private function initializeLdap(): LdapInterface
     {
         $ldapUtils = new Utils\Ldap();
 
