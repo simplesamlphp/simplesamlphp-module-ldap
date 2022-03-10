@@ -354,6 +354,7 @@ class AttributeAddUsersGroups extends BaseFilter
         // Init the groups variable
         $entries = [];
         $ldapUtils = new LdapUtils();
+        $options['scope'] = 'base';
 
         // Check each DN of the passed memberOf
         foreach ($memberOf as $dn) {
@@ -369,8 +370,8 @@ class AttributeAddUsersGroups extends BaseFilter
             // Query LDAP for the attribute values for the DN
             $entry = $ldapUtils->search(
                 $this->ldapObject,
-                $this->searchBase,
-                sprintf("(&(%s=%s)(distinguishedName=%s))", $map['type'], $this->type_map['group'], $dn),
+                [$dn],
+                sprintf("(%s=%s)", $map['type'], $this->type_map['group']),
                 $options,
                 true,
             );
