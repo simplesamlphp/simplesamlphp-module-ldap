@@ -9,6 +9,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Module\core\Auth\UserPassBase;
 use SimpleSAML\Module\ldap\Connector;
+use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
 use function array_fill_keys;
@@ -31,9 +32,9 @@ use function var_export;
 class Ldap extends UserPassBase
 {
     /**
-     * @var Connector\Connector
+     * @var \SimpleSAML\Module\ldap\ConnectorInterface|null
      */
-    protected Connector\Connector $connector;
+    protected ?ConnectorInterface $connector = null;
 
     /**
      * An LDAP configuration object.
@@ -153,10 +154,10 @@ class Ldap extends UserPassBase
     /**
      * Resolve the connector
      *
-     * @return Connector\Connector
+     * @return \SimpleSAML\Module\ldap\ConnectorInterface
      * @throws \Exception
      */
-    protected function resolveConnector(): Connector\Connector
+    protected function resolveConnector(): ConnectorInterface
     {
         if ($this->connector) {
             return $this->connector;
@@ -170,6 +171,7 @@ class Ldap extends UserPassBase
 
         $class = $this->ldapConfig->getString('connector', Connector\Ldap::class);
         Assert::classExists($class);
+        Assert::implementsInterface($class, ConnectorInterface::class);
 
         return $this->connector = new $class(
             $this->ldapConfig->getString('connection_string'),

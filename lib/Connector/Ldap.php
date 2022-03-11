@@ -7,26 +7,43 @@ namespace SimpleSAML\Module\ldap\Connector;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
+use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Adapter;
 use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
 use Symfony\Component\Ldap\Ldap as LdapObject;
 
-class Ldap
-    implements Connector
+use function array_merge;
+use function array_pop;
+use function explode;
+use function implode;
+use function ini_get;
+use function sprintf;
+use function var_export;
+
+class Ldap implements ConnectorInterface
 {
     use LdapHelpers;
 
     /**
-     * @var Adapter
+     * @var \Symfony\Component\Ldap\Adapter\ExtLdap\Adapter
      */
-    protected $adapter;
+    protected Adapter $adapter;
 
     /**
-     * @var LdapObject
+     * @var \Symfony\Component\Ldap\Ldap
      */
-    protected $connection;
+    protected LdapObject $connection;
 
+
+    /**
+     * @param string $connection_strings
+     * @param string $encryption
+     * @param int $version
+     * @param string $extension
+     * @param bool $debug
+     * @param array $options
+     */
     public function __construct(
         string $connection_strings,
         string $encryption = 'ssl',
@@ -34,8 +51,7 @@ class Ldap
         string $extension = 'ext_ldap',
         bool   $debug = false,
         array  $options = ['referrals' => false, 'network_timeout' => 3]
-    )
-    {
+    ) {
         foreach (explode(' ', $connection_strings) as $connection_string) {
             Assert::regex($connection_string, '#^ldap[s]?:\/\/#');
         }
@@ -64,6 +80,7 @@ class Ldap
         $this->connection = new LdapObject($this->adapter);
     }
 
+
     /**
      * @inheritDoc
      */
@@ -77,6 +94,7 @@ class Ldap
 
         Logger::debug(sprintf("LDAP bind(): Bind successful for DN '%s'.", $username));
     }
+
 
     /**
      * @inheritDoc
@@ -130,6 +148,7 @@ class Ldap
         return $entry;
     }
 
+
     /**
      * @inheritDoc
      */
@@ -167,6 +186,7 @@ class Ldap
 
         return $results;
     }
+
 
     /**
      * Resolve the message to a UI exception

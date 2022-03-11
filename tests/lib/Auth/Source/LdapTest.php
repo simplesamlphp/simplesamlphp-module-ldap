@@ -6,7 +6,7 @@ namespace SimpleSAML\Module\ldap\Auth\Source;
 
 use PHPUnit\Framework\TestCase;
 use SAML2\Constants;
-use SimpleSAML\Module\ldap\Connector\Connector;
+use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Entry;
 
 class LdapTest extends TestCase
@@ -18,13 +18,13 @@ class LdapTest extends TestCase
 
     public function buildSourceMock(): Ldap
     {
-        $mb = $this->getMockBuilder(Connector::class);
+        $mb = $this->getMockBuilder(ConnectorInterface::class);
         $s  = $mb->getMock();
 
         return new class($s) extends Ldap {
-            public Connector $connector;
+            public ConnectorInterface $connector;
 
-            public function __construct(Connector $connector)
+            public function __construct(ConnectorInterface $connector)
             {
                 $this->connector = $connector;
                 parent::__construct(

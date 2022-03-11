@@ -6,20 +6,22 @@ namespace SimpleSAML\Module\ldap\Connector;
 
 use SimpleSAML\Module\ldap\Auth\InvalidCredentialResult;
 
+use function ldap_get_option;
+
 /**
  * Extends Ldap so that we can diagnose error messages from MS Active Directory
  */
-class ActiveDirectory
-    extends Ldap
+class ActiveDirectory extends Ldap
 {
-    const ERR_PASSWORD_RESET = 'RESETPASSWORD';
-    const ERR_ACCOUNT_RESET = 'RESETACCOUNT';
-    const ERR_LOGON_RESTRICTION = 'LOGONRESTRICTION';
+    public const ERR_PASSWORD_RESET = 'RESETPASSWORD';
+    public const ERR_ACCOUNT_RESET = 'RESETACCOUNT';
+    public const ERR_LOGON_RESTRICTION = 'LOGONRESTRICTION';
+
 
     /**
      * Resolves the bind exception
      *
-     * @return void
+     * @return string
      */
     protected function resolveBindException(): string
     {
