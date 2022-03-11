@@ -13,7 +13,6 @@ namespace SimpleSAML\Module\ldap\Auth\Process;
 use Exception;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Logger;
-use SimpleSAML\Module\ldap\Utils\Ldap as LdapUtils;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
 class AttributeAddFromLDAP extends BaseFilter
@@ -90,8 +89,6 @@ class AttributeAddFromLDAP extends BaseFilter
         Assert::keyExists($state, 'Attributes');
         $attributes = &$state['Attributes'];
 
-        $ldapUtils = new LdapUtils();
-
         // perform a merge on the ldap_search_filter
         // loop over the attributes and build the search and replace arrays
         $arrSearch = $arrReplace = [];
@@ -99,7 +96,7 @@ class AttributeAddFromLDAP extends BaseFilter
             $arrSearch[] = '%' . $attr . '%';
 
             if (strlen($val[0]) > 0) {
-                $arrReplace[] = $ldapUtils->escapeFilterValue($val[0], true);
+                $arrReplace[] = $this->connector->escapeFilterValue($val[0], true);
             } else {
                 $arrReplace[] = '';
             }
@@ -117,15 +114,14 @@ class AttributeAddFromLDAP extends BaseFilter
             return;
         }
 
-        $ldapUtils->bind($this->ldapObject, $this->searchUsername, $this->searchPassword);
+        $this->connector->bind($this->searchUsername, $this->searchPassword);
 
         $options = [
             'scope' => $this->config->getString('search.scope', Query::SCOPE_SUB),
             'timeout' => $this->config->getInteger('timeout', 3),
         ];
 
-        $entries = $ldapUtils->searchForMultiple(
-            $this->ldapObject,
+        $entries = $this->connector->searchForMultiple(
             $this->searchBase,
             $filter,
             $options,

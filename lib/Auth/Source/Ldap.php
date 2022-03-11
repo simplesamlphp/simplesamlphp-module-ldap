@@ -32,14 +32,15 @@ use function var_export;
 class Ldap extends UserPassBase
 {
     /**
-     * @var \SimpleSAML\Module\ldap\ConnectorInterface|null
+     * @var \SimpleSAML\Module\ldap\ConnectorInterface
      */
-    protected ?ConnectorInterface $connector = null;
+    protected ConnectorInterface $connector;
 
     /**
      * An LDAP configuration object.
      */
     protected Configuration $ldapConfig;
+
 
     /**
      * Constructor for this authentication source.
@@ -56,6 +57,8 @@ class Ldap extends UserPassBase
             $config,
             'authsources[' . var_export($this->authId, true) . ']'
         );
+
+        $this->connector = $this->resolveConnector();
     }
 
 
@@ -81,8 +84,6 @@ class Ldap extends UserPassBase
             'timeout' => $timeout,
         ];
 
-        $connector = $this->resolveConnector();
-
         $searchEnable = $this->ldapConfig->getBoolean('search.enable', false);
         if ($searchEnable === false) {
             $dnPattern = $this->ldapConfig->getString('dnpattern');
@@ -98,7 +99,7 @@ class Ldap extends UserPassBase
             $searchFilter = $this->ldapConfig->getString('search.filter', null);
 
             try {
-                $connector->bind($searchUsername, $searchPassword);
+                $this->connector->bind($searchUsername, $searchPassword);
             } catch (Error\Error $e) {
                 throw new Error\Exception("Unable to bind using the configured search.username and search.password.");
             }
@@ -116,18 +117,18 @@ class Ldap extends UserPassBase
 
             try {
                 /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-                $entry = $connector->search($searchBase, $filter, $options, false);
+                $entry = $this->connector->search($searchBase, $filter, $options, false);
                 $dn = $entry->getDn();
             } catch (Error\Exception $e) {
                 throw new Error\Error('WRONGUSERPASS');
             }
         }
 
-        $connector->bind($dn, $password);
+        $this->connector->bind($dn, $password);
         $filter = sprintf('(distinguishedName=%s)', $dn);
 
         /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-        $entry = $connector->search($searchBase, $filter, $options, false);
+        $entry = $this->connector->search($searchBase, $filter, $options, false);
 
         $attributes = $this->ldapConfig->getValue('attributes', []);
         if ($attributes === null) {
@@ -159,7 +160,7 @@ class Ldap extends UserPassBase
      */
     protected function resolveConnector(): ConnectorInterface
     {
-        if ($this->connector) {
+        if (!empty($this->connector)) {
             return $this->connector;
         }
 
