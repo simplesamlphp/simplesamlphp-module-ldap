@@ -63,8 +63,8 @@ class AttributeAddFromLDAP extends BaseFilter
         parent::__construct($config, $reserved);
 
         // Get filter specific config options
-        $this->binaryAttributes = $this->config->getArray('attributes.binary', []);
-        $this->searchAttributes = $this->config->getArrayize('attributes', []);
+        $this->binaryAttributes = $this->config->getOptionalArray('attributes.binary', []);
+        $this->searchAttributes = $this->config->getOptionalArrayize('attributes', []);
         if (empty($this->searchAttributes)) {
             $new_attribute = $this->config->getString('attribute.new');
             $this->searchAttributes[$new_attribute] = $this->config->getString('search.attribute');
@@ -72,11 +72,11 @@ class AttributeAddFromLDAP extends BaseFilter
         $this->searchFilter = $this->config->getString('search.filter');
 
         // get the attribute policy
-        $this->attrPolicy = $this->config->getString('attribute.policy', 'merge');
+        $this->attrPolicy = $this->config->getOptionalString('attribute.policy', 'merge');
         Assert::oneOf($this->attrPolicy, ['merge', 'replace', 'add']);
 
         $this->searchUsername = $this->config->getString('search.username');
-        $this->searchPassword = $this->config->getString('search.password', null);
+        $this->searchPassword = $this->config->getOptionalString('search.password', null);
     }
 
 
@@ -120,8 +120,8 @@ class AttributeAddFromLDAP extends BaseFilter
         $ldapUtils->bind($this->ldapObject, $this->searchUsername, $this->searchPassword);
 
         $options = [
-            'scope' => $this->config->getString('search.scope', Query::SCOPE_SUB),
-            'timeout' => $this->config->getInteger('timeout', 3),
+            'scope' => $this->config->getOptionalString('search.scope', Query::SCOPE_SUB),
+            'timeout' => $this->config->getOptionalInteger('timeout', 3),
         ];
 
         $entries = $ldapUtils->searchForMultiple(

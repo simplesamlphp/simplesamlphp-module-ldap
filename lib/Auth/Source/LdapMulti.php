@@ -75,7 +75,7 @@ class LdapMulti extends UserPassOrgBase
         );
         $this->setUsernameOrgMethod($usernameOrgMethod);
 
-        $this->includeOrgInUsername = $this->ldapConfig->getBoolean(
+        $this->includeOrgInUsername = $this->ldapConfig->getOptionalBoolean(
             'include_organization_in_username',
             false
         );

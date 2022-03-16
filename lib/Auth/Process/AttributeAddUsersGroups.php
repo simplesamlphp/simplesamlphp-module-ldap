@@ -43,8 +43,8 @@ class AttributeAddUsersGroups extends BaseFilter
 
         // Get filter specific config options
         $this->searchUsername = $this->config->getString('search.username');
-        $this->searchPassword = $this->config->getString('search.password', null);
-        $this->product = $this->config->getString('ldap.product', null);
+        $this->searchPassword = $this->config->getOptionalString('search.password', null);
+        $this->product = $this->config->getOptionalString('ldap.product', null);
     }
 
 
@@ -76,7 +76,7 @@ class AttributeAddUsersGroups extends BaseFilter
             $this->title
         ));
 
-        $this->additional_filters = $this->config->getArray('additional_filters', []);
+        $this->additional_filters = $this->config->getOptionalArray('additional_filters', []);
 
         // Reference the attributes, just to make the names shorter
         $attributes = &$state['Attributes'];
@@ -140,8 +140,8 @@ class AttributeAddUsersGroups extends BaseFilter
         $ldapUtils->bind($this->ldapObject, $this->searchUsername, $this->searchPassword);
 
         $options = [
-            'scope' => $this->config->getString('search.scope', Query::SCOPE_SUB),
-            'timeout' => $this->config->getInteger('timeout', 3),
+            'scope' => $this->config->getOptionalString('search.scope', Query::SCOPE_SUB),
+            'timeout' => $this->config->getOptionalInteger('timeout', 3),
         ];
 
         // Reference the map, just to make the name shorter
