@@ -40,7 +40,7 @@
 
         "simplesamlphp/assert": "~0.2.13",
         "simplesamlphp/composer-module-installer": "~1.1",
-        "simplesamlphp/simplesamlphp": "^2.0.0-beta.7",
+        "simplesamlphp/simplesamlphp": "^2.0.0-beta.9",
         "symfony/ldap": "^5.4"
     },
     "require-dev": {
