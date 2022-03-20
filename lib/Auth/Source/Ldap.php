@@ -87,7 +87,7 @@ class Ldap extends UserPassBase
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
 
         $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
-        $searchBase = $this->ldapConfig->getOptionalArray('search.base');
+        $searchBase = $this->ldapConfig->getArray('search.base');
         $options = [
             'scope' => $searchScope,
             'timeout' => $timeout,
