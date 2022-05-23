@@ -271,19 +271,13 @@ abstract class BaseFilter extends Auth\ProcessingFilter
             return $this->connector;
         }
 
-        $encryption = $this->config->getString('encryption', 'ssl');
-        Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
-
-        $version = $this->config->getInteger('version', 3);
-        Assert::positiveInteger($version);
-
         $class = $this->config->getString('connector', Connector\Ldap::class);
         Assert::classExists($class);
 
         return $this->connector = new $class(
             $this->config->getString('connection_string'),
-            $this->config->getOptionalString('encryption', 'ssl'),
-            $this->config->getOptionalInteger('version', 3),
+            $encryption,
+            $version,
             $this->config->getOptionalString('extension', 'ext_ldap'),
             $this->config->getOptionalBoolean('debug', false),
             [
