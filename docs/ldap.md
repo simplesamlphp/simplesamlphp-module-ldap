@@ -62,6 +62,15 @@ authentication source:
         ],
 
         /**
+         * The connector to use.
+         * Defaults to '\SimpleSAML\Module\ldap\Connector\Ldap', but can be set
+         * to '\SimpleSAML\Module\ldap\Connector\ActiveDirectory' when
+         * authenticating against Microsoft Active Directory. This will
+         * provide you with more specific error messages.
+         */
+        'connector' => '\SimpleSAML\Module\ldap\Connector\Ldap',
+
+        /**
          * Which attributes should be retrieved from the LDAP server.
          * This can be an array of attribute names, or NULL, in which case
          * all attributes are fetched.
