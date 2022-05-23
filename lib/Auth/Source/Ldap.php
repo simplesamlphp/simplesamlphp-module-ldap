@@ -71,24 +71,8 @@ class Ldap extends UserPassBase
      */
     protected function login(string $username, string $password): array
     {
-        $encryption = $this->ldapConfig->getOptionalString('encryption', 'ssl');
-        Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
-
-        $version = $this->ldapConfig->getOptionalInteger('version', 3);
-        Assert::positiveInteger($version);
-
         $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
         Assert::positiveInteger($timeout);
-
-        $ldapUtils = new Utils\Ldap();
-        $ldapObject = $ldapUtils->create(
-            $this->ldapConfig->getString('connection_string'),
-            $encryption,
-            $version,
-            $this->ldapConfig->getOptionalString('extension', 'ext_ldap'),
-            $this->ldapConfig->getOptionalBoolean('debug', false),
-            $this->ldapConfig->getOptionalArray('options', []),
-        );
 
         $searchScope = $this->ldapConfig->getOptionalString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
@@ -99,6 +83,8 @@ class Ldap extends UserPassBase
             'scope' => $searchScope,
             'timeout' => $timeout,
         ];
+
+        $connector = $this->resolveConnector();
 
         $searchEnable = $this->ldapConfig->getOptionalBoolean('search.enable', false);
         if ($searchEnable === false) {
