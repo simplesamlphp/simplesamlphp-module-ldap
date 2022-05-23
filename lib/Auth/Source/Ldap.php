@@ -166,13 +166,13 @@ class Ldap extends UserPassBase
             return $this->connector;
         }
 
-        $encryption = $this->ldapConfig->getString('encryption', 'ssl');
+        $encryption = $this->ldapConfig->getOptionalString('encryption', 'ssl');
         Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
 
-        $version = $this->ldapConfig->getInteger('version', 3);
+        $version = $this->ldapConfig->getOptionalInteger('version', 3);
         Assert::positiveInteger($version);
 
-        $class = $this->ldapConfig->getString('connector', Connector\Ldap::class);
+        $class = $this->ldapConfig->getOptionalString('connector', Connector\Ldap::class);
         Assert::classExists($class);
         Assert::implementsInterface($class, ConnectorInterface::class);
 
@@ -180,9 +180,9 @@ class Ldap extends UserPassBase
             $this->ldapConfig->getString('connection_string'),
             $encryption,
             $version,
-            $this->ldapConfig->getString('extension', 'ext_ldap'),
-            $this->ldapConfig->getBoolean('debug', false),
-            $this->ldapConfig->getArray('options', []),
+            $this->ldapConfig->getOptionalString('extension', 'ext_ldap'),
+            $this->ldapConfig->getOptionalBoolean('debug', false),
+            $this->ldapConfig->getOptionalArray('options', []),
         );
     }
 }
