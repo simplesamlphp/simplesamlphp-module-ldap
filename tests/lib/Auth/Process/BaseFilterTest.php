@@ -1,30 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Test\Module\ldap\Auth\Process;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use SimpleSAML\Module\ldap\Auth\Process\BaseFilter;
 
 class BaseFilterTest extends TestCase
 {
     /**
-     * @return void
      */
     public function testVarExportHidesLdapPassword(): void
     {
         $stub = $this->getMockBuilder(BaseFilter::class)
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
-        $class = new \ReflectionClass($stub);
+        $class = new ReflectionClass($stub);
         $method = $class->getMethod('varExport');
         $method->setAccessible(true);
 
         $this->assertEquals(
-            "array ( 'ldap.hostname' => 'ldap://172.17.101.32', 'ldap.port' => 389, 'ldap.password' => '********', )",
+            "array ( 'connection_string' => 'ldap://172.17.101.32:389', 'search.password' => '********', )",
             $method->invokeArgs($stub, [[
-                'ldap.hostname' => 'ldap://172.17.101.32',
-                'ldap.port' => 389,
-                'ldap.password' => 'password',
+                'connection_string' => 'ldap://172.17.101.32:389',
+                'search.password' => 'password',
             ]])
         );
     }

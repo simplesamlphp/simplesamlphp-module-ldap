@@ -3,7 +3,7 @@
     "description": "A module that provides authentication against LDAP stores",
     "type": "simplesamlphp-module",
     "keywords": ["simplesamlphp", "ldap"],
-    "license": "LGPL-3.0-or-later",
+    "license": "LGPL-2.1-or-later",
     "authors": [
         {
             "name": "Olav Morken",
@@ -18,6 +18,10 @@
         "preferred-install": {
             "simplesamlphp/simplesamlphp": "source",
             "*": "dist"
+        },
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "simplesamlphp/composer-module-installer": true
         }
     },
     "autoload": {
@@ -31,14 +35,16 @@
         }
     },
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4 || ^8.0",
         "ext-ldap": "*",
+
+        "simplesamlphp/assert": "~0.2.13",
         "simplesamlphp/composer-module-installer": "~1.1",
-        "simplesamlphp/simplesamlphp": "dev-master",
-        "webmozart/assert": "~1.4"
+        "simplesamlphp/simplesamlphp": "^2.0.0-beta.9",
+        "symfony/ldap": "^5.4"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "^0.1.0"
+        "simplesamlphp/simplesamlphp-test-framework": "^1.1.5"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-ldap/issues",
