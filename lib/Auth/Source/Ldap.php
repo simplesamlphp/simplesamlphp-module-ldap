@@ -71,20 +71,36 @@ class Ldap extends UserPassBase
      */
     protected function login(string $username, string $password): array
     {
-        $timeout = $this->ldapConfig->getInteger('timeout', 3);
+        $encryption = $this->ldapConfig->getOptionalString('encryption', 'ssl');
+        Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
+
+        $version = $this->ldapConfig->getOptionalInteger('version', 3);
+        Assert::positiveInteger($version);
+
+        $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
         Assert::positiveInteger($timeout);
 
-        $searchScope = $this->ldapConfig->getString('search.scope', Query::SCOPE_SUB);
+        $ldapUtils = new Utils\Ldap();
+        $ldapObject = $ldapUtils->create(
+            $this->ldapConfig->getString('connection_string'),
+            $encryption,
+            $version,
+            $this->ldapConfig->getOptionalString('extension', 'ext_ldap'),
+            $this->ldapConfig->getOptionalBoolean('debug', false),
+            $this->ldapConfig->getOptionalArray('options', []),
+        );
+
+        $searchScope = $this->ldapConfig->getOptionalString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
 
-        $timeout = $this->ldapConfig->getInteger('timeout', 3);
+        $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
         $searchBase = $this->ldapConfig->getArray('search.base');
         $options = [
             'scope' => $searchScope,
             'timeout' => $timeout,
         ];
 
-        $searchEnable = $this->ldapConfig->getBoolean('search.enable', false);
+        $searchEnable = $this->ldapConfig->getOptionalBoolean('search.enable', false);
         if ($searchEnable === false) {
             $dnPattern = $this->ldapConfig->getString('dnpattern');
             $dn = str_replace('%username%', $username, $dnPattern);
@@ -92,11 +108,11 @@ class Ldap extends UserPassBase
             $searchUsername = $this->ldapConfig->getString('search.username');
             Assert::notWhitespaceOnly($searchUsername);
 
-            $searchPassword = $this->ldapConfig->getString('search.password', null);
+            $searchPassword = $this->ldapConfig->getOptionalString('search.password', null);
             Assert::nullOrnotWhitespaceOnly($searchPassword);
 
             $searchAttributes = $this->ldapConfig->getArray('search.attributes');
-            $searchFilter = $this->ldapConfig->getString('search.filter', null);
+            $searchFilter = $this->ldapConfig->getOptionalString('search.filter', null);
 
             try {
                 $this->connector->bind($searchUsername, $searchPassword);
@@ -130,7 +146,7 @@ class Ldap extends UserPassBase
         /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
         $entry = $this->connector->search($searchBase, $filter, $options, false);
 
-        $attributes = $this->ldapConfig->getValue('attributes', []);
+        $attributes = $this->ldapConfig->getOptionalValue('attributes', []);
         if ($attributes === null) {
             $result = $entry->getAttributes();
         } else {
@@ -143,7 +159,7 @@ class Ldap extends UserPassBase
 
         $binaries = array_intersect(
             array_keys($result),
-            $this->ldapConfig->getArray('attributes.binary', []),
+            $this->ldapConfig->getOptionalArray('attributes.binary', []),
         );
         foreach ($binaries as $binary) {
             $result[$binary] = array_map('base64_encode', $result[$binary]);

@@ -118,7 +118,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
         $this->connector = $this->resolveConnector();
 
         // Set all the filter values, setting defaults if needed
-        $this->searchBase = $this->config->getArray('search.base', []);
+        $this->searchBase = $this->config->getOptionalArray('search.base', []);
 
         // Log the member values retrieved above
         Logger::debug(sprintf(
@@ -129,14 +129,14 @@ abstract class BaseFilter extends Auth\ProcessingFilter
 
         // Setup the attribute map which will be used to search LDAP
         $this->attribute_map = [
-            'dn'       => $this->config->getString('attribute.dn', 'distinguishedName'),
-            'groups'   => $this->config->getString('attribute.groups', 'groups'),
-            'member'   => $this->config->getString('attribute.member', 'member'),
-            'memberOf' => $this->config->getString('attribute.memberOf', 'memberOf'),
-            'name'     => $this->config->getString('attribute.groupname', 'name'),
-            'return'   => $this->config->getString('attribute.return', 'distinguishedName'),
-            'type'     => $this->config->getString('attribute.type', 'objectClass'),
-            'username' => $this->config->getString('attribute.username', 'sAMAccountName')
+            'dn'       => $this->config->getOptionalString('attribute.dn', 'distinguishedName'),
+            'groups'   => $this->config->getOptionalString('attribute.groups', 'groups'),
+            'member'   => $this->config->getOptionalString('attribute.member', 'member'),
+            'memberOf' => $this->config->getOptionalString('attribute.memberOf', 'memberOf'),
+            'name'     => $this->config->getOptionalString('attribute.groupname', 'name'),
+            'return'   => $this->config->getOptionalString('attribute.return', 'distinguishedName'),
+            'type'     => $this->config->getOptionalString('attribute.type', 'objectClass'),
+            'username' => $this->config->getOptionalString('attribute.username', 'sAMAccountName')
         ];
 
         // Log the attribute map
@@ -148,8 +148,8 @@ abstract class BaseFilter extends Auth\ProcessingFilter
 
         // Setup the object type map which is used to determine a DNs' type
         $this->type_map = [
-            'group' => $this->config->getString('type.group', 'group'),
-            'user'  => $this->config->getString('type.user', 'user')
+            'group' => $this->config->getOptionalString('type.group', 'group'),
+            'user'  => $this->config->getOptionalString('type.user', 'user')
         ];
 
         // Log the type map
@@ -282,11 +282,14 @@ abstract class BaseFilter extends Auth\ProcessingFilter
 
         return $this->connector = new $class(
             $this->config->getString('connection_string'),
-            $encryption,
-            $version,
-            $this->config->getString('extension', 'ext_ldap'),
-            $this->config->getBoolean('debug', false),
-            $this->config->getArray('options', []),
+            $this->config->getOptionalString('encryption', 'ssl'),
+            $this->config->getOptionalInteger('version', 3),
+            $this->config->getOptionalString('extension', 'ext_ldap'),
+            $this->config->getOptionalBoolean('debug', false),
+            [
+                'network_timeout' => $this->config->getOptionalInteger('timeout', 3),
+                'referrals' => $this->config->getOptionalBoolean('referrals', false),
+            ]
         );
     }
 
