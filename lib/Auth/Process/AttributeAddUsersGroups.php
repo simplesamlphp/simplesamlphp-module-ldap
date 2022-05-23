@@ -350,6 +350,9 @@ class AttributeAddUsersGroups extends BaseFilter
         // Init the groups variable
         $entries = [];
 
+        // Set scope to 'base'
+        $options['scope'] = Query::SCOPE_BASE;
+
         // Check each DN of the passed memberOf
         foreach ($memberOf as $dn) {
             // Avoid infinite loops, only need to check a DN once
@@ -363,8 +366,8 @@ class AttributeAddUsersGroups extends BaseFilter
 
             // Query LDAP for the attribute values for the DN
             $entry = $this->connector->search(
-                $this->searchBase,
-                sprintf("(&(%s=%s)(distinguishedName=%s))", $map['type'], $this->type_map['group'], $dn),
+                [$dn],
+                sprintf("(%s=%s)", $map['type'], $this->type_map['group']),
                 $options,
                 true,
             );
