@@ -271,8 +271,9 @@ abstract class BaseFilter extends Auth\ProcessingFilter
             return $this->connector;
         }
 
-        $class = $this->config->getString('connector', Connector\Ldap::class);
+        $class = $this->config->getOptionalString('connector', Connector\Ldap::class);
         Assert::classExists($class);
+        Assert::implementsInterface($class, ConnectorInterface::class);
 
         return $this->connector = new $class(
             $this->config->getString('connection_string'),
