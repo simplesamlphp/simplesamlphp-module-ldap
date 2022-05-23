@@ -15,7 +15,6 @@ namespace SimpleSAML\Module\ldap\Auth\Process;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
-use SimpleSAML\Module\ldap\Utils\Ldap as LdapUtils;
 use SimpleSAML\Utils;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
@@ -136,8 +135,7 @@ class AttributeAddUsersGroups extends BaseFilter
             $this->title
         ));
 
-        $ldapUtils = new LdapUtils();
-        $ldapUtils->bind($this->ldapObject, $this->searchUsername, $this->searchPassword);
+        $this->connector->bind($this->searchUsername, $this->searchPassword);
 
         $options = [
             'scope' => $this->config->getOptionalString('search.scope', Query::SCOPE_SUB),
@@ -208,8 +206,7 @@ class AttributeAddUsersGroups extends BaseFilter
                     $attributes[$dn_attribute][0],
                 );
 
-                $entries = $ldapUtils->searchForMultiple(
-                    $this->ldapObject,
+                $entries = $this->connector->searchForMultiple(
                     $this->searchBase,
                     $filter,
                     $options,
@@ -239,8 +236,7 @@ class AttributeAddUsersGroups extends BaseFilter
                     $attributes[$map['username']][0]
                 );
 
-                $entries = $ldapUtils->searchForMultiple(
-                    $this->ldapObject,
+                $entries = $this->connector->searchForMultiple(
                     $this->searchBase,
                     $filter,
                     $options,
@@ -353,8 +349,9 @@ class AttributeAddUsersGroups extends BaseFilter
 
         // Init the groups variable
         $entries = [];
-        $ldapUtils = new LdapUtils();
-        $options['scope'] = 'base';
+
+        // Set scope to 'base'
+        $options['scope'] = Query::SCOPE_BASE;
 
         // Check each DN of the passed memberOf
         foreach ($memberOf as $dn) {
@@ -368,8 +365,7 @@ class AttributeAddUsersGroups extends BaseFilter
             $searched[$dn] = $dn;
 
             // Query LDAP for the attribute values for the DN
-            $entry = $ldapUtils->search(
-                $this->ldapObject,
+            $entry = $this->connector->search(
                 [$dn],
                 sprintf("(%s=%s)", $map['type'], $this->type_map['group']),
                 $options,

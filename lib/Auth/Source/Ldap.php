@@ -8,14 +8,14 @@ use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Module\core\Auth\UserPassBase;
-use SimpleSAML\Module\ldap\Utils;
+use SimpleSAML\Module\ldap\Connector;
+use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
 use function array_fill_keys;
 use function array_keys;
 use function array_map;
 use function array_values;
-use function explode;
 use function sprintf;
 use function str_replace;
 use function var_export;
@@ -32,9 +32,14 @@ use function var_export;
 class Ldap extends UserPassBase
 {
     /**
+     * @var \SimpleSAML\Module\ldap\ConnectorInterface
+     */
+    protected ConnectorInterface $connector;
+
+    /**
      * An LDAP configuration object.
      */
-    private Configuration $ldapConfig;
+    protected Configuration $ldapConfig;
 
 
     /**
@@ -52,6 +57,8 @@ class Ldap extends UserPassBase
             $config,
             'authsources[' . var_export($this->authId, true) . ']'
         );
+
+        $this->connector = $this->resolveConnector();
     }
 
 
@@ -64,24 +71,8 @@ class Ldap extends UserPassBase
      */
     protected function login(string $username, string $password): array
     {
-        $encryption = $this->ldapConfig->getOptionalString('encryption', 'ssl');
-        Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
-
-        $version = $this->ldapConfig->getOptionalInteger('version', 3);
-        Assert::positiveInteger($version);
-
         $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
         Assert::positiveInteger($timeout);
-
-        $ldapUtils = new Utils\Ldap();
-        $ldapObject = $ldapUtils->create(
-            $this->ldapConfig->getString('connection_string'),
-            $encryption,
-            $version,
-            $this->ldapConfig->getOptionalString('extension', 'ext_ldap'),
-            $this->ldapConfig->getOptionalBoolean('debug', false),
-            $this->ldapConfig->getOptionalArray('options', []),
-        );
 
         $searchScope = $this->ldapConfig->getOptionalString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
@@ -92,6 +83,8 @@ class Ldap extends UserPassBase
             'scope' => $searchScope,
             'timeout' => $timeout,
         ];
+
+        $connector = $this->resolveConnector();
 
         $searchEnable = $this->ldapConfig->getOptionalBoolean('search.enable', false);
         if ($searchEnable === false) {
@@ -108,7 +101,7 @@ class Ldap extends UserPassBase
             $searchFilter = $this->ldapConfig->getOptionalString('search.filter', null);
 
             try {
-                $ldapUtils->bind($ldapObject, $searchUsername, $searchPassword);
+                $this->connector->bind($searchUsername, $searchPassword);
             } catch (Error\Error $e) {
                 throw new Error\Exception("Unable to bind using the configured search.username and search.password.");
             }
@@ -126,20 +119,20 @@ class Ldap extends UserPassBase
 
             try {
                 /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-                $entry = $ldapUtils->search($ldapObject, $searchBase, $filter, $options, false);
+                $entry = $this->connector->search($searchBase, $filter, $options, false);
                 $dn = $entry->getDn();
             } catch (Error\Exception $e) {
                 throw new Error\Error('WRONGUSERPASS');
             }
         }
 
-        $ldapUtils->bind($ldapObject, $dn, $password);
+        $this->connector->bind($dn, $password);
 
-        $options['scope'] = 'base';
+        $options['scope'] = Query::SCOPE_BASE;
         $filter = '(objectClass=*)';
 
         /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-        $entry = $ldapUtils->search($ldapObject, [$dn], $filter, $options, false);
+        $entry = $this->connector->search([$dn], $filter, $options, false);
 
         $attributes = $this->ldapConfig->getOptionalValue('attributes', []);
         if ($attributes === null) {
@@ -161,5 +154,37 @@ class Ldap extends UserPassBase
         }
 
         return $result;
+    }
+
+    /**
+     * Resolve the connector
+     *
+     * @return \SimpleSAML\Module\ldap\ConnectorInterface
+     * @throws \Exception
+     */
+    protected function resolveConnector(): ConnectorInterface
+    {
+        if (!empty($this->connector)) {
+            return $this->connector;
+        }
+
+        $encryption = $this->ldapConfig->getOptionalString('encryption', 'ssl');
+        Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
+
+        $version = $this->ldapConfig->getOptionalInteger('version', 3);
+        Assert::positiveInteger($version);
+
+        $class = $this->ldapConfig->getOptionalString('connector', Connector\Ldap::class);
+        Assert::classExists($class);
+        Assert::implementsInterface($class, ConnectorInterface::class);
+
+        return $this->connector = new $class(
+            $this->ldapConfig->getString('connection_string'),
+            $encryption,
+            $version,
+            $this->ldapConfig->getOptionalString('extension', 'ext_ldap'),
+            $this->ldapConfig->getOptionalBoolean('debug', false),
+            $this->ldapConfig->getOptionalArray('options', []),
+        );
     }
 }

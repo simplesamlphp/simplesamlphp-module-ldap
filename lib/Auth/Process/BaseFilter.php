@@ -12,8 +12,9 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
 use SimpleSAML\{Auth, Configuration, Error, Logger};
-use SimpleSAML\Module\ldap\Utils;
-use Symfony\Component\Ldap\LdapInterface;
+use SimpleSAML\Assert\Assert;
+use SimpleSAML\Module\ldap\Connector;
+use SimpleSAML\Module\ldap\ConnectorInterface;
 
 abstract class BaseFilter extends Auth\ProcessingFilter
 {
@@ -48,9 +49,9 @@ abstract class BaseFilter extends Auth\ProcessingFilter
     /**
      * Array of LDAP connection objects. Stored here to be accessed later during processing.
      *
-     * @var \Symfony\Component\Ldap\LdapInterface
+     * @var \SimpleSAML\Module\ldap\ConnectorInterface
      */
-    protected LdapInterface $ldapObject;
+    protected ConnectorInterface $connector;
 
     /**
      * The class "title" used in logging and exception messages.
@@ -114,7 +115,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
         $this->config = Configuration::loadFromArray($config, 'ldap:AuthProcess');
 
         // Initialize the Ldap-object
-        $this->ldapObject = $this->initializeLdap();
+        $this->connector = $this->resolveConnector();
 
         // Set all the filter values, setting defaults if needed
         $this->searchBase = $this->config->getOptionalArray('search.base', []);
@@ -259,18 +260,31 @@ abstract class BaseFilter extends Auth\ProcessingFilter
 
 
     /**
-     * Initialize the Ldap-object
+     * Resolve the connector
      *
-     * @return \Symfony\Component\Ldap\LdapInterface
+     * @return \SimpleSAML\Module\ldap\ConnectorInterface
+     * @throws \Exception
      */
-    private function initializeLdap(): LdapInterface
+    protected function resolveConnector(): ConnectorInterface
     {
-        $ldapUtils = new Utils\Ldap();
+        if (!empty($this->connector)) {
+            return $this->connector;
+        }
 
-        return $ldapUtils->create(
+        $encryption = $this->config->getOptionalString('encryption', 'ssl');
+        Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
+
+        $version = $this->config->getOptionalInteger('version', 3);
+        Assert::positiveInteger($version);
+
+        $class = $this->config->getOptionalString('connector', Connector\Ldap::class);
+        Assert::classExists($class);
+        Assert::implementsInterface($class, ConnectorInterface::class);
+
+        return $this->connector = new $class(
             $this->config->getString('connection_string'),
-            $this->config->getOptionalString('encryption', 'ssl'),
-            $this->config->getOptionalInteger('version', 3),
+            $encryption,
+            $version,
             $this->config->getOptionalString('extension', 'ext_ldap'),
             $this->config->getOptionalBoolean('debug', false),
             [
