@@ -127,10 +127,12 @@ class Ldap extends UserPassBase
         }
 
         $this->connector->bind($dn, $password);
-        $filter = sprintf('(distinguishedName=%s)', $dn);
+
+        $options['scope'] = Query::SCOPE_BASE;
+        $filter = '(objectClass=*)';
 
         /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-        $entry = $this->connector->search($searchBase, $filter, $options, false);
+        $entry = $this->connector->search([$dn], $filter, $options, false);
 
         $attributes = $this->ldapConfig->getOptionalValue('attributes', []);
         if ($attributes === null) {
