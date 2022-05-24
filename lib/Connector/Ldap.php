@@ -26,7 +26,7 @@ class Ldap implements ConnectorInterface
     use LdapHelpers;
 
     /**
-     * @var \Symfony\Component\Ldap\Adapter\ExtLdap\Adapter
+     * @var \Symfony\Component\Ldap\Adapter
      */
     protected Adapter $adapter;
 
@@ -78,6 +78,15 @@ class Ldap implements ConnectorInterface
         );
 
         $this->connection = new LdapObject($this->adapter);
+    }
+
+
+    /**
+     * @return \Symfony\Component\Ldap\Adapter
+     */
+    public function getAdapter(): Adapter
+    {
+        return $this->adapter;
     }
 
 
@@ -197,5 +206,21 @@ class Ldap implements ConnectorInterface
     protected function resolveBindError(InvalidCredentialsException $e): string
     {
         return self::ERR_WRONG_PASS;
+    }
+
+
+    /**
+     * @param \Symfony\Component\Ldap\Entry $entry
+     * @return bool
+     */
+    public function updateEntry(Entry $entry): bool
+    {
+        try {
+            $this->adapter->getEntryManager()->update($entry);
+            return true;
+        } catch (LdapException $e) {
+            Logger::warning($e->getMessage());
+            return false;
+        }
     }
 }
