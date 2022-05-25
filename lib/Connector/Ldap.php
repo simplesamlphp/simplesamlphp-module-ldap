@@ -8,8 +8,10 @@ use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\ldap\ConnectorInterface;
+use Symfony\Component\Ldap\Adapter\AdapterInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Adapter;
 use Symfony\Component\Ldap\Entry;
+use Symfony\Component\Ldap\Exception\LdapException;
 use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
 use Symfony\Component\Ldap\Ldap as LdapObject;
 
@@ -26,9 +28,9 @@ class Ldap implements ConnectorInterface
     use LdapHelpers;
 
     /**
-     * @var \Symfony\Component\Ldap\Adapter
+     * @var \Symfony\Component\Ldap\Adapter\AdapterInterface
      */
-    protected Adapter $adapter;
+    protected AdapterInterface $adapter;
 
     /**
      * @var \Symfony\Component\Ldap\Ldap
@@ -82,9 +84,9 @@ class Ldap implements ConnectorInterface
 
 
     /**
-     * @return \Symfony\Component\Ldap\Adapter
+     * @return \Symfony\Component\Ldap\Adapter\AdapterInterface
      */
-    public function getAdapter(): Adapter
+    public function getAdapter(): AdapterInterface
     {
         return $this->adapter;
     }

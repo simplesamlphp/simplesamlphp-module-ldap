@@ -2,6 +2,7 @@
 
 namespace SimpleSAML\Module\ldap;
 
+use Symfony\Component\Ldap\Adapter\AdapterInterface;
 use Symfony\Component\Ldap\Entry;
 
 interface ConnectorInterface
@@ -59,4 +60,10 @@ interface ConnectorInterface
         array $options,
         bool $allowMissing
     ): array;
+
+
+    /**
+     * @return \Symfony\Component\Ldap\Adapter\AdapterInterface
+     */
+    public function getAdapter(): AdapterInterface;
 }
