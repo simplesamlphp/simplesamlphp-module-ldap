@@ -141,7 +141,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
 
         // Log the attribute map
         Logger::debug(sprintf(
-            '%s : Attribute map created: $s',
+            '%s : Attribute map created: %s',
             $this->title,
             $this->varExport($this->attribute_map)
         ));
