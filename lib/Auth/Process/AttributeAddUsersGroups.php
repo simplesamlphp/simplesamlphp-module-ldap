@@ -301,21 +301,16 @@ class AttributeAddUsersGroups extends BaseFilter
                 $values = $entry->getAttribute(strtolower($return_attribute));
                 $groups[] = array_pop($values);
                 continue;
-            } elseif ($entry->hasAttribute('dn')) {
-                // AD queries also seem to return the objects dn by default
-                /** @psalm-var array $values */
-                $values = $entry->getAttribute('dn');
-                $groups[] = array_pop($values);
-                continue;
             }
 
-            // Could not find DN, log and continue
+            // Could not find return attribute, log and continue
             Logger::notice(sprintf(
-                '%s : The return attribute [%s] could not be found in the entry. %s',
+                '%s : The return attribute [%s] could not be found in entry `%s`.',
                 $this->title,
                 array_unique(implode(', ', [$map['return'], strtolower($map['return'])])),
                 $entry->getDn(),
             ));
+            Logger::debug(sprintf('%s : Entry was: %s', $this->title, $this->varExport($entry)));
         }
 
         // All done
