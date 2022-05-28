@@ -307,7 +307,7 @@ class AttributeAddUsersGroups extends BaseFilter
             Logger::notice(sprintf(
                 '%s : The return attribute [%s] could not be found in entry `%s`.',
                 $this->title,
-                array_unique(implode(', ', [$map['return'], strtolower($map['return'])])),
+                implode(', ', array_unique([$map['return'], strtolower($map['return'])])),
                 $entry->getDn(),
             ));
             Logger::debug(sprintf('%s : Entry was: %s', $this->title, $this->varExport($entry)));
