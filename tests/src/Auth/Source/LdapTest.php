@@ -21,7 +21,7 @@ class LdapTest extends TestCase
         $mb = $this->getMockBuilder(ConnectorInterface::class);
         $s  = $mb->getMock();
 
-        return new class($s) extends Ldap {
+        return new class ($s) extends Ldap {
             public ConnectorInterface $connector;
 
             public function __construct(ConnectorInterface $connector)

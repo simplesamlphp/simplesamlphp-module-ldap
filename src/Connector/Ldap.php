@@ -49,25 +49,24 @@ class Ldap implements ConnectorInterface
     public function __construct(
         string $connection_strings,
         string $encryption = 'ssl',
-        int    $version = 3,
+        int $version = 3,
         string $extension = 'ext_ldap',
-        bool   $debug = false,
-        array  $options = ['referrals' => false, 'network_timeout' => 3]
+        bool $debug = false,
+        array $options = ['referrals' => false, 'network_timeout' => 3]
     ) {
         foreach (explode(' ', $connection_strings) as $connection_string) {
             Assert::regex($connection_string, '#^ldap[s]?:\/\/#');
         }
 
-        Logger::debug(
-            sprintf(
-                "Setting up LDAP connection: host='%s', encryption=%s, version=%d, debug=%s, timeout=%d, referrals=%s.",
-                $connection_strings,
-                $encryption,
-                $version,
-                var_export($debug, true),
-                $options['timeout'] ?? ini_get('default_socket_timeout'),
-                var_export($options['referrals'] ?? false, true),
-            ));
+        Logger::debug(sprintf(
+            "Setting up LDAP connection: host='%s', encryption=%s, version=%d, debug=%s, timeout=%d, referrals=%s.",
+            $connection_strings,
+            $encryption,
+            $version,
+            var_export($debug, true),
+            $options['timeout'] ?? ini_get('default_socket_timeout'),
+            var_export($options['referrals'] ?? false, true),
+        ));
 
         $this->adapter = new Adapter(
             [
@@ -111,12 +110,11 @@ class Ldap implements ConnectorInterface
      * @inheritDoc
      */
     public function search(
-        array  $searchBase,
+        array $searchBase,
         string $filter,
-        array  $options,
-        bool   $allowMissing
-    ): ?Entry
-    {
+        array $options,
+        bool $allowMissing
+    ): ?Entry {
         $entry = null;
 
         foreach ($searchBase as $base) {
@@ -164,12 +162,11 @@ class Ldap implements ConnectorInterface
      * @inheritDoc
      */
     public function searchForMultiple(
-        array  $searchBase,
+        array $searchBase,
         string $filter,
-        array  $options,
-        bool   $allowMissing
-    ): array
-    {
+        array $options,
+        bool $allowMissing
+    ): array {
         $results = [];
 
         foreach ($searchBase as $base) {
