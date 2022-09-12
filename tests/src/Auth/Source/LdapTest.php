@@ -39,7 +39,7 @@ class LdapTest extends TestCase
         };
     }
 
-    public function testLogin()
+    public function testLogin(): void
     {
         $source = $this->buildSourceMock();
         $source->connector->method('search')->willReturn(
