@@ -58,7 +58,7 @@ class Ldap extends UserPassBase
             'authsources[' . var_export($this->authId, true) . ']'
         );
 
-        $this->connector = $this->resolveConnector();
+        $this->connector = ConnectorFactory::fromAuthSource($this->authId);
     }
 
 
@@ -82,8 +82,6 @@ class Ldap extends UserPassBase
             'scope' => $searchScope,
             'timeout' => $timeout,
         ];
-
-        $connector = $this->resolveConnector();
 
         $searchEnable = $this->ldapConfig->getOptionalBoolean('search.enable', false);
         if ($searchEnable === false) {
@@ -153,21 +151,5 @@ class Ldap extends UserPassBase
         }
 
         return $result;
-    }
-
-
-    /**
-     * Resolve the connector
-     *
-     * @return \SimpleSAML\Module\ldap\ConnectorInterface
-     * @throws \Exception
-     */
-    protected function resolveConnector(): ConnectorInterface
-    {
-        if (empty($this->connector)) {
-            $this->connector = ConnectorFactory::fromAuthSource($this->authId);
-        }
-
-        return $this->connector;
     }
 }

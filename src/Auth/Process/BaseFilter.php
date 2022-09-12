@@ -85,7 +85,8 @@ abstract class BaseFilter extends Auth\ProcessingFilter
 
         // Change the class $title to match it's true name
         // This way if the class is extended the proper name is used
-        $classname = end(explode('_', get_class($this)));
+        $classname = explode('_', get_class($this));
+        $classname = end($classname);
         $this->title = 'ldap:' . $classname;
 
         // Log the construction
@@ -114,7 +115,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
         $this->config = Configuration::loadFromArray($config, 'ldap:AuthProcess');
 
         // Initialize the Ldap-object
-        $this->connector = $this->resolveConnector();
+        $this->connector = ConnectorFactory::fromAuthSource($config['authsource']);
 
         // Set all the filter values, setting defaults if needed
         $this->searchBase = $this->config->getOptionalArray('search.base', []);
@@ -255,22 +256,6 @@ abstract class BaseFilter extends Auth\ProcessingFilter
         }
 
         return $authconfig;
-    }
-
-
-    /**
-     * Resolve the connector
-     *
-     * @return \SimpleSAML\Module\ldap\ConnectorInterface
-     * @throws \Exception
-     */
-    protected function resolveConnector(): ConnectorInterface
-    {
-        if (empty($this->connector)) {
-            ConnectorFactory::fromAuthSource($this->config->getString('authsource'));
-        }
-
-        return $this->connector;
     }
 
 

@@ -54,6 +54,6 @@ class LdapTest extends TestCase
         $_SERVER['PHP_AUTH_PW']   = 'test';
         $source->authenticate($ary);
 
-        self::assertEquals(['test' => ['test']], $ary['Attributes']);
+        $this->assertEquals(['test' => ['test']], $ary['Attributes']);
     }
 }

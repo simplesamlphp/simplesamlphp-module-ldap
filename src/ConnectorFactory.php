@@ -46,7 +46,7 @@ class ConnectorFactory
         Assert::classExists($class);
         Assert::implementsInterface($class, ConnectorInterface::class);
 
-        return new $class(
+        return /** @psalm-var \SimpleSAML\Module\ldap\ConnectionInterface */ new $class(
             $ldapConfig->getString('connection_string'),
             $encryption,
             $version,
