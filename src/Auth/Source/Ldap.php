@@ -8,7 +8,7 @@ use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Module\core\Auth\UserPassBase;
-use SimpleSAML\Module\ldap\Connector;
+use SimpleSAML\Module\ldap\ConnectorFactory;
 use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
@@ -155,6 +155,7 @@ class Ldap extends UserPassBase
         return $result;
     }
 
+
     /**
      * Resolve the connector
      *
@@ -163,27 +164,10 @@ class Ldap extends UserPassBase
      */
     protected function resolveConnector(): ConnectorInterface
     {
-        if (!empty($this->connector)) {
-            return $this->connector;
+        if (empty($this->connector)) {
+            $this->connector = ConnectorFactory::fromAuthSource($this->authId);
         }
 
-        $encryption = $this->ldapConfig->getOptionalString('encryption', 'ssl');
-        Assert::oneOf($encryption, ['none', 'ssl', 'tls']);
-
-        $version = $this->ldapConfig->getOptionalInteger('version', 3);
-        Assert::positiveInteger($version);
-
-        $class = $this->ldapConfig->getOptionalString('connector', Connector\Ldap::class);
-        Assert::classExists($class);
-        Assert::implementsInterface($class, ConnectorInterface::class);
-
-        return $this->connector = new $class(
-            $this->ldapConfig->getString('connection_string'),
-            $encryption,
-            $version,
-            $this->ldapConfig->getOptionalString('extension', 'ext_ldap'),
-            $this->ldapConfig->getOptionalBoolean('debug', false),
-            $this->ldapConfig->getOptionalArray('options', []),
-        );
+        return $this->connector;
     }
 }
