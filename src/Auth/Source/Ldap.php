@@ -71,13 +71,12 @@ class Ldap extends UserPassBase
      */
     protected function login(string $username, string $password): array
     {
-        $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
-        Assert::positiveInteger($timeout);
-
         $searchScope = $this->ldapConfig->getOptionalString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
 
         $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
+        Assert::natural($timeout);
+
         $searchBase = $this->ldapConfig->getArray('search.base');
         $options = [
             'scope' => $searchScope,
