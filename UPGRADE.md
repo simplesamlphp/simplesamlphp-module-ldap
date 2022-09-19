@@ -23,6 +23,10 @@ to follow the Symfony naming convention:
 - 'search.base' is not always an array of OUs.
 - 'search.scope' can now be set to 'base', 'one' or 'sub'.
 
+The authsources themselves have been renamed:
+- 'ldap:LDAP' becomes 'ldap:Ldap'
+- 'ldap:LDAPMulti' becomes 'ldap:LdapMulti'
+
 Some new settings have been added for the authsources:
 
 - 'version' can be used to set the LDAP-version to be used. Defaults to v3.
