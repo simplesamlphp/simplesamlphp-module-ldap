@@ -140,23 +140,23 @@ class ConfigHelper
         $config = Configuration::loadFromArray($config, $location);
 
         $this->hostname = $config->getString('hostname');
-        $this->enableTLS = $config->getBoolean('enable_tls', false);
-        $this->debug = $config->getBoolean('debug', false);
-        $this->timeout = $config->getInteger('timeout', 0);
-        $this->port = $config->getInteger('port', 389);
-        $this->referrals = $config->getBoolean('referrals', true);
-        $this->searchEnable = $config->getBoolean('search.enable', false);
-        $this->privRead = $config->getBoolean('priv.read', false);
+        $this->enableTLS = $config->getOptionalBoolean('enable_tls', false);
+        $this->debug = $config->getOptionalBoolean('debug', false);
+        $this->timeout = $config->getOptionalInteger('timeout', 0);
+        $this->port = $config->getOptionalInteger('port', 389);
+        $this->referrals = $config->getOptionalBoolean('referrals', true);
+        $this->searchEnable = $config->getOptionalBoolean('search.enable', false);
+        $this->privRead = $config->getOptionalBoolean('priv.read', false);
 
         if ($this->searchEnable) {
-            $this->searchUsername = $config->getString('search.username', null);
+            $this->searchUsername = $config->getOptionalString('search.username', null);
             if ($this->searchUsername !== null) {
                 $this->searchPassword = $config->getString('search.password');
             }
 
             $this->searchBase = $config->getArrayizeString('search.base');
-            $this->searchScope = $config->getString('search.scope', 'subtree');
-            $this->searchFilter = $config->getString('search.filter', null);
+            $this->searchScope = $config->getOptionalString('search.scope', 'subtree');
+            $this->searchFilter = $config->getOptionalString('search.filter', null);
             $this->searchAttributes = $config->getArray('search.attributes');
         } else {
             $this->dnPattern = $config->getString('dnpattern');
@@ -168,8 +168,8 @@ class ConfigHelper
             $this->privPassword = $config->getString('priv.password');
         }
 
-        $this->attributes = $config->getArray('attributes', null);
-        $this->binaryAttributes = $config->getArray('attributes.binary', []);
+        $this->attributes = $config->getOptionalArray('attributes', null);
+        $this->binaryAttributes = $config->getOptionalArray('attributes.binary', []);
     }
 
 

@@ -204,8 +204,8 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         $this->config = \SimpleSAML\Configuration::loadFromArray($config, 'ldap:AuthProcess');
 
         // Set all the filter values, setting defaults if needed
-        $this->base_dn = $this->config->getArrayizeString('ldap.basedn', '');
-        $this->product = $this->config->getString('ldap.product', '');
+        $this->base_dn = $this->config->getOptionalArrayizeString('ldap.basedn', '');
+        $this->product = $this->config->getOptionalString('ldap.product', '');
 
         // Cleanup the directory service, so that it is easier for
         // child classes to determine service name consistently
@@ -221,14 +221,14 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
 
         // Setup the attribute map which will be used to search LDAP
         $this->attribute_map = [
-            'dn'       => $this->config->getString('attribute.dn', 'distinguishedName'),
-            'groups'   => $this->config->getString('attribute.groups', 'groups'),
-            'member'   => $this->config->getString('attribute.member', 'member'),
-            'memberof' => $this->config->getString('attribute.memberof', 'memberOf'),
-            'name'     => $this->config->getString('attribute.groupname', 'name'),
-            'return'   => $this->config->getString('attribute.return', 'distinguishedName'),
-            'type'     => $this->config->getString('attribute.type', 'objectClass'),
-            'username' => $this->config->getString('attribute.username', 'sAMAccountName')
+            'dn'       => $this->config->getOptionalString('attribute.dn', 'distinguishedName'),
+            'groups'   => $this->config->getOptionalString('attribute.groups', 'groups'),
+            'member'   => $this->config->getOptionalString('attribute.member', 'member'),
+            'memberof' => $this->config->getOptionalString('attribute.memberof', 'memberOf'),
+            'name'     => $this->config->getOptionalString('attribute.groupname', 'name'),
+            'return'   => $this->config->getOptionalString('attribute.return', 'distinguishedName'),
+            'type'     => $this->config->getOptionalString('attribute.type', 'objectClass'),
+            'username' => $this->config->getOptionalString('attribute.username', 'sAMAccountName')
         ];
 
         // Log the attribute map
@@ -238,8 +238,8 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
 
         // Setup the object type map which is used to determine a DNs' type
         $this->type_map = [
-            'group' => $this->config->getString('type.group', 'group'),
-            'user'  => $this->config->getString('type.user', 'user')
+            'group' => $this->config->getOptionalString('type.group', 'group'),
+            'user'  => $this->config->getOptionalString('type.user', 'user')
         ];
 
         // Log the type map
@@ -265,13 +265,13 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
 
         // Get the connection specific options
         $hostname   = $this->config->getString('ldap.hostname');
-        $port       = $this->config->getInteger('ldap.port', 389);
-        $enable_tls = $this->config->getBoolean('ldap.enable_tls', false);
-        $debug      = $this->config->getBoolean('ldap.debug', false);
-        $referrals  = $this->config->getBoolean('ldap.referrals', true);
-        $timeout    = $this->config->getInteger('ldap.timeout', 0);
-        $username   = $this->config->getString('ldap.username', null);
-        $password   = $this->config->getString('ldap.password', null);
+        $port       = $this->config->getOptionalInteger('ldap.port', 389);
+        $enable_tls = $this->config->getOptionalBoolean('ldap.enable_tls', false);
+        $debug      = $this->config->getOptionalBoolean('ldap.debug', false);
+        $referrals  = $this->config->getOptionalBoolean('ldap.referrals', true);
+        $timeout    = $this->config->getOptionalInteger('ldap.timeout', 0);
+        $username   = $this->config->getOptionalString('ldap.username', null);
+        $password   = $this->config->getOptionalString('ldap.password', null);
 
         // Log the LDAP connection
         \SimpleSAML\Logger::debug(

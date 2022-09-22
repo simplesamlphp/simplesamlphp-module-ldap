@@ -67,7 +67,7 @@ class LdapMulti extends \SimpleSAML\Module\core\Auth\UserPassOrgBase
             }
 
             if ($name === 'include_organization_in_username') {
-                $this->includeOrgInUsername = $cfgHelper->getBoolean(
+                $this->includeOrgInUsername = $cfgHelper->getOptionalBoolean(
                     'include_organization_in_username',
                     false
                 );

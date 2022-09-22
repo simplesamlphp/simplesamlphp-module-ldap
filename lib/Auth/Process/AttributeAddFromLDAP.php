@@ -75,16 +75,16 @@ class AttributeAddFromLDAP extends BaseFilter
         parent::__construct($config, $reserved);
 
         // Get filter specific config options
-        $this->binary_attributes = $this->config->getArray('attributes.binary', []);
-        $this->search_attributes = $this->config->getArrayize('attributes', []);
+        $this->binary_attributes = $this->config->getOptionalArray('attributes.binary', []);
+        $this->search_attributes = $this->config->getOptionalArrayize('attributes', []);
         if (empty($this->search_attributes)) {
-            $new_attribute = $this->config->getString('attribute.new', '');
+            $new_attribute = $this->config->getOptionalString('attribute.new', '');
             $this->search_attributes[$new_attribute] = $this->config->getString('search.attribute');
         }
         $this->search_filter = $this->config->getString('search.filter');
 
         // get the attribute policy
-        $this->attr_policy = $this->config->getString('attribute.policy', 'merge');
+        $this->attr_policy = $this->config->getOptionalString('attribute.policy', 'merge');
     }
 
 

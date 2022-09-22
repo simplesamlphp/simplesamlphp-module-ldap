@@ -51,8 +51,8 @@ class AttributeAddUsersGroups extends BaseFilter
             $this->title . 'Attempting to get the users groups...'
         );
 
-        $this->additional_filters = $this->config->getArray('additional_filters', []);
-        $this->escape = $this->config->getBoolean('escape', true);
+        $this->additional_filters = $this->config->getOptionalArray('additional_filters', []);
+        $this->escape = $this->config->getOptionalBoolean('escape', true);
 
         // Reference the attributes, just to make the names shorter
         $attributes = &$request['Attributes'];
@@ -176,7 +176,7 @@ class AttributeAddUsersGroups extends BaseFilter
         $map = &$this->attribute_map;
 
         // Print group search string and search for all group names
-        $openldap_base = $this->config->getString('ldap.basedn', 'ou=groups,dc=example,dc=com');
+        $openldap_base = $this->config->getOptionalString('ldap.basedn', 'ou=groups,dc=example,dc=com');
         Logger::debug(
             $this->title . "Searching for groups in ldap.basedn " . $openldap_base . " with filter (" .
             $map['memberof'] . "=" . $attributes[$map['username']][0] . ") and attributes " . $map['member']
