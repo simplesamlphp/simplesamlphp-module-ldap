@@ -6,6 +6,7 @@ namespace SimpleSAML\Module\ldap\Auth\Source;
 
 use PHPUnit\Framework\TestCase;
 use SAML2\Constants;
+use SimpleSAML\Configuration;
 use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Entry;
 
@@ -15,6 +16,23 @@ class LdapTest extends TestCase
      * @var Ldap
      */
     protected $connector;
+
+    /**
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $sourceConfig = Configuration::loadFromArray([
+            'ldap_login' => [
+                'ldap:Ldap',
+
+                 'connection_string' => 'ldaps://ldap.example.org',
+            ],
+        ]);
+
+        Configuration::setPreLoadedConfig($sourceConfig, 'authsources.php');
+    }
 
     public function buildSourceMock(): Ldap
     {
