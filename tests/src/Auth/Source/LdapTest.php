@@ -27,7 +27,7 @@ class LdapTest extends TestCase
             'ldap_login' => [
                 'ldap:Ldap',
 
-                 'connection_string' => 'ldaps://ldap.example.org',
+                'connection_string' => 'ldaps://ldap.example.org',
             ],
         ]);
 
@@ -44,7 +44,6 @@ class LdapTest extends TestCase
 
             public function __construct(ConnectorInterface $connector)
             {
-                $this->connector = $connector;
                 parent::__construct(
                     ['AuthId' => 'ldap_login'],
                     [
@@ -53,6 +52,7 @@ class LdapTest extends TestCase
                         'dnpattern'   => '%username%@example.com'
                     ]
                 );
+                $this->connector = $connector;
             }
         };
     }
