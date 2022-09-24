@@ -204,7 +204,7 @@ abstract class BaseFilter extends \SimpleSAML\Auth\ProcessingFilter
         $this->config = \SimpleSAML\Configuration::loadFromArray($config, 'ldap:AuthProcess');
 
         // Set all the filter values, setting defaults if needed
-        $this->base_dn = $this->config->getOptionalArrayizeString('ldap.basedn', '');
+        $this->base_dn = $this->config->getOptionalArrayizeString('ldap.basedn', []);
         $this->product = $this->config->getOptionalString('ldap.product', '');
 
         // Cleanup the directory service, so that it is easier for
