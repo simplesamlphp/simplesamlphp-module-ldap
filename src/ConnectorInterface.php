@@ -30,6 +30,7 @@ interface ConnectorInterface
      * @param array $options
      * @param boolean $allowMissing
      * @return \Symfony\Component\Ldap\Entry|null The result of the search or null if none found
+     * @psalm-return ($allowMissing is true ? \Symfony\Component\Ldap\Entry|null : \Symfony\Component\Ldap\Entry)
      *
      * @throws \SimpleSAML\Error\Exception if more than one entry was found
      * @throws \SimpleSAML\Error\Exception if the object cannot be found using the given search base and filter

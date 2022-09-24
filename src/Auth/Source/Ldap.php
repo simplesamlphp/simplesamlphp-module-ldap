@@ -104,8 +104,7 @@ class Ldap extends UserPassBase
             $filter = $this->buildSearchFilter($username);
 
             try {
-                /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
-                $entry = $this->connector->search($searchBase, $filter, $options, false);
+                $entry = /** @scrutinizer-ignore-type */$this->connector->search($searchBase, $filter, $options, false);
                 $dn = $entry->getDn();
             } catch (Error\Exception $e) {
                 throw new Error\Error('WRONGUSERPASS');
@@ -117,10 +116,9 @@ class Ldap extends UserPassBase
         $options['scope'] = Query::SCOPE_BASE;
         $filter = '(objectClass=*)';
 
-        /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
         $entry = $this->connector->search([$dn], $filter, $options, false);
 
-        return $this->processAttributes($entry);
+        return $this->processAttributes(/** @scrutinizer-ignore-type */$entry);
     }
 
 
@@ -165,7 +163,7 @@ class Ldap extends UserPassBase
         ];
 
         try {
-            /** @psalm-var \Symfony\Component\Ldap\Entry $entry */
+            /** @var \Symfony\Component\Ldap\Entry $entry */
             $entry = $this->connector->search($searchBase, $filter, $options, false);
         } catch (Error\Exception $e) {
             throw new Error\Error('WRONGUSERPASS');
