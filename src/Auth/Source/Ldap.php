@@ -95,9 +95,6 @@ class Ldap extends UserPassBase
             $searchPassword = $this->ldapConfig->getOptionalString('search.password', null);
             Assert::nullOrnotWhitespaceOnly($searchPassword);
 
-            $searchAttributes = $this->ldapConfig->getArray('search.attributes');
-            $searchFilter = $this->ldapConfig->getOptionalString('search.filter', null);
-
             try {
                 $this->connector->bind($searchUsername, $searchPassword);
             } catch (Error\Error $e) {
