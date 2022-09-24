@@ -49,6 +49,7 @@ class LdapTest extends TestCase
                     [
                         'attributes'  => null,
                         'search.base' => ['DC=example,DC=com'],
+                        'search.username' => 'readonly',
                         'dnpattern'   => '%username%@example.com'
                     ]
                 );
@@ -73,5 +74,17 @@ class LdapTest extends TestCase
         $source->authenticate($ary);
 
         $this->assertEquals(['test' => ['test']], $ary['Attributes']);
+    }
+
+
+    public function testGetAttributes(): void
+    {
+        $source = $this->buildSourceMock();
+        $source->connector->method('search')->willReturn(
+            new Entry('test', ['test' => ['test']])
+        );
+
+        $result = $source->getAttributes('test');
+        $this->assertEquals(['test' => ['test']], $result);
     }
 }
