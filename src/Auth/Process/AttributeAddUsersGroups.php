@@ -247,7 +247,7 @@ class AttributeAddUsersGroups extends BaseFilter
             default:
                 // Log the generic search
                 Logger::debug(
-                    $this->title . 'Searching LDAP using the generic search method.'
+                    sprintf('%s : Searching LDAP using the generic search method.', $this->title)
                 );
 
                 // Make sure the defined memberOf attribute exists
