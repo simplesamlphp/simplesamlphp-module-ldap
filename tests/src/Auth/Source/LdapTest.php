@@ -6,6 +6,7 @@ namespace SimpleSAML\Module\ldap\Auth\Source;
 
 use PHPUnit\Framework\TestCase;
 use SAML2\Constants;
+use SimpleSAML\Configuration;
 use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Entry;
 
@@ -15,6 +16,23 @@ class LdapTest extends TestCase
      * @var Ldap
      */
     protected $connector;
+
+    /**
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $sourceConfig = Configuration::loadFromArray([
+            'ldap_login' => [
+                'ldap:Ldap',
+
+                'connection_string' => 'ldaps://ldap.example.org',
+            ],
+        ]);
+
+        Configuration::setPreLoadedConfig($sourceConfig, 'authsources.php');
+    }
 
     public function buildSourceMock(): Ldap
     {
@@ -26,15 +44,16 @@ class LdapTest extends TestCase
 
             public function __construct(ConnectorInterface $connector)
             {
-                $this->connector = $connector;
                 parent::__construct(
                     ['AuthId' => 'ldap_login'],
                     [
                         'attributes'  => null,
                         'search.base' => ['DC=example,DC=com'],
+                        'search.username' => 'readonly',
                         'dnpattern'   => '%username%@example.com'
                     ]
                 );
+                $this->connector = $connector;
             }
         };
     }
@@ -54,6 +73,18 @@ class LdapTest extends TestCase
         $_SERVER['PHP_AUTH_PW']   = 'test';
         $source->authenticate($ary);
 
-        self::assertEquals(['test' => ['test']], $ary['Attributes']);
+        $this->assertEquals(['test' => ['test']], $ary['Attributes']);
+    }
+
+
+    public function testGetAttributes(): void
+    {
+        $source = $this->buildSourceMock();
+        $source->connector->method('search')->willReturn(
+            new Entry('test', ['test' => ['test']])
+        );
+
+        $result = $source->getAttributes('test');
+        $this->assertEquals(['test' => ['test']], $result);
     }
 }

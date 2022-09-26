@@ -86,9 +86,9 @@ class InvalidCredentialResult
      * For Simple Binds this is the part after NT_STATUS_
      * Otherwise it is the HEX code from `data ([0-9a-f]+)`
      *
-     * @var string The error code.
+     * @var string|null The error code.
      */
-    protected string $code;
+    protected ?string $code;
 
     /**
      * @var string the message as it came from LDAP
@@ -110,6 +110,8 @@ class InvalidCredentialResult
             $code = str_replace('NT_STATUS_', '', $tmp);
         } elseif (preg_match('/data\s(.*)?,/', $message, $match)) {
             $code = $match[1];
+        } else {
+            $code = null;
         }
 
         return new self($code, $message);
@@ -117,10 +119,10 @@ class InvalidCredentialResult
 
 
     /**
-     * @param string $code
+     * @param string|null $code
      * @param string $rawMessage
      */
-    protected function __construct(string $code, string $rawMessage)
+    protected function __construct(?string $code, string $rawMessage)
     {
         $this->code = $code;
         $this->rawMessage = $rawMessage;
@@ -130,9 +132,9 @@ class InvalidCredentialResult
     /**
      * Returns the code that was pulled from the raw message
      *
-     * @return string
+     * @return string|null
      */
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }
