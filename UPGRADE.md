@@ -24,6 +24,7 @@ to follow the Symfony naming convention:
 - 'search.scope' can now be set to 'base', 'one' or 'sub'.
 
 The authsources themselves have been renamed:
+
 - 'ldap:LDAP' becomes 'ldap:Ldap'
 - 'ldap:LDAPMulti' becomes 'ldap:LdapMulti'
 
