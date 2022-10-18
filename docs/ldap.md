@@ -46,6 +46,14 @@ authentication source:
         'version' => 3,
 
         /**
+         * Set to TRUE to enable LDAP debug level. Passed to the LDAP connector class.
+         *
+         * Default: FALSE
+         * Required: No
+         */
+        'ldap.debug' => false,
+
+        /**
          * The LDAP-options to pass when setting up a connection
          * See [Symfony documentation][1]
          */
