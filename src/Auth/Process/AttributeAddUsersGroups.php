@@ -203,7 +203,7 @@ class AttributeAddUsersGroups extends BaseFilter
                     $map['type'],
                     $this->type_map['group'],
                     $map['member'] . ':1.2.840.113556.1.4.1941:',
-                    $attributes[$dn_attribute][0],
+                    $this->connector->escapeFilterValue($attributes[$dn_attribute][0], true),
                 );
 
                 $entries = $this->connector->searchForMultiple(
