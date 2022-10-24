@@ -72,7 +72,7 @@ authentication source:
 		 * The scope of the search. Valid values are 'subtree' and 'onelevel' and 'base',
 		 * first one being the default if no value is set.
 		 */
-                'search.scope' => 'subtree',
+		'search.scope' => 'subtree',
 
 		/*
 		 * The attribute(s) the username should match against.
