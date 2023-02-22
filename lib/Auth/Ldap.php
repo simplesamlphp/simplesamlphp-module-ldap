@@ -351,7 +351,7 @@ class Ldap
         string $scope = 'subtree'
     ): ?string {
         // Traverse all search bases, returning DN if found
-        $bases = Utils\Arrays::arrayize($base);
+        $bases = is_array($base) ? $base : [$base];
         foreach ($bases as $current) {
             try {
                 // Single base search
@@ -373,8 +373,9 @@ class Ldap
             return null;
         } else {
             // Zero hits not allowed
+            $attributes = is_array($attribute) ? $attribute : [$attribute];
             throw $this->makeException('Library - LDAP searchfordn(): LDAP search returned zero entries for' .
-                ' filter \'(' . join(' | ', Utils\Arrays::arrayize($attribute)) .
+                ' filter \'(' . join(' | ', $attributes) .
                 ' = ' . $value . ')\' on base(s) \'(' . join(' & ', $bases) . ')\'', 2);
         }
     }
@@ -435,7 +436,7 @@ class Ldap
             throw $this->makeException('ldap:LdapConnection->search_manual : No base DNs were passed', ERR_INTERNAL);
         }
 
-        $attributes = Utils\Arrays::arrayize($attributes);
+        $attributes = is_array($attributes) ? $attributes : [$attributes];
 
         // Search each base until result is found
         $result = false;
@@ -755,7 +756,7 @@ class Ldap
     public static function escapeFilterValue($values = [], bool $singleValue = true)
     {
         // Parameter validation
-        $values = Utils\Arrays::arrayize($values);
+        $values = is_array($values) ? $values : [$values];
 
         foreach ($values as $key => $val) {
             if ($val === null) {

@@ -349,7 +349,7 @@ class AttributeAddUsersGroups extends BaseFilter
             ' Member Attribute: ' . $map['member'] .
             ' Type Attribute: ' . $map['type'] .
             ' Type Value: ' . $this->type_map['group'] .
-            ' Base: ' . implode('; ', Arrays::Arrayize($this->base_dn))
+            ' Base: ' . implode('; ', is_array($this->base_dn) ? $this->base_dn : [$this->base_dn]);
         );
 
         // AD connections should have this set
