@@ -47,7 +47,7 @@ class LdapTest extends TestCase
                 parent::__construct(
                     ['AuthId' => 'ldap_login'],
                     [
-                        'attributes'  => null,
+                        'attributes'  => ['test1', 'test2', 'test3'],
                         'search.base' => ['DC=example,DC=com'],
                         'search.username' => 'readonly',
                         'dnpattern'   => '%username%@example.com'
@@ -62,7 +62,7 @@ class LdapTest extends TestCase
     {
         $source = $this->buildSourceMock();
         $source->connector->method('search')->willReturn(
-            new Entry('test', ['test' => ['test']])
+            new Entry('test', ['test1' => ['testval1']])
         );
 
         // This forces the login flow through the ECP processing
@@ -73,7 +73,7 @@ class LdapTest extends TestCase
         $_SERVER['PHP_AUTH_PW']   = 'test';
         $source->authenticate($ary);
 
-        $this->assertEquals(['test' => ['test']], $ary['Attributes']);
+        $this->assertEquals(['test1' => ['testval1']], $ary['Attributes']);
     }
 
 
@@ -81,10 +81,22 @@ class LdapTest extends TestCase
     {
         $source = $this->buildSourceMock();
         $source->connector->method('search')->willReturn(
-            new Entry('test', ['test' => ['test']])
+            new Entry('test', ['test2' => ['testval2']])
         );
 
         $result = $source->getAttributes('test');
-        $this->assertEquals(['test' => ['test']], $result);
+        $this->assertEquals(['test2' => ['testval2']], $result);
+    }
+
+
+    public function testGetAttributesWithAttributesSetToNull(): void
+    {
+        $source = $this->buildSourceMock();
+        $source->connector->method('search')->willReturn(
+            new Entry('test', ['test1' => ['testval1'], 'test2' => ['testval2'], 'test3' => ['testval3']])
+        );
+
+        $result = $source->getAttributes('test');
+        $this->assertEquals(['test1' => ['testval1'], 'test2' => ['testval2'], 'test3' => ['testval3']], $result);
     }
 }

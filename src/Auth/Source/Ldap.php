@@ -179,7 +179,12 @@ class Ldap extends UserPassBase
      */
     private function processAttributes(Entry $entry): array
     {
-        $attributes = $this->ldapConfig->getOptionalValue('attributes', []);
+        $attributes = $this->ldapConfig->getOptionalValue(
+            'attributes',
+            // If specifically set to NULL return all attributes, if not set at all return nothing (safe default)
+            $this->ldapConfig->hasValue('attributes') ? null: [],
+        );
+
         if ($attributes === null) {
             $result = $entry->getAttributes();
         } else {
