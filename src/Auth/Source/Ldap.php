@@ -89,8 +89,7 @@ class Ldap extends UserPassBase
             $dnPattern = $this->ldapConfig->getString('dnpattern');
             $dn = str_replace('%username%', $username, $dnPattern);
         } else {
-            $searchUsername = $this->ldapConfig->getString('search.username');
-            Assert::notWhitespaceOnly($searchUsername);
+            $searchUsername = $this->ldapConfig->getOptionalString('search.username', null);
 
             $searchPassword = $this->ldapConfig->getOptionalString('search.password', null);
             Assert::nullOrnotWhitespaceOnly($searchPassword);
@@ -130,8 +129,7 @@ class Ldap extends UserPassBase
      */
     public function getAttributes(string $username): array
     {
-        $searchUsername = $this->ldapConfig->getString('search.username');
-        Assert::notWhitespaceOnly($searchUsername);
+        $searchUsername = $this->ldapConfig->getOptionalString('search.username', null);
 
         $searchPassword = $this->ldapConfig->getOptionalString('search.password', null);
         Assert::nullOrnotWhitespaceOnly($searchPassword);
