@@ -94,7 +94,7 @@ class Ldap implements ConnectorInterface
     /**
      * @inheritDoc
      */
-    public function bind(string $username, ?string $password): void
+    public function bind(?string $username, ?string $password): void
     {
         try {
             $this->connection->bind($username, strval($password));
