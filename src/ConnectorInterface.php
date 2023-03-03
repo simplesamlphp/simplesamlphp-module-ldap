@@ -13,13 +13,13 @@ interface ConnectorInterface
     /**
      * Bind to an LDAP-server
      *
-     * @param string $username
+     * @param string|null $username
      * @param string|null $password Null for passwordless logon
      * @return void
      *
      * @throws \SimpleSAML\Error\Exception if none of the LDAP-servers could be contacted
      */
-    public function bind(string $username, ?string $password): void;
+    public function bind(?string $username, ?string $password): void;
 
 
     /**
