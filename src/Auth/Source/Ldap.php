@@ -10,6 +10,7 @@ use SimpleSAML\Error;
 use SimpleSAML\Module\core\Auth\UserPassBase;
 use SimpleSAML\Module\ldap\ConnectorFactory;
 use SimpleSAML\Module\ldap\ConnectorInterface;
+use SimpleSAML\Module\ldap\Connector\LdapHelpers;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 use Symfony\Component\Ldap\Entry;
 
@@ -32,6 +33,9 @@ use function var_export;
 
 class Ldap extends UserPassBase
 {
+    use LdapHelpers;
+
+
     /**
      * @var \SimpleSAML\Module\ldap\ConnectorInterface
      */
@@ -145,7 +149,7 @@ class Ldap extends UserPassBase
         $searchEnable = $this->ldapConfig->getOptionalBoolean('search.enable', false);
         if ($searchEnable === false) {
             $dnPattern = $this->ldapConfig->getString('dnpattern');
-            $filter = '(' . str_replace('%username%', $username, $dnPattern) . ')';
+            $filter = '(' . str_replace('%username%', $this->escapeFilterValue($username), $dnPattern) . ')';
         } else {
             $filter = $this->buildSearchFilter($username);
         }
@@ -219,7 +223,7 @@ class Ldap extends UserPassBase
 
         $filter = '';
         foreach ($searchAttributes as $attr) {
-            $filter .= '(' . $attr . '=' . $username . ')';
+            $filter .= '(' . $attr . '=' . $this->escapeFilterValue($username) . ')';
         }
         $filter = '(|' . $filter . ')';
 
