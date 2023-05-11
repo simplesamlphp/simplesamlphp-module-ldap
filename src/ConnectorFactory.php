@@ -52,10 +52,10 @@ class ConnectorFactory
             $version,
             $ldapConfig->getOptionalString('extension', 'ext_ldap'),
             $ldapConfig->getOptionalBoolean('debug', false),
-            [
-                'network_timeout' => $ldapConfig->getOptionalInteger('timeout', 3),
-                'referrals' => $ldapConfig->getOptionalBoolean('referrals', false),
-            ]
+            $ldapConfig->getOptionalArray('options', [
+                'network_timeout' => 3,
+                'referrals' => false,
+            ]),
         );
     }
 }
