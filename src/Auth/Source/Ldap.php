@@ -18,6 +18,7 @@ use function array_fill_keys;
 use function array_keys;
 use function array_map;
 use function array_values;
+use function in_array;
 use function sprintf;
 use function str_replace;
 use function var_export;
@@ -186,7 +187,7 @@ class Ldap extends UserPassBase
         $attributes = $this->ldapConfig->getOptionalValue(
             'attributes',
             // If specifically set to NULL return all attributes, if not set at all return nothing (safe default)
-            $this->ldapConfig->hasValue('attributes') ? null: [],
+            in_array('attributes', $this->ldapConfig->getOptions(), true) ? null: [],
         );
 
         if ($attributes === null) {
