@@ -55,7 +55,7 @@ authentication source:
 
         /**
          * The LDAP-options to pass when setting up a connection
-         * See [Symfony documentation][1]
+         * See [Symfony documentation]
          */
         'options' => [
             /**
@@ -138,8 +138,8 @@ authentication source:
          * Additional filters that must match for the entire LDAP search to
          * be true.
          *
-         * This should be a single string conforming to [RFC 1960][2]
-         * and [RFC 2544][3]. The string is appended to the search attributes
+         * This should be a single string conforming to [RFC 1960]
+         * and [RFC 2544]. The string is appended to the search attributes
          */
         'search.filter' => '(&(objectClass=Person)(|(sn=Doe)(cn=John *)))',
 
@@ -153,9 +153,11 @@ authentication source:
     ],
 ```
 
-[1]: https://github.com/symfony/symfony/blob/5.4/src/Symfony/Component/Ldap/Adapter/ExtLdap/ConnectionOptions.php
-[2]: https://datatracker.ietf.org/doc/html/rfc1960
-[3]: https://datatracker.ietf.org/doc/html/rfc2544
+See:
+
+- [Symfony documentation](https://github.com/symfony/symfony/blob/5.4/src/Symfony/Component/Ldap/Adapter/ExtLdap/ConnectionOptions.php)
+- [RFC 1960](https://datatracker.ietf.org/doc/html/rfc1960)
+- [RFC 2544](https://datatracker.ietf.org/doc/html/rfc2544)
 
 You should update the name of this authentication source
 (`example-ldap`) to have a name which makes sense to your organization.

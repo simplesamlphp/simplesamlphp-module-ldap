@@ -20,7 +20,7 @@ composer.phar require simplesamlphp/simplesamlphp-module-ldap:dev-master
 ```
 
 where `dev-master` instructs Composer to install the `master` branch from the
-Git repository. See the [releases][releases]
+Git repository. See the [releases](https://github.com/simplesamlphp/simplesamlphp-module-ldap/releases)
 available if you want to use a stable version of the module.
 
 Next thing you need to do is to enable the module: in `config.php`,
