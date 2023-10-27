@@ -51,7 +51,7 @@ authentication source:
          * Default: FALSE
          * Required: No
          */
-        'ldap.debug' => false,
+        'debug' => false,
 
         /**
          * The LDAP-options to pass when setting up a connection
@@ -392,12 +392,12 @@ required, see the config options for ldap:AttributeAddFromLDAP above.
 ```php
     50 => [
         'class' => 'ldap:AttributeAddFromLDAP',
-        'ldap.hostname' => 'ldap.example.org',
-        'ldap.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
-        'ldap.password' => 'Abc123',
-        'ldap.basedn' => ['DC=example,DC=org'],
-        'attributes' => ['displayName' => 'cn', 'jpegPhoto'],
+        'connection_string' => 'ldap.example.org',
+        'search.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
+        'search.password' => 'Abc123',
+        'search.base' => ['DC=example,DC=org'],
         'search.filter' => '(uid=%uid%)',
+        'attributes' => ['displayName' => 'cn', 'jpegPhoto'],
     ]
 ```
 
@@ -451,7 +451,7 @@ a listing of all configuration options and their details.
          * Required: No
          * AuthSource: search.base
          */
-        'ldap.basedn' => [
+        'search.base' => [
             'OU=Staff,DC=example,DC=org',
             'OU=Students,DC=example,DC=org'
         ],
@@ -465,22 +465,16 @@ a listing of all configuration options and their details.
          * Required: No
          * AuthSource: debug
          */
-        'ldap.debug' => false,
-        'ldap.debug' => true,
+        'debug' => false,
+        'debug' => true,
 
 
         /**
-         * Set to TRUE to force the LDAP connection to use TLS.
-         *
-         * Note: If ldaps:// is specified in the hostname then it
-         *       will automatically use TLS.
-         *
-         * Default: FALSE
-         * Required: No
-         * AuthSource: enable_tls
+         * Whether SSL/TLS should be used when contacting the LDAP server.
+         * Possible values are 'ssl', 'tls' or 'none'
          */
-        'ldap.enable_tls' => false,
-        'ldap.enable_tls' => true,
+        'encryption' => 'tls',
+        'encryption' => 'ssl',
 
 
         /**
@@ -494,19 +488,8 @@ a listing of all configuration options and their details.
          * Required: Yes, unless authsource is used
          * AuthSource: hostname
          */
-        'ldap.hostname' => 'ldap.example.org',
-        'ldap.hostname' => 'ad1.example.org ad2.example.org',
-
-
-        /**
-         * This is the port where the LDAP server(s) listen for
-         * connections.
-         *
-         * Default: 389
-         * Required: No
-         * AuthSource: port
-         */
-        'ldap.port' => 389,
+        'connection_string' => 'ldap.example.org',
+        'connection_string' => 'ad1.example.org ad2.example.org',
 
 
         /**
@@ -516,7 +499,7 @@ a listing of all configuration options and their details.
          * Required: No, only if required for binding.
          * AuthSource: search.password OR priv.password
          */
-        'ldap.password' => 'Abc123',
+        'search.password' => 'Abc123',
 
 
         /**
@@ -543,8 +526,8 @@ a listing of all configuration options and their details.
          * Required: No
          * AuthSource: timeout
          */
-        'ldap.timeout' => 0,
-        'ldap.timeout' => 30,
+        'timeout' => 0,
+        'timeout' => 30,
 
 
         /**
@@ -556,7 +539,7 @@ a listing of all configuration options and their details.
          * Required: No, only if required for binding.
          * AuthSource: search.username OR priv.username
          */
-        'ldap.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
+        'search.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
 
 
         /**
@@ -632,10 +615,10 @@ required, see the config info above for details.
 ```php
     50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
-        'ldap.hostname' => 'ldap.example.org',
-        'ldap.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
-        'ldap.password' => 'Abc123',
-        'ldap.basedn' => ['DC=example,DC=org'],
+        'connection_string' => 'ldaps://ldap.example.org',
+        'search.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
+        'search.password' => 'Abc123',
+        'search.base' => ['DC=example,DC=org'],
     ]
 ```
 
@@ -647,7 +630,7 @@ Intention is to filter in `ou=groups,dc=example,dc=com` for
     50 => [
         'class' => 'ldap:AttributeAddUsersGroups',
         'ldap.product' => 'OpenLDAP',
-        'ldap.basedn' => ['ou=groups,dc=example,dc=org'],
+        'search.base' => ['ou=groups,dc=example,dc=org'],
         'attribute.username' => 'uid',
         'attribute.member' => 'cn',
         'attribute.memberOf' => 'memberUid',
