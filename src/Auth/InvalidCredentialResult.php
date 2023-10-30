@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\ldap\Auth;
 
 use function array_merge_recursive;

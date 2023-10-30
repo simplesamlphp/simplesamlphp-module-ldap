@@ -13,15 +13,10 @@ use Symfony\Component\Ldap\Entry;
 class LdapTest extends TestCase
 {
     /**
-     * @var Ldap
      */
-    protected $connector;
-
-    /**
-     */
-    protected function setUp(): void
+    public static function setUpBeforeClass(): void
     {
-        parent::setUp();
+        parent::setUpBeforeClass();
 
         $sourceConfig = Configuration::loadFromArray([
             'ldap_login' => [
@@ -37,11 +32,9 @@ class LdapTest extends TestCase
     public function buildSourceMock(): Ldap
     {
         $mb = $this->getMockBuilder(ConnectorInterface::class);
-        $s  = $mb->getMock();
+        $s = $mb->getMock();
 
         return new class ($s) extends Ldap {
-            public ConnectorInterface $connector;
-
             public function __construct(ConnectorInterface $connector)
             {
                 parent::__construct(
@@ -61,7 +54,9 @@ class LdapTest extends TestCase
     public function testLogin(): void
     {
         $source = $this->buildSourceMock();
-        $source->connector->method('search')->willReturn(
+        /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
+        $connector = $source->getConnector();
+        $connector->method('search')->willReturn(
             new Entry('test', ['test1' => ['testval1']])
         );
 
@@ -71,6 +66,7 @@ class LdapTest extends TestCase
         ];
         $_SERVER['PHP_AUTH_USER'] = 'test';
         $_SERVER['PHP_AUTH_PW']   = 'test';
+
         $source->authenticate($ary);
 
         $this->assertEquals(['test1' => ['testval1']], $ary['Attributes']);
@@ -80,7 +76,9 @@ class LdapTest extends TestCase
     public function testGetAttributes(): void
     {
         $source = $this->buildSourceMock();
-        $source->connector->method('search')->willReturn(
+        /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
+        $connector = $source->getConnector();
+        $connector->method('search')->willReturn(
             new Entry('test', ['test2' => ['testval2']])
         );
 
@@ -92,7 +90,9 @@ class LdapTest extends TestCase
     public function testGetAttributesWithAttributesSetToNull(): void
     {
         $source = $this->buildSourceMock();
-        $source->connector->method('search')->willReturn(
+        /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
+        $connector = $source->getConnector();
+        $connector->method('search')->willReturn(
             new Entry('test', ['test1' => ['testval1'], 'test2' => ['testval2'], 'test3' => ['testval3']])
         );
 

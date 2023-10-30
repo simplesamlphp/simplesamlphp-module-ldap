@@ -19,25 +19,18 @@ use SimpleSAML\Module\ldap\ConnectorFactory;
  */
 class ConnectorFactoryTest extends TestCase
 {
-    /** @var \SimpleSAML\Configuration */
-    private Configuration $config;
-
-    /** @var \SimpleSAML\Configuration */
-    private Configuration $sourceConfig;
-
-
     /**
      */
-    public function setUp(): void
+    public static function setUpBeforeClass(): void
     {
-        $this->config = Configuration::loadFromArray(
+        $config = Configuration::loadFromArray(
             ['module.enable' => ['ldap' => true]],
             '[ARRAY]',
             'simplesaml'
         );
-        Configuration::setPreLoadedConfig($this->config, 'config.php');
+        Configuration::setPreLoadedConfig($config, 'config.php');
 
-        $this->sourceConfig = Configuration::loadFromArray([
+        $sourceConfig = Configuration::loadFromArray([
             'some' => [
                 'ldap:Ldap',
                 'connection_string' => 'ldaps://example.org:636',
@@ -54,7 +47,7 @@ class ConnectorFactoryTest extends TestCase
                 'connection_string' => 'ldaps://example.org:636', // Mimic an ldap-source with minimal settings
             ],
         ]);
-        Configuration::setPreLoadedConfig($this->sourceConfig, 'authsources.php');
+        Configuration::setPreLoadedConfig($sourceConfig, 'authsources.php');
     }
 
 

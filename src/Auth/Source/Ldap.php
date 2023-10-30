@@ -187,7 +187,7 @@ class Ldap extends UserPassBase
         $attributes = $this->ldapConfig->getOptionalValue(
             'attributes',
             // If specifically set to NULL return all attributes, if not set at all return nothing (safe default)
-            in_array('attributes', $this->ldapConfig->getOptions(), true) ? null: [],
+            in_array('attributes', $this->ldapConfig->getOptions(), true) ? null : [],
         );
 
         if ($attributes === null) {
@@ -234,5 +234,14 @@ class Ldap extends UserPassBase
         }
 
         return $filter;
+    }
+
+
+    /**
+     * @return \SimpleSAML\Module\ldap\ConnectorInterface
+     */
+    public function getConnector(): ConnectorInterface
+    {
+        return $this->connector;
     }
 }
