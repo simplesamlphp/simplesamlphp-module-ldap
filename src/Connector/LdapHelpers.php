@@ -6,8 +6,7 @@ namespace SimpleSAML\Module\ldap\Connector;
 
 use SimpleSAML\Utils;
 
-use function asc2hex32;
-use function dec2hex;
+use function dechex;
 use function ord;
 use function str_pad;
 use function str_replace;
