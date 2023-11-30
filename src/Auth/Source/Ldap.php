@@ -83,10 +83,18 @@ class Ldap extends UserPassBase
         $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
         Assert::natural($timeout);
 
+        $attributes = $this->ldapConfig->getOptionalValue(
+            'attributes',
+            // If specifically set to NULL return all attributes, if not set at all return nothing (safe default)
+            in_array('attributes', $this->ldapConfig->getOptions(), true) ? ['*'] : [],
+        );
+
         $searchBase = $this->ldapConfig->getArray('search.base');
+
         $options = [
             'scope' => $searchScope,
             'timeout' => $timeout,
+            'filter' => $attributes,
         ];
 
         $searchEnable = $this->ldapConfig->getOptionalBoolean('search.enable', false);
@@ -161,10 +169,17 @@ class Ldap extends UserPassBase
         $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
         Assert::natural($timeout);
 
+        $attributes = $this->ldapConfig->getOptionalValue(
+            'attributes',
+            // If specifically set to NULL return all attributes, if not set at all return nothing (safe default)
+            in_array('attributes', $this->ldapConfig->getOptions(), true) ? ['*'] : [],
+        );
+
         $searchBase = $this->ldapConfig->getArray('search.base');
         $options = [
             'scope' => $searchScope,
             'timeout' => $timeout,
+            'filter' => $attributes,
         ];
 
         try {
@@ -184,26 +199,13 @@ class Ldap extends UserPassBase
      */
     private function processAttributes(Entry $entry): array
     {
-        $attributes = $this->ldapConfig->getOptionalValue(
-            'attributes',
-            // If specifically set to NULL return all attributes, if not set at all return nothing (safe default)
-            in_array('attributes', $this->ldapConfig->getOptions(), true) ? null : [],
-        );
-
-        if ($attributes === null) {
-            $result = $entry->getAttributes();
-        } else {
-            Assert::isArray($attributes);
-            $result = array_intersect_key(
-                $entry->getAttributes(),
-                array_fill_keys(array_values($attributes), null)
-            );
-        }
+        $result = $entry->getAttributes();
 
         $binaries = array_intersect(
             array_keys($result),
             $this->ldapConfig->getOptionalArray('attributes.binary', []),
         );
+
         foreach ($binaries as $binary) {
             $result[$binary] = array_map('base64_encode', $result[$binary]);
         }

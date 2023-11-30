@@ -116,9 +116,16 @@ class AttributeAddFromLDAP extends BaseFilter
 
         $this->connector->bind($this->searchUsername, $this->searchPassword);
 
+        $attributes = $this->config->getOptionalValue(
+            'attributes',
+            // If specifically set to NULL return all attributes, if not set at all return nothing (safe default)
+            in_array('attributes', $this->config->getOptions(), true) ? ['*'] : [],
+        );
+
         $options = [
             'scope' => $this->config->getOptionalString('search.scope', Query::SCOPE_SUB),
             'timeout' => $this->config->getOptionalInteger('timeout', 3),
+            'filter' => $attributes,
         ];
 
         $entries = $this->connector->searchForMultiple(
