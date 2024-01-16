@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
-use Exception;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Logger;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;

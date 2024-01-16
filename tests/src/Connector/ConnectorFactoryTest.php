@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Test\Module\ldap\Connector;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Assert\AssertionFailedException;
-use SimpleSAML\Error;
 use SimpleSAML\Configuration;
+use SimpleSAML\Error;
 use SimpleSAML\Module\ldap\Connector;
 use SimpleSAML\Module\ldap\ConnectorFactory;
 

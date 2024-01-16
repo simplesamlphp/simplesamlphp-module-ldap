@@ -8,18 +8,15 @@ use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Module\core\Auth\UserPassBase;
+use SimpleSAML\Module\ldap\Connector\LdapHelpers;
 use SimpleSAML\Module\ldap\ConnectorFactory;
 use SimpleSAML\Module\ldap\ConnectorInterface;
-use SimpleSAML\Module\ldap\Connector\LdapHelpers;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 use Symfony\Component\Ldap\Entry;
 
-use function array_fill_keys;
 use function array_keys;
 use function array_map;
-use function array_values;
 use function in_array;
-use function sprintf;
 use function str_replace;
 use function var_export;
 
