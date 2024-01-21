@@ -121,7 +121,19 @@ class Ldap extends UserPassBase
             }
         }
 
+        /* Actually verify the credentials. (Must do this unconditionally even if priv.username is set!) */
         $this->connector->bind($dn, $password);
+
+        /* If the credentials were correct, rebind using a privileged account to read attributes */
+        $readUsername = $this->ldapConfig->getOptionalString('priv.username', null);
+        $readPassword = $this->ldapConfig->getOptionalString('priv.password', null);
+        if (!$readUsername) {
+            $readUsername = $this->ldapConfig->getOptionalString('search.username', null);
+            $readPassword = $this->ldapConfig->getOptionalString('search.password', null);
+        }
+        if ($readUsername) {
+            $this->connector->bind($readUsername, $readPassword);
+        }
 
         $options['scope'] = Query::SCOPE_BASE;
         $filter = '(objectClass=*)';
