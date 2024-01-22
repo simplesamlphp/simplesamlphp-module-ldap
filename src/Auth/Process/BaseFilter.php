@@ -273,7 +273,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
         if (is_array($value)) {
             // remove sensitive data
             foreach ($value as $key => &$val) {
-                if ($key === 'search.password') {
+                if ($key === 'search.password' || $key === 'priv.password') {
                     $val = empty($val) ? '' : '********';
                 }
             }
