@@ -73,8 +73,8 @@ class AttributeAddFromLDAP extends BaseFilter
         $this->attrPolicy = $this->config->getOptionalString('attribute.policy', 'merge');
         Assert::oneOf($this->attrPolicy, ['merge', 'replace', 'add']);
 
-        $this->searchUsername = $this->config->getString('search.username');
-        $this->searchPassword = $this->config->getOptionalString('search.password', null);
+        $this->searchUsername = $this->config->getOptionalString('search.username', '');
+        $this->searchPassword = $this->config->getOptionalString('search.password', '');
     }
 
 
