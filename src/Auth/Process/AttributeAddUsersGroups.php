@@ -20,11 +20,11 @@ use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
 class AttributeAddUsersGroups extends BaseFilter
 {
-    /** @var string */
-    protected string $searchUsername;
+    /** @var string|null */
+    protected ?string $searchUsername;
 
-    /** @var string */
-    protected string $searchPassword;
+    /** @var string|null */
+    protected ?string $searchPassword;
 
     /** @var string */
     protected string $product;
@@ -41,7 +41,7 @@ class AttributeAddUsersGroups extends BaseFilter
         parent::__construct($config, $reserved);
 
         // Get filter specific config options
-        $this->searchUsername = $this->config->getString('search.username');
+        $this->searchUsername = $this->config->getOptionalString('search.username', null);
         $this->searchPassword = $this->config->getOptionalString('search.password', null);
         $this->product = $this->config->getOptionalString('ldap.product', null);
     }

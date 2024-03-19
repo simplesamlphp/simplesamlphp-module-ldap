@@ -112,7 +112,7 @@ class LdapMulti extends UserPassOrgBase
      * @param string $password  The password the user wrote.
      * @return array  Associative array with the users attributes.
      */
-    protected function login(string $username, string $password, string $organization): array
+    protected function login(string $username, #[\SensitiveParameter]string $password, string $organization): array
     {
         if ($this->includeOrgInUsername) {
             $username = $username . '@' . $organization;
@@ -123,7 +123,7 @@ class LdapMulti extends UserPassOrgBase
 
         $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap
         {
-            public function loginOverload(string $username, string $password): array
+            public function loginOverload(string $username, #[\SensitiveParameter]string $password): array
             {
                 return $this->login($username, $password);
             }

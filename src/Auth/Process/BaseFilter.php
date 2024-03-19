@@ -228,6 +228,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
             if (isset($authsource['search.scope'])) {
                 $authconfig['search.scope'] = $authsource['search.scope'];
             }
+
             if (isset($authsource['search.username'])) {
                 $authconfig['search.username']   = $authsource['search.username'];
             }
