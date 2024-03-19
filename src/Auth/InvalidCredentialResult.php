@@ -8,8 +8,8 @@ use function array_merge_recursive;
 use function explode;
 use function in_array;
 use function preg_match;
-use function strpos;
 use function str_replace;
+use function strpos;
 
 /**
  * Class representing an InvalidCredential Result

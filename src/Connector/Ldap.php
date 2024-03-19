@@ -11,8 +11,8 @@ use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Adapter\AdapterInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Adapter;
 use Symfony\Component\Ldap\Entry;
-use Symfony\Component\Ldap\Exception\LdapException;
 use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
+use Symfony\Component\Ldap\Exception\LdapException;
 use Symfony\Component\Ldap\Ldap as LdapObject;
 
 use function array_merge;
