@@ -94,7 +94,7 @@ class Ldap implements ConnectorInterface
     /**
      * @inheritDoc
      */
-    public function bind(?string $username, ?string $password): void
+    public function bind(?string $username, #[\SensitiveParameter]?string $password): void
     {
         try {
             $this->connection->bind($username, strval($password));
@@ -102,7 +102,11 @@ class Ldap implements ConnectorInterface
             throw new Error\Error($this->resolveBindError($e));
         }
 
-        Logger::debug(sprintf("LDAP bind(): Bind successful for DN '%s'.", $username));
+        if ($username === null) {
+            Logger::debug("LDAP bind(): Anonymous bind succesful.");
+        } else {
+            Logger::debug(sprintf("LDAP bind(): Bind successful for DN '%s'.", $username));
+        }
     }
 
 

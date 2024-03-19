@@ -72,7 +72,7 @@ class Ldap extends UserPassBase
      * @param string $password  The password the user wrote.
      * @return array  Associative array with the users attributes.
      */
-    protected function login(string $username, string $password): array
+    protected function login(string $username, #[\SensitiveParameter]string $password): array
     {
         $searchScope = $this->ldapConfig->getOptionalString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);

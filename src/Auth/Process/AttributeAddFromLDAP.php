@@ -44,11 +44,11 @@ class AttributeAddFromLDAP extends BaseFilter
      */
     protected string $attrPolicy;
 
-    /** @var string */
-    protected string $searchUsername;
+    /** @var string|null */
+    protected ?string $searchUsername;
 
-    /** @var string */
-    protected string $searchPassword;
+    /** @var string|null */
+    protected ?string $searchPassword;
 
     /**
      * Initialize this filter.
@@ -73,7 +73,7 @@ class AttributeAddFromLDAP extends BaseFilter
         $this->attrPolicy = $this->config->getOptionalString('attribute.policy', 'merge');
         Assert::oneOf($this->attrPolicy, ['merge', 'replace', 'add']);
 
-        $this->searchUsername = $this->config->getString('search.username');
+        $this->searchUsername = $this->config->getOptionalString('search.username', null);
         $this->searchPassword = $this->config->getOptionalString('search.password', null);
     }
 
