@@ -26,8 +26,8 @@ class AttributeAddUsersGroups extends BaseFilter
     /** @var string|null */
     protected ?string $searchPassword;
 
-    /** @var string */
-    protected string $product;
+    /** @var string|null */
+    protected ?string $product;
 
 
     /**
