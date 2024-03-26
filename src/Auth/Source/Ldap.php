@@ -19,7 +19,7 @@ use function array_keys;
 use function array_map;
 use function array_values;
 use function in_array;
-use function sprintf;
+use function preg_match;
 use function str_replace;
 use function var_export;
 
@@ -77,6 +77,11 @@ class Ldap extends UserPassBase
      */
     protected function login(string $username, string $password): array
     {
+        if (preg_match('/^\s*$/', $password)) {
+            // The empty string is considered an anonymous bind to Symfony
+            throw new Error\Error('WRONGUSERPASS');
+        }
+
         $searchScope = $this->ldapConfig->getOptionalString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
 
