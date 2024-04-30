@@ -14,9 +14,7 @@ class BaseFilterTest extends TestCase
      */
     public function testVarExportHidesLdapPassword(): void
     {
-        $stub = $this->getMockBuilder(BaseFilter::class)
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $stub = $this->createStub(BaseFilter::class);
         $class = new ReflectionClass($stub);
         $method = $class->getMethod('varExport');
         $method->setAccessible(true);
