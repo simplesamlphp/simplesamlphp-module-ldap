@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Test\Module\ldap\Connector;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Assert\AssertionFailedException;
 use SimpleSAML\Configuration;
@@ -12,10 +13,10 @@ use SimpleSAML\Module\ldap\Connector;
 use SimpleSAML\Module\ldap\ConnectorFactory;
 
 /**
- * @covers \SimpleSAML\Module\ldap\Connector\ActiveDirectory
- * @covers \SimpleSAML\Module\ldap\Connector\Ldap
- * @covers \SimpleSAML\Module\ldap\ConnectorFactory
  */
+#[CoversClass(ConnectorFactory::class)]
+#[CoversClass(Connector\ActiveDirectory::class)]
+#[CoversClass(Connector\Ldap::class)]
 class ConnectorFactoryTest extends TestCase
 {
     /**
