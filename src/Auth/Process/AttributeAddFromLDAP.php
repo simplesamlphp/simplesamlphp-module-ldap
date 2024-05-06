@@ -14,6 +14,8 @@ use SimpleSAML\Assert\Assert;
 use SimpleSAML\Logger;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 
+use function array_values;
+
 class AttributeAddFromLDAP extends BaseFilter
 {
     /**
@@ -124,7 +126,7 @@ class AttributeAddFromLDAP extends BaseFilter
         $options = [
             'scope' => $this->config->getOptionalString('search.scope', Query::SCOPE_SUB),
             'timeout' => $this->config->getOptionalInteger('timeout', 3),
-            'filter' => $wantedAttrs,
+            'filter' => array_values($wantedAttrs),
         ];
 
         $entries = $this->connector->searchForMultiple(
