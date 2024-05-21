@@ -18,6 +18,7 @@ namespace SimpleSAML\Module\ldap\Auth\Source;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Auth;
 use SimpleSAML\Configuration;
+use SimpleSAML\Error;
 use SimpleSAML\Module\core\Auth\UserPassOrgBase;
 
 use function array_key_exists;
@@ -117,6 +118,12 @@ class LdapMulti extends UserPassOrgBase
         }
 
         $authsource = $this->mapping[$organization]['authsource'];
+
+        if (array_key_exists($organization, $this->ldapOrgs)) {
+            // The organization is unknown to us.
+            throw new Error\Error('WRONGUSERPASS');
+        }
+
         $sourceConfig = $this->ldapOrgs[$organization];
 
         $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap
