@@ -43,7 +43,7 @@ class LdapTest extends TestCase
                         'attributes'  => ['test1', 'test2', 'test3'],
                         'search.base' => ['DC=example,DC=com'],
                         'search.username' => 'readonly',
-                        'dnpattern'   => '%username%@example.com'
+                        'dnpattern'   => '%username%@example.com',
                     ]
                 );
                 $this->connector = $connector;
@@ -57,12 +57,12 @@ class LdapTest extends TestCase
         /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
         $connector = $source->getConnector();
         $connector->method('search')->willReturn(
-            new Entry('test', ['test1' => ['testval1']])
+            new Entry('test', ['test1' => ['testval1']]),
         );
 
         // This forces the login flow through the ECP processing
-        $ary                      = [
-            'saml:Binding' => Constants::BINDING_PAOS
+        $ary = [
+            'saml:Binding' => Constants::BINDING_PAOS,
         ];
         $_SERVER['PHP_AUTH_USER'] = 'test';
         $_SERVER['PHP_AUTH_PW']   = 'test';
