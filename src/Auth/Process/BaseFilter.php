@@ -135,7 +135,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
             'name'     => $this->config->getOptionalString('attribute.groupname', 'name'),
             'return'   => $this->config->getOptionalString('attribute.return', 'distinguishedName'),
             'type'     => $this->config->getOptionalString('attribute.type', 'objectClass'),
-            'username' => $this->config->getOptionalString('attribute.username', 'sAMAccountName')
+            'username' => $this->config->getOptionalString('attribute.username', 'sAMAccountName'),
         ];
 
         // Log the attribute map
@@ -148,7 +148,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
         // Setup the object type map which is used to determine a DNs' type
         $this->type_map = [
             'group' => $this->config->getOptionalString('type.group', 'group'),
-            'user'  => $this->config->getOptionalString('type.user', 'user')
+            'user'  => $this->config->getOptionalString('type.user', 'user'),
         ];
 
         // Log the type map
