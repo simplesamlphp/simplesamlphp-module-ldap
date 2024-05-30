@@ -26,7 +26,7 @@ trait LdapHelpers
      * @param bool $singleValue
      * @return string|string[] Array $values, but escaped
      */
-    public function escapeFilterValue($values = [], bool $singleValue = true)
+    public function escapeFilterValue(string|array $values = [], bool $singleValue = true)
     {
         // Parameter validation
         $arrayUtils = new Utils\Arrays();

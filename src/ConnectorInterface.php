@@ -21,7 +21,11 @@ interface ConnectorInterface
      *
      * @throws \SimpleSAML\Error\Exception if none of the LDAP-servers could be contacted
      */
-    public function bind(?string $username, ?string $password): void;
+    public function bind(
+        ?string $username,
+        #[\SensitiveParameter]
+        ?string $password,
+    ): void;
 
 
     /**
