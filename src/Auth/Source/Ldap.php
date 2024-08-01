@@ -16,6 +16,7 @@ use Symfony\Component\Ldap\Entry;
 
 use function array_keys;
 use function array_map;
+use function array_merge;
 use function in_array;
 use function preg_match;
 use function str_replace;
@@ -83,9 +84,6 @@ class Ldap extends UserPassBase
         $searchScope = $this->ldapConfig->getOptionalString('search.scope', Query::SCOPE_SUB);
         Assert::oneOf($searchScope, [Query::SCOPE_BASE, Query::SCOPE_ONE, Query::SCOPE_SUB]);
 
-        $timeout = $this->ldapConfig->getOptionalInteger('timeout', 3);
-        Assert::natural($timeout);
-
         $attributes = $this->ldapConfig->getOptionalValue(
             'attributes',
             // If specifically set to NULL return all attributes, if not set at all return nothing (safe default)
@@ -94,11 +92,11 @@ class Ldap extends UserPassBase
 
         $searchBase = $this->ldapConfig->getArray('search.base');
 
-        $options = [
+        $options = $this->ldapConfig->getOptionalArray('options', []);
+        $options = array_merge($options, [
             'scope' => $searchScope,
-            'timeout' => $timeout,
             'filter' => $attributes,
-        ];
+        ]);
 
         $searchEnable = $this->ldapConfig->getOptionalBoolean('search.enable', false);
         if ($searchEnable === false) {
