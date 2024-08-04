@@ -26,7 +26,7 @@ class ConnectorFactoryTest extends TestCase
         $config = Configuration::loadFromArray(
             ['module.enable' => ['ldap' => true]],
             '[ARRAY]',
-            'simplesaml'
+            'simplesaml',
         );
         Configuration::setPreLoadedConfig($config, 'config.php');
 

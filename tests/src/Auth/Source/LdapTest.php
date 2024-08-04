@@ -44,7 +44,7 @@ class LdapTest extends TestCase
                         'search.base' => ['DC=example,DC=com'],
                         'search.username' => 'readonly',
                         'dnpattern'   => '%username%@example.com',
-                    ]
+                    ],
                 );
                 $this->connector = $connector;
             }
@@ -79,7 +79,7 @@ class LdapTest extends TestCase
         /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
         $connector = $source->getConnector();
         $connector->method('search')->willReturn(
-            new Entry('test', ['test2' => ['testval2']])
+            new Entry('test', ['test2' => ['testval2']]),
         );
 
         $result = $source->getAttributes('test');
@@ -93,7 +93,7 @@ class LdapTest extends TestCase
         /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
         $connector = $source->getConnector();
         $connector->method('search')->willReturn(
-            new Entry('test', ['test1' => ['testval1'], 'test2' => ['testval2'], 'test3' => ['testval3']])
+            new Entry('test', ['test1' => ['testval1'], 'test2' => ['testval2'], 'test3' => ['testval3']]),
         );
 
         $result = $source->getAttributes('test');

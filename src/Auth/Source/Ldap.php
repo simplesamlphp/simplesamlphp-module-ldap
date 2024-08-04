@@ -59,7 +59,7 @@ class Ldap extends UserPassBase
 
         $this->ldapConfig = Configuration::loadFromArray(
             $config,
-            'authsources[' . var_export($this->authId, true) . ']'
+            'authsources[' . var_export($this->authId, true) . ']',
         );
 
         $this->connector = ConnectorFactory::fromAuthSource($this->authId);

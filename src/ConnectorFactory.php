@@ -27,7 +27,7 @@ class ConnectorFactory
         if (!$authSources->hasValue($authSource)) {
             throw new Error\Exception(sprintf(
                 'Authsource [%s] not found in authsources.php',
-                $authSource
+                $authSource,
             ));
         }
 

@@ -45,7 +45,7 @@ interface ConnectorInterface
         array $searchBase,
         string $filter,
         array $options,
-        bool $allowMissing
+        bool $allowMissing,
     ): ?Entry;
 
 
@@ -65,7 +65,7 @@ interface ConnectorInterface
         array $searchBase,
         string $filter,
         array $options,
-        bool $allowMissing
+        bool $allowMissing,
     ): array;
 
 

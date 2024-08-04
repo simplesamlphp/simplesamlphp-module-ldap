@@ -52,7 +52,7 @@ class Ldap implements ConnectorInterface
         int $version = 3,
         string $extension = 'ext_ldap',
         bool $debug = false,
-        array $options = ['referrals' => false, 'network_timeout' => 3]
+        array $options = ['referrals' => false, 'network_timeout' => 3],
     ) {
         foreach (explode(' ', $connection_strings) as $connection_string) {
             Assert::regex($connection_string, '#^ldap[s]?:\/\/#');
@@ -75,7 +75,7 @@ class Ldap implements ConnectorInterface
                 'version'           => $version,
                 'debug'             => $debug,
                 'options'           => $options,
-            ]
+            ],
         );
 
         $this->connection = new LdapObject($this->adapter);
@@ -117,7 +117,7 @@ class Ldap implements ConnectorInterface
         array $searchBase,
         string $filter,
         array $options,
-        bool $allowMissing
+        bool $allowMissing,
     ): ?Entry {
         $entry = null;
 
@@ -126,36 +126,30 @@ class Ldap implements ConnectorInterface
             $result = $query->execute()->toArray();
 
             if (count($result) > 1) {
-                throw new Error\Exception(
-                    sprintf(
-                        "LDAP search(): Found %d entries searching base '%s' for '%s'",
-                        count($result),
-                        $base,
-                        $filter,
-                    )
-                );
+                throw new Error\Exception(sprintf(
+                    "LDAP search(): Found %d entries searching base '%s' for '%s'",
+                    count($result),
+                    $base,
+                    $filter,
+                ));
             } elseif (count($result) === 1) {
                 $entry = array_pop($result);
                 break;
             } else {
-                Logger::debug(
-                    sprintf(
-                        "LDAP search(): Found no entries searching base '%s' for '%s'",
-                        $base,
-                        $filter,
-                    )
-                );
+                Logger::debug(sprintf(
+                    "LDAP search(): Found no entries searching base '%s' for '%s'",
+                    $base,
+                    $filter,
+                ));
             }
         }
 
         if ($entry === null && $allowMissing === false) {
-            throw new Error\Exception(
-                sprintf(
-                    "Object not found using search base [%s] and filter '%s'",
-                    implode(', ', $searchBase),
-                    $filter
-                )
-            );
+            throw new Error\Exception(sprintf(
+                "Object not found using search base [%s] and filter '%s'",
+                implode(', ', $searchBase),
+                $filter,
+            ));
         }
 
         return $entry;
@@ -169,7 +163,7 @@ class Ldap implements ConnectorInterface
         array $searchBase,
         string $filter,
         array $options,
-        bool $allowMissing
+        bool $allowMissing,
     ): array {
         $results = [];
 
@@ -187,13 +181,11 @@ class Ldap implements ConnectorInterface
         }
 
         if (empty($results) && ($allowMissing === false)) {
-            throw new Error\Exception(
-                sprintf(
-                    "No Objects found using search base [%s] and filter '%s'",
-                    implode(', ', $searchBase),
-                    $filter
-                )
-            );
+            throw new Error\Exception(sprintf(
+                "No Objects found using search base [%s] and filter '%s'",
+                implode(', ', $searchBase),
+                $filter,
+            ));
         }
 
         return $results;

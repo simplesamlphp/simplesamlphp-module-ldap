@@ -65,18 +65,18 @@ class LdapMulti extends UserPassOrgBase
 
         $this->ldapConfig = Configuration::loadFromArray(
             $config,
-            'authsources[' . var_export($this->authId, true) . ']'
+            'authsources[' . var_export($this->authId, true) . ']',
         );
 
         $usernameOrgMethod = $this->ldapConfig->getValueValidate(
             'username_organization_method',
-            ['none', 'allow', 'force']
+            ['none', 'allow', 'force'],
         );
         $this->setUsernameOrgMethod($usernameOrgMethod);
 
         $this->includeOrgInUsername = $this->ldapConfig->getOptionalBoolean(
             'include_organization_in_username',
-            false
+            false,
         );
 
         $this->mapping = $this->ldapConfig->getArray('mapping');
@@ -98,7 +98,7 @@ class LdapMulti extends UserPassOrgBase
 
             $this->ldapOrgs[$organization] = Configuration::loadFromArray(
                 $authsources->getValue($authsource),
-                'authsources[' . var_export($this->authId, true) . '][' . var_export($organization, true) . ']'
+                'authsources[' . var_export($this->authId, true) . '][' . var_export($organization, true) . ']',
             );
         }
     }

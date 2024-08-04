@@ -24,7 +24,7 @@ class BaseFilterTest extends TestCase
             $method->invokeArgs($stub, [[
                 'connection_string' => 'ldap://172.17.101.32:389',
                 'search.password' => 'password',
-            ]])
+            ]]),
         );
     }
 }

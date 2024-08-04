@@ -28,7 +28,7 @@ class ActiveDirectory extends Ldap
         ldap_get_option(
             $this->adapter->getConnection()->getResource(),
             LDAP_OPT_DIAGNOSTIC_MESSAGE,
-            $message
+            $message,
         );
 
         $result  = InvalidCredentialResult::fromDiagnosticMessage($message);

@@ -110,7 +110,7 @@ class AttributeAddFromLDAP extends BaseFilter
             Logger::info(sprintf(
                 '%s: There are non-existing attributes in the search filter. (%s)',
                 $this->title,
-                $filter
+                $filter,
             ));
             return;
         }
@@ -133,14 +133,14 @@ class AttributeAddFromLDAP extends BaseFilter
             $this->searchBase,
             $filter,
             $options,
-            true
+            true,
         );
 
         $results = [];
         foreach ($entries as $entry) {
             $tmp = array_intersect_key(
                 $entry->getAttributes(),
-                array_fill_keys(array_values($this->searchAttributes), null)
+                array_fill_keys(array_values($this->searchAttributes), null),
             );
 
             $binaries = array_intersect(
