@@ -119,7 +119,7 @@ class LdapMulti extends UserPassOrgBase
 
         $authsource = $this->mapping[$organization]['authsource'];
 
-        if (array_key_exists($organization, $this->ldapOrgs)) {
+        if (!array_key_exists($organization, $this->ldapOrgs)) {
             // The organization is unknown to us.
             throw new Error\Error('WRONGUSERPASS');
         }
