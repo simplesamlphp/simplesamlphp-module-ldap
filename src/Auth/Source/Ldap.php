@@ -67,13 +67,14 @@ class Ldap extends UserPassBase
 
 
     /**
-     * Attempt to log in using the given username and password.
+     * Attempt to log in using SASL and the given username and password.
      *
      * @param string $username  The username the user wrote.
      * @param string $password  The password the user wrote.
+     * @param array|null $sasl_args  SASL options
      * @return array  Associative array with the users attributes.
      */
-    protected function login(string $username, #[\SensitiveParameter]string $password): array
+    protected function login_sasl(string $username, #[\SensitiveParameter]string $password, ?array $sasl_args): array
     {
         if (preg_match('/^\s*$/', $password)) {
             // The empty string is considered an anonymous bind to Symfony
@@ -128,7 +129,14 @@ class Ldap extends UserPassBase
         }
 
         /* Verify the credentials */
-        $this->connector->bind($dn, $password);
+        if (isset($sasl_args)) {
+            Assert::isArray($sasl_args);
+
+            $this->connector->saslBind($dn, $password, $sasl_args['mech'], $sasl_args['realm'], $sasl_args['authc_id'], $sasl_args['authz_id'], $sasl_args['props']);
+            $dn = $this->connector->whoami();
+        } else {
+            $this->connector->bind($dn, $password);
+        }
 
         /* If the credentials were correct, rebind using a privileged account to read attributes */
         $readUsername = $this->ldapConfig->getOptionalString('priv.username', null);
@@ -143,6 +151,18 @@ class Ldap extends UserPassBase
         $entry = $this->connector->search([$dn], $filter, $options, false);
 
         return $this->processAttributes(/** @scrutinizer-ignore-type */$entry);
+    }
+
+    /**
+     * Attempt to log in using the given username and password.
+     *
+     * @param string $username  The username the user wrote.
+     * @param string $password  The password the user wrote.
+     * @return array  Associative array with the users attributes.
+     */
+    protected function login(string $username, #[\SensitiveParameter]string $password): array
+    {
+        return $this->login_sasl($username, $password);
     }
 
 

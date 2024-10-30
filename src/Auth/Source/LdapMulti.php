@@ -105,13 +105,15 @@ class LdapMulti extends UserPassOrgBase
 
 
     /**
-     * Attempt to log in using the given username and password.
+     * Attempt to log in using SASL and the given username and password.
      *
      * @param string $username  The username the user wrote.
      * @param string $password  The password the user wrote.
+     * @param string $organizaion  The organization the user chose.
+     * @param array|null $sasl_args SASL options
      * @return array  Associative array with the users attributes.
      */
-    protected function login(string $username, #[\SensitiveParameter]string $password, string $organization): array
+    protected function login_sasl(string $username, #[\SensitiveParameter]string $password, string $organization, ?array $sasl_args): array
     {
         if ($this->includeOrgInUsername) {
             $username = $username . '@' . $organization;
@@ -128,15 +130,27 @@ class LdapMulti extends UserPassOrgBase
 
         $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap
         {
-            public function loginOverload(string $username, #[\SensitiveParameter]string $password): array
+            public function loginOverload(string $username, #[\SensitiveParameter]string $password, ?array $sasl_args): array
             {
-                return $this->login($username, $password);
+                return $this->login_sasl($username, $password, $sasl_args);
             }
         };
 
-        return $ldap->loginOverload($username, $password);
+        return $ldap->loginOverload($username, $password, $sasl_args);
     }
 
+    /**
+     * Attempt to log in using the given username and password.
+     *
+     * @param string $username  The username the user wrote.
+     * @param string $password  The password the user wrote.
+     * @param string $organizaion  The organization the user chose.
+     * @return array  Associative array with the users attributes.
+     */
+    protected function login(string $username, #[\SensitiveParameter]string $password, string $organization): array
+    {
+        return $this->login_sasl($username, $password, $organization);
+    }
 
     /**
      * Retrieve list of organizations.

@@ -109,6 +109,32 @@ class Ldap implements ConnectorInterface
         }
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function saslBind(?string $username, #[\SensitiveParameter]?string $password, ?string $mech, ?string $realm, ?string $authcId, ?string $authzId, ?string $props): void
+
+    {
+        try {
+            $this->connection->saslBind($username, strval($password), $mech, $realm, $authcId, $authzId, $props);
+        } catch (InvalidCredentialsException $e) {
+            throw new Error\Error($this->resolveBindError($e));
+        }
+
+        if ($username === null) {
+            Logger::debug("LDAP bind(): Anonymous bind succesful.");
+        } else {
+            Logger::debug(sprintf("LDAP bind(): Bind successful for DN '%s'.", $username));
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function whoami(): string
+    {
+        return $this->connection->whoami();
+    }
 
     /**
      * @inheritDoc
