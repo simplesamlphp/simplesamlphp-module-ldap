@@ -29,6 +29,39 @@ interface ConnectorInterface
 
 
     /**
+     * Bind to an LDAP-server using SASL
+     *
+     * @param string|null $username
+     * @param string|null $password Null for passwordless logon
+     * @param string|null $mech
+     * @param string|null $realm
+     * @param string|null $authcId
+     * @param string|null $authzId
+     * @param string|null $props
+     * @return void
+     *
+     * @throws \SimpleSAML\Error\Exception if none of the LDAP-servers could be contacted
+     */
+    public function saslBind(
+        ?string $username,
+        ?string $password,
+        ?string $mech,
+        ?string $realm,
+        ?string $authcId,
+        ?string $authzId,
+        ?string $props,
+    ): void;
+
+
+    /**
+     * Return the authenticated DN
+     *
+     * @return string
+     */
+    public function whoami(): string;
+
+
+    /**
      * Search the LDAP-directory for a specific object
      *
      * @param array $searchBase
