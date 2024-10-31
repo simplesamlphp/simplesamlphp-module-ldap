@@ -115,6 +115,9 @@ class Ldap implements ConnectorInterface
     public function saslBind(?string $username, #[\SensitiveParameter]?string $password, ?string $mech, ?string $realm, ?string $authcId, ?string $authzId, ?string $props): void
 
     {
+        if (!method_exists($this->connection, 'saslBind'))
+            throw new Error\Error("SASL not implemented");
+
         try {
             $this->connection->saslBind($username, strval($password), $mech, $realm, $authcId, $authzId, $props);
         } catch (InvalidCredentialsException $e) {
@@ -133,6 +136,9 @@ class Ldap implements ConnectorInterface
      */
     public function whoami(): string
     {
+        if (!method_exists($this->connection, 'whoami'))
+            throw new Error\Error("SASL not implemented");
+
         return $this->connection->whoami();
     }
 
