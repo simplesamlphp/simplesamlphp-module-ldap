@@ -33,7 +33,7 @@ interface ConnectorInterface
      *
      * @param string|null $username
      * @param string|null $password Null for passwordless logon
-     * @param string|null $mech 
+     * @param string|null $mech
      * @param string|null $realm
      * @param string|null $authcId
      * @param string|null $authzId
