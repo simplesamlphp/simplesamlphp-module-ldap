@@ -134,8 +134,11 @@ class LdapMulti extends UserPassOrgBase
 
         $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap
         {
-            public function loginOverload(string $username, #[\SensitiveParameter]string $password, ?array $sasl_args): array
-            {
+            public function loginOverload(
+                string $username,
+                #[\SensitiveParameter]string $password,
+                ?array $sasl_args,
+            ): array {
                 return $this->loginSasl($username, $password, $sasl_args);
             }
         };
