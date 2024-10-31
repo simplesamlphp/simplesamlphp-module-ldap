@@ -113,8 +113,12 @@ class LdapMulti extends UserPassOrgBase
      * @param array|null $sasl_args SASL options
      * @return array  Associative array with the users attributes.
      */
-    protected function login_sasl(string $username, #[\SensitiveParameter]string $password, string $organization, ?array $sasl_args): array
-    {
+    protected function loginSasl(
+        string $username,
+        #[\SensitiveParameter]string $password,
+        string $organization,
+        ?array $sasl_args,
+    ): array {
         if ($this->includeOrgInUsername) {
             $username = $username . '@' . $organization;
         }
@@ -132,7 +136,7 @@ class LdapMulti extends UserPassOrgBase
         {
             public function loginOverload(string $username, #[\SensitiveParameter]string $password, ?array $sasl_args): array
             {
-                return $this->login_sasl($username, $password, $sasl_args);
+                return $this->loginSasl($username, $password, $sasl_args);
             }
         };
 
@@ -149,7 +153,7 @@ class LdapMulti extends UserPassOrgBase
      */
     protected function login(string $username, #[\SensitiveParameter]string $password, string $organization): array
     {
-        return $this->login_sasl($username, $password, $organization);
+        return $this->loginSasl($username, $password, $organization);
     }
 
     /**
