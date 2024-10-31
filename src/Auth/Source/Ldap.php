@@ -74,7 +74,7 @@ class Ldap extends UserPassBase
      * @param array|null $sasl_args  SASL options
      * @return array  Associative array with the users attributes.
      */
-    protected function login_sasl(string $username, #[\SensitiveParameter]string $password, ?array $sasl_args): array
+    protected function loginSasl(string $username, #[\SensitiveParameter]string $password, ?array $sasl_args): array
     {
         if (preg_match('/^\s*$/', $password)) {
             // The empty string is considered an anonymous bind to Symfony
@@ -132,7 +132,15 @@ class Ldap extends UserPassBase
         if (isset($sasl_args)) {
             Assert::isArray($sasl_args);
 
-            $this->connector->saslBind($dn, $password, $sasl_args['mech'], $sasl_args['realm'], $sasl_args['authc_id'], $sasl_args['authz_id'], $sasl_args['props']);
+            $this->connector->saslBind(
+                $dn,
+                $password,
+                $sasl_args['mech'],
+                $sasl_args['realm'],
+                $sasl_args['authc_id'],
+                $sasl_args['authz_id'],
+                $sasl_args['props'],
+            );
             $dn = $this->connector->whoami();
         } else {
             $this->connector->bind($dn, $password);
@@ -162,7 +170,7 @@ class Ldap extends UserPassBase
      */
     protected function login(string $username, #[\SensitiveParameter]string $password): array
     {
-        return $this->login_sasl($username, $password);
+        return $this->loginSasl($username, $password);
     }
 
 
