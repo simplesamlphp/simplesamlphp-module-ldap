@@ -49,7 +49,7 @@ interface ConnectorInterface
         ?string $realm,
         ?string $authcId,
         ?string $authzId,
-        ?string $props
+        ?string $props,
     ): void;
 
 
