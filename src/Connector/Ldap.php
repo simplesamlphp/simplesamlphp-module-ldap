@@ -121,12 +121,12 @@ class Ldap implements ConnectorInterface
         ?string $authzId,
         ?string $props,
     ): void {
-        if (!method_exists($this->connection, 'saslBind')) {
+        if (!method_exists($this->connection, 'sasl_bind')) {
             throw new Error\Error("SASL not implemented");
         }
 
         try {
-            $this->connection->saslBind($username, strval($password), $mech, $realm, $authcId, $authzId, $props);
+            $this->connection->sasl_bind($username, strval($password), $mech, $realm, $authcId, $authzId, $props);
         } catch (InvalidCredentialsException $e) {
             throw new Error\Error($this->resolveBindError($e));
         }
