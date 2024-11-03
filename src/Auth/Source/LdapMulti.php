@@ -117,7 +117,7 @@ class LdapMulti extends UserPassOrgBase
         string $username,
         #[\SensitiveParameter]string $password,
         string $organization,
-        ?array $sasl_args,
+        ?array $sasl_args = [],
     ): array {
         if ($this->includeOrgInUsername) {
             $username = $username . '@' . $organization;

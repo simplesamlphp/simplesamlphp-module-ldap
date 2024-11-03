@@ -129,7 +129,7 @@ class Ldap extends UserPassBase
         }
 
         /* Verify the credentials */
-        if (empty($sasl_args)) {
+        if (!is_null($sasl_args)) {
             Assert::isArray($sasl_args);
 
             $this->connector->saslBind(
