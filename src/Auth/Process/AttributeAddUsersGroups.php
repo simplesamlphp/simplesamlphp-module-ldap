@@ -33,7 +33,7 @@ class AttributeAddUsersGroups extends BaseFilter
     /**
      * Initialize this filter.
      *
-     * @param array $config Configuration information about this filter.
+     * @param array<mixed> $config Configuration information about this filter.
      * @param mixed $reserved For future use.
      */
     public function __construct(array $config, $reserved)
@@ -51,7 +51,7 @@ class AttributeAddUsersGroups extends BaseFilter
      * LDAP search filters to be added to the base filters for this authproc-filter.
      * It's an array of key => value pairs that will be translated to (key=value) in the ldap query.
      *
-     * @var array
+     * @var array<mixed>
      */
     protected array $additional_filters;
 
@@ -63,7 +63,7 @@ class AttributeAddUsersGroups extends BaseFilter
      * are then added to the request attributes.
      *
      * @throws \SimpleSAML\Error\Exception
-     * @param array &$state
+     * @param array<mixed> &$state
      */
     public function process(array &$state): void
     {
@@ -124,8 +124,8 @@ class AttributeAddUsersGroups extends BaseFilter
      * get their group membership, recursively.
      *
      * @throws \SimpleSAML\Error\Exception
-     * @param array $attributes
-     * @return array
+     * @param array<mixed> $attributes
+     * @return array<mixed>
      */
     protected function getGroups(array $attributes): array
     {
@@ -291,13 +291,11 @@ class AttributeAddUsersGroups extends BaseFilter
         $groups = [];
         foreach ($entries as $entry) {
             if ($entry->hasAttribute($return_attribute)) {
-                /** @psalm-var array $values */
                 $values = $entry->getAttribute($return_attribute);
                 $groups[] = array_pop($values);
                 continue;
             } elseif ($entry->hasAttribute(strtolower($return_attribute))) {
                 // Some backends return lowercase attributes
-                /** @psalm-var array $values */
                 $values = $entry->getAttribute(strtolower($return_attribute));
                 $groups[] = array_pop($values);
                 continue;
@@ -330,9 +328,9 @@ class AttributeAddUsersGroups extends BaseFilter
      * Avoids loops by only searching a DN once. Returns
      * the list of groups found.
      *
-     * @param array $memberOf
-     * @param array $options
-     * @return array
+     * @param array<mixed> $memberOf
+     * @param array<mixed> $options
+     * @return array<mixed>
      */
     protected function search(array $memberOf, array $options): array
     {
