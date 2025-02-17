@@ -57,7 +57,7 @@ class InvalidCredentialResult
     /**
      * Map of keys to check the code against when using is* methods
      *
-     * @var array
+     * @var array<string, array<string>>
      */
     protected array $codeMap = [
         self::KEY_INVALID_CREDENTIAL => [
@@ -155,7 +155,7 @@ class InvalidCredentialResult
 
     /**
      * Allows the default code mappings to be updated
-     * @param array $codes
+     * @param array<mixed> $codes
      * @return void
      */
     public function updateCodeMap(array $codes): void
@@ -167,7 +167,7 @@ class InvalidCredentialResult
     /**
      * Allows the default code mappings to be replaced
      *
-     * @param array $codes
+     * @param array<mixed> $codes
      * @return void
      */
     public function replaceCodeMap(array $codes): void

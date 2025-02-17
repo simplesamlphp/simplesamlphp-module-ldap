@@ -44,7 +44,7 @@ class Ldap implements ConnectorInterface
      * @param int $version
      * @param string $extension
      * @param bool $debug
-     * @param array $options
+     * @param array<mixed> $options
      */
     public function __construct(
         string $connection_strings,

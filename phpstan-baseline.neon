@@ -1,0 +1,21 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method SimpleSAML\\\\Module\\\\ldap\\\\ConnectorInterface\\:\\:escapeFilterValue\\(\\)\\.$#"
+			count: 1
+			path: src/Auth/Process/AttributeAddFromLDAP.php
+
+		-
+			message: "#^Call to an undefined method SimpleSAML\\\\Module\\\\ldap\\\\ConnectorInterface\\:\\:escapeFilterValue\\(\\)\\.$#"
+			count: 1
+			path: src/Auth/Process/AttributeAddUsersGroups.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Ldap\\\\Adapter\\\\ConnectionInterface\\:\\:getResource\\(\\)\\.$#"
+			count: 1
+			path: src/Connector/ActiveDirectory.php
+
+		-
+			message: "#^Constructor of class SimpleSAML\\\\Module\\\\ldap\\\\Connector\\\\Ldap has an unused parameter \\$extension\\.$#"
+			count: 1
+			path: src/Connector/Ldap.php

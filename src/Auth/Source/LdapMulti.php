@@ -33,16 +33,22 @@ class LdapMulti extends UserPassOrgBase
 
     /**
      * An array with mappings for organization => authsource.
+     *
+     * @var array<mixed>
      */
     private array $mapping;
 
     /**
      * An array with descriptions for organizations.
+     *
+     * @var array<mixed>
      */
     private array $orgs;
 
     /**
      * An array of organization IDs to LDAP configuration objects.
+     *
+     * @var array<mixed>
      */
     private array $ldapOrgs;
 
@@ -55,8 +61,8 @@ class LdapMulti extends UserPassOrgBase
     /**
      * Constructor for this authentication source.
      *
-     * @param array $info  Information about this authentication source.
-     * @param array $config  Configuration.
+     * @param array<mixed> $info  Information about this authentication source.
+     * @param array<mixed> $config  Configuration.
      */
     public function __construct(array $info, array $config)
     {
@@ -109,15 +115,15 @@ class LdapMulti extends UserPassOrgBase
      *
      * @param string $username  The username the user wrote.
      * @param string $password  The password the user wrote.
-     * @param string $organizaion  The organization the user chose.
-     * @param array|null $sasl_args SASL options
-     * @return array  Associative array with the users attributes.
+     * @param string $organization  The organization the user chose.
+     * @param array<mixed> $sasl_args SASL options
+     * @return array<mixed> Associative array with the users attributes.
      */
     protected function loginSasl(
         string $username,
         #[\SensitiveParameter]string $password,
         string $organization,
-        ?array $sasl_args = [],
+        array $sasl_args = [],
     ): array {
         if ($this->includeOrgInUsername) {
             $username = $username . '@' . $organization;
@@ -134,10 +140,14 @@ class LdapMulti extends UserPassOrgBase
 
         $ldap = new class (['AuthId' => $authsource], $sourceConfig->toArray()) extends Ldap
         {
+            /**
+             * @param array<mixed> $sasl_args
+             * @return array<mixed>
+             */
             public function loginOverload(
                 string $username,
                 #[\SensitiveParameter]string $password,
-                ?array $sasl_args,
+                array $sasl_args,
             ): array {
                 return $this->loginSasl($username, $password, $sasl_args);
             }
@@ -146,23 +156,25 @@ class LdapMulti extends UserPassOrgBase
         return $ldap->loginOverload($username, $password, $sasl_args);
     }
 
+
     /**
      * Attempt to log in using the given username and password.
      *
      * @param string $username  The username the user wrote.
      * @param string $password  The password the user wrote.
-     * @param string $organizaion  The organization the user chose.
-     * @return array  Associative array with the users attributes.
+     * @param string $organization  The organization the user chose.
+     * @return array<mixed> Associative array with the users attributes.
      */
     protected function login(string $username, #[\SensitiveParameter]string $password, string $organization): array
     {
         return $this->loginSasl($username, $password, $organization);
     }
 
+
     /**
      * Retrieve list of organizations.
      *
-     * @return array  Associative array with the organizations.
+     * @return array<mixed> Associative array with the organizations.
      */
     protected function getOrganizations(): array
     {
