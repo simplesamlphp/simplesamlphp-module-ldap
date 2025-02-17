@@ -10,7 +10,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Module\ldap\ConnectorInterface;
 use Symfony\Component\Ldap\Entry;
 
-class LdapTest extends TestCase
+final class LdapTest extends TestCase
 {
     /**
      */

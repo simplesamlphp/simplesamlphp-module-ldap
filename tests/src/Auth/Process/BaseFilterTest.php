@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use SimpleSAML\Module\ldap\Auth\Process\BaseFilter;
 
-class BaseFilterTest extends TestCase
+final class BaseFilterTest extends TestCase
 {
     /**
      */

@@ -17,7 +17,7 @@ use SimpleSAML\Module\ldap\ConnectorFactory;
 #[CoversClass(ConnectorFactory::class)]
 #[CoversClass(Connector\ActiveDirectory::class)]
 #[CoversClass(Connector\Ldap::class)]
-class ConnectorFactoryTest extends TestCase
+final class ConnectorFactoryTest extends TestCase
 {
     /**
      */
