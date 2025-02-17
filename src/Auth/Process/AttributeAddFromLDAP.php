@@ -21,14 +21,14 @@ class AttributeAddFromLDAP extends BaseFilter
     /**
      * LDAP attributes to add to the request attributes
      *
-     * @var array
+     * @var string[]
      */
     protected array $searchAttributes;
 
     /**
      * LDAP attributes to base64 encode
      *
-     * @var array
+     * @var string[]
      */
     protected array $binaryAttributes;
 
@@ -55,7 +55,7 @@ class AttributeAddFromLDAP extends BaseFilter
     /**
      * Initialize this filter.
      *
-     * @param array $config Configuration information about this filter.
+     * @param array<mixed> $config Configuration information about this filter.
      * @param mixed $reserved For future use.
      */
     public function __construct(array $config, $reserved)
@@ -83,7 +83,7 @@ class AttributeAddFromLDAP extends BaseFilter
     /**
      * Add attributes from an LDAP server.
      *
-     * @param array &$state The current request
+     * @param array<mixed> &$state The current request
      */
     public function process(array &$state): void
     {
@@ -148,7 +148,6 @@ class AttributeAddFromLDAP extends BaseFilter
                 $this->binaryAttributes,
             );
             foreach ($binaries as $binary) {
-                /** @psalm-var array $attr */
                 $attr = $entry->getAttribute($binary);
                 $tmp[$binary] = array_map('base64_encode', $attr);
             }

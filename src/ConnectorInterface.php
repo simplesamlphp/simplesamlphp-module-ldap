@@ -64,9 +64,9 @@ interface ConnectorInterface
     /**
      * Search the LDAP-directory for a specific object
      *
-     * @param array $searchBase
+     * @param string[] $searchBase
      * @param string $filter
-     * @param array $options
+     * @param array<mixed> $options
      * @param boolean $allowMissing
      * @return \Symfony\Component\Ldap\Entry|null The result of the search or null if none found
      * @psalm-return ($allowMissing is true ? \Symfony\Component\Ldap\Entry|null : \Symfony\Component\Ldap\Entry)
@@ -85,9 +85,9 @@ interface ConnectorInterface
     /**
      * Search the LDAP-directory for any object matching the search filter
      *
-     * @param array $searchBase
+     * @param string[] $searchBase
      * @param string $filter
-     * @param array $options
+     * @param array<mixed> $options
      * @param boolean $allowMissing
      * @return \Symfony\Component\Ldap\Entry[] The result of the search
      *

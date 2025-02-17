@@ -17,7 +17,11 @@ use SimpleSAML\Module\ldap\ConnectorInterface;
 
 abstract class BaseFilter extends Auth\ProcessingFilter
 {
-    // TODO: Support ldap:LDAPMulti, if possible
+    /**
+     * TODO: Support ldap:LDAPMulti, if possible
+     *
+     * @var string[]
+     */
     protected static array $ldapsources = ['ldap:Ldap', 'authX509:X509userCert'];
 
     /**
@@ -25,14 +29,14 @@ abstract class BaseFilter extends Auth\ProcessingFilter
      * name. Used for abstraction / configuration of the LDAP
      * attribute names, which may change between dir service.
      *
-     * @var array
+     * @var array<mixed>
      */
     protected array $attribute_map;
 
     /**
      * The base DN of the LDAP connection. Used when searching the LDAP server.
      *
-     * @var array
+     * @var array<mixed>
      */
     protected array $searchBase;
 
@@ -64,7 +68,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
      * List of LDAP object types, used to determine the type of
      * object that a DN references.
      *
-     * @var array
+     * @var array<mixed>
      */
     protected array $type_map;
 
@@ -75,7 +79,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
      * instance/object and stores everything in class members.
      *
      * @throws \SimpleSAML\Error\Exception
-     * @param array &$config
+     * @param array<mixed> &$config
      * @param mixed $reserved
      */
     public function __construct(array &$config, $reserved)
@@ -164,6 +168,7 @@ abstract class BaseFilter extends Auth\ProcessingFilter
      * Parse authsource config
      *
      * @param string $as The name of the authsource
+     * @return array<mixed>
      */
     private function parseAuthSourceConfig(string $as): array
     {
