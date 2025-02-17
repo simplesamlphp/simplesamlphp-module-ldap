@@ -28,10 +28,12 @@ authentication source:
         'ldap:Ldap',
 
         /**
-         * The connection string for the LDAP-server.
+         * The connection string for the LDAP server.
          * You can add multiple by separating them with a space.
+         * Cannot contain simple hostnames or IP-addresses,
+         * but must be given one or more ldap(s):// URIs.
          */
-        'connection_string' => 'ldap.example.org',
+        'connection_string' => 'ldaps://ldap.example.org',
 
         /**
          * Whether SSL/TLS should be used when contacting the LDAP server.
@@ -161,8 +163,8 @@ See:
 
 You should update the name of this authentication source
 (`example-ldap`) to have a name which makes sense to your organization.
-You also need to update the `hostname` and `dnpattern` options. The
-`hostname` should be the hostname of your LDAP server, and the
+You also need to update the `connection_string` and `dnpattern` options. The
+`connection_string` should be the connection string for your LDAP server, and the
 `dnpattern` should be a pattern which can be used to generate the `dn`
 of a user with a given username.
 
@@ -196,8 +198,8 @@ is the password for that `dn`.
 
 ## Configuring failover
 
-You can configure multiple LDAP servers in the hostname option by separating
-the individual hosts with a space. This enables the builtin LDAP failover
+You can configure multiple LDAP servers in the `connection_string` option by separating
+the individual connections with a space. This enables the builtin LDAP failover
 in OpenLDAP.
 
 Note that OpenLDAP waits for a timeout from the first server before attempting
@@ -215,10 +217,10 @@ In this case, if we are unable to connect to the first LDAP server within
 Example:
 
 ```php
-    /* Configuration that uses two ldap servers. */
+    /* Configuration that uses two LDAP servers. */
     'example-ldap' => [
         'ldap:Ldap',
-        /* The hostname of the LDAP server. */
+        /* The connection string for the LDAP servers. */
         'connect_string' => 'ldaps://ldap1.example.org ldaps://ldap2.example.org',
         'dnpattern' => 'uid=%username%,ou=people,dc=example,dc=org',
     ],
@@ -394,7 +396,7 @@ required, see the config options for ldap:AttributeAddFromLDAP above.
 ```php
     50 => [
         'class' => 'ldap:AttributeAddFromLDAP',
-        'connection_string' => 'ldap.example.org',
+        'connection_string' => 'ldaps://ldap.example.org',
         'search.username' => 'CN=LDAP User,CN=Users,DC=example,DC=org',
         'search.password' => 'Abc123',
         'search.base' => ['DC=example,DC=org'],
@@ -419,11 +421,11 @@ a listing of all configuration options and their details.
 
 
         /**
-         * LDAP connection settings can be retrieved from an ldap:LDAP
+         * LDAP connection settings can be retrieved from an ldap:Ldap
          * authsource. Specify the authsource name here to pull that
          * data from the authsources.php file in the config folder.
          *
-         * Note: ldap:LDAPMulti is not supported as the SimpleSAMLphp
+         * Note: ldap:LdapMulti is not supported as the SimpleSAMLphp
          *       framework does not pass any information about which
          *       LDAP source the user selected.
          *
@@ -480,18 +482,20 @@ a listing of all configuration options and their details.
 
 
         /**
-         * This is the hostname string of LDAP server(s) to try
+         * This is the connection string of LDAP server(s) to try
          * and connect to. It should be the same format as the
-         * LDAP authsource hostname as it is passed to that class.
+         * LDAP authsource connection_string as it is passed to that class.
          *
          * Note: Multiple servers are separated by a space.
+         * Cannot contain simple hostnames or IP-addresses,
+         * but must be given one or more ldap(s):// URIs.
          *
          * Default: NULL
          * Required: Yes, unless authsource is used
-         * AuthSource: hostname
+         * AuthSource: connection_string
          */
-        'connection_string' => 'ldap.example.org',
-        'connection_string' => 'ad1.example.org ad2.example.org',
+        'connection_string' => 'ldaps://ldap.example.org',
+        'connection_string' => 'ldaps://ad1.example.org ldaps://ad2.example.org',
 
 
         /**
