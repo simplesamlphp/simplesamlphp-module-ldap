@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\ldap\Connector;
 
 use SimpleSAML\Module\ldap\Auth\InvalidCredentialResult;
+use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
+
 
 use function ldap_get_option;
 
@@ -23,7 +25,7 @@ class ActiveDirectory extends Ldap
      *
      * @return string
      */
-    protected function resolveBindException(): string
+    protected function resolveBindError(InvalidCredentialsException $e): string
     {
         ldap_get_option(
             $this->adapter->getConnection()->getResource(),
