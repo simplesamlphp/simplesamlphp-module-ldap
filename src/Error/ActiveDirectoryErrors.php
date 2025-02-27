@@ -6,12 +6,21 @@ namespace SimpleSAML\Module\ldap\Error;
 
 use SimpleSAML\Error\ErrorCodes;
 use SimpleSAML\Locale\Translate;
+use SimpleSAML\Module\core\Controller\Login;
+
 
 class ActiveDirectoryErrors extends ErrorCodes
 {
     final public const RESETPASSWORD = 'RESETPASSWORD';
     final public const RESETACCOUNT = 'RESETACCOUNT';
     final public const LOGONRESTRICTION = 'LOGONRESTRICTION';
+
+    public function __construct()
+    {
+        // Automatically register instances of subclasses with Login to allow
+        // custom ErrorCodes to work in a redirect environment
+        Login::registerErrorCodeClass($this);
+    }
 
     public function getCustomTitles(): array
     {
