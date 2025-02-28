@@ -6,7 +6,8 @@ namespace SimpleSAML\Module\ldap\Connector;
 
 use SimpleSAML\Module\ldap\Auth\InvalidCredentialResult;
 use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
-use SimpleSAML\Module\ldap\Error\ActiveDirectoryErrors;
+use SimpleSAML\Locale\Translate;
+
 
 
 
@@ -21,6 +22,37 @@ class ActiveDirectory extends Ldap
     public const ERR_ACCOUNT_RESET = 'RESETACCOUNT';
     public const ERR_LOGON_RESTRICTION = 'LOGONRESTRICTION';
 
+    public const RESETPASSWORD = 'RESETPASSWORD';
+    public const RESETACCOUNT = 'RESETACCOUNT';
+    public const LOGONRESTRICTION = 'LOGONRESTRICTION';
+
+
+    public function getCustomTitles(): array
+    {
+        return [
+            self::RESETPASSWORD => Translate::noop('Password Reset Required'),
+            self::RESETACCOUNT => Translate::noop('Account Reset Required'),
+            self::LOGONRESTRICTION => Translate::noop('Logon Restriction Applied'),
+        ];
+    }
+
+    public function getCustomDescriptions(): array
+    {
+        return [
+            self::RESETPASSWORD => Translate::noop(
+                "Your password has expired or needs to be reset. Please follow the instructions " .
+                "provided to reset your password and try again."
+            ),
+            self::RESETACCOUNT => Translate::noop(
+                "Your account requires a full reset due to security policies or administrative action. " .
+                "Please contact support or follow the reset procedure."
+            ),
+            self::LOGONRESTRICTION => Translate::noop(
+                "Your account is currently restricted from logging in due to security measures or " .
+                "policy enforcement. Please contact the administrator for assistance."
+            ),
+        ];
+    }
 
     /**
      * Resolves the bind exception
@@ -30,7 +62,6 @@ class ActiveDirectory extends Ldap
     protected function resolveBindError(InvalidCredentialsException $e): string
     {
         // Register the custom error codes
-        new ActiveDirectoryErrors();
         
         ldap_get_option(
             $this->adapter->getConnection()->getResource(),
