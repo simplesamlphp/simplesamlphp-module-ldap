@@ -11,9 +11,10 @@ use SimpleSAML\Module\core\Controller\Login;
 
 class ActiveDirectoryErrors extends ErrorCodes
 {
-    final public const RESETPASSWORD = 'RESETPASSWORD';
-    final public const RESETACCOUNT = 'RESETACCOUNT';
-    final public const LOGONRESTRICTION = 'LOGONRESTRICTION';
+
+    public const RESETPASSWORD = 'RESETPASSWORD';
+    public const RESETACCOUNT = 'RESETACCOUNT';
+    public const LOGONRESTRICTION = 'LOGONRESTRICTION';
 
     public function __construct()
     {
@@ -22,18 +23,28 @@ class ActiveDirectoryErrors extends ErrorCodes
         Login::registerErrorCodeClass($this);
     }
 
+    /**
+     * Fetch all title translation strings for custom error codes.
+     *
+     * @return array A map from custom error code to error code title
+     */
     public function getCustomTitles(): array
     {
-        return [
+        return array_merge(parent::getCustomTitles(), [
             self::RESETPASSWORD => Translate::noop('Password Reset Required'),
             self::RESETACCOUNT => Translate::noop('Account Reset Required'),
             self::LOGONRESTRICTION => Translate::noop('Logon Restriction Applied'),
-        ];
+        ]);
     }
 
+    /**
+     * Fetch all description translation strings for custom error codes.
+     *
+     * @return array A map from custom error code to error code description
+     */
     public function getCustomDescriptions(): array
     {
-        return [
+        return array_merge(parent::getCustomDescriptions(), [
             self::RESETPASSWORD => Translate::noop(
                 "Your password has expired or needs to be reset. Please follow the instructions " .
                 "provided to reset your password and try again."
@@ -46,6 +57,6 @@ class ActiveDirectoryErrors extends ErrorCodes
                 "Your account is currently restricted from logging in due to security measures or " .
                 "policy enforcement. Please contact the administrator for assistance."
             ),
-        ];
+        ]);
     }
 }
