@@ -21,13 +21,6 @@ class ActiveDirectory extends Ldap
     public const ERR_ACCOUNT_RESET = 'RESETACCOUNT';
     public const ERR_LOGON_RESTRICTION = 'LOGONRESTRICTION';
 
-    public function __construct()
-    {
-        parent::__construct();
-        // Register the custom error codes
-        new ActiveDirectoryErrors();
-    }
-
 
     /**
      * Resolves the bind exception
@@ -36,6 +29,9 @@ class ActiveDirectory extends Ldap
      */
     protected function resolveBindError(InvalidCredentialsException $e): string
     {
+        // Register the custom error codes
+        new ActiveDirectoryErrors();
+        
         ldap_get_option(
             $this->adapter->getConnection()->getResource(),
             LDAP_OPT_DIAGNOSTIC_MESSAGE,
