@@ -6,6 +6,8 @@ namespace SimpleSAML\Module\ldap\Connector;
 
 use SimpleSAML\Module\ldap\Auth\InvalidCredentialResult;
 use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
+use SimpleSAML\Module\ldap\Error\ActiveDirectoryErrors;
+
 
 
 use function ldap_get_option;
@@ -18,6 +20,13 @@ class ActiveDirectory extends Ldap
     public const ERR_PASSWORD_RESET = 'RESETPASSWORD';
     public const ERR_ACCOUNT_RESET = 'RESETACCOUNT';
     public const ERR_LOGON_RESTRICTION = 'LOGONRESTRICTION';
+
+    public function __construct()
+    {
+        parent::__construct();
+        // Register the custom error codes
+        new ActiveDirectoryErrors();
+    }
 
 
     /**
