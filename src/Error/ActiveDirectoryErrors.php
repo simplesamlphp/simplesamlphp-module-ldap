@@ -16,6 +16,10 @@ class ActiveDirectoryErrors extends ErrorCodes
     public const RESETACCOUNT = 'RESETACCOUNT';
     public const LOGONRESTRICTION = 'LOGONRESTRICTION';
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     /**
      * Fetch all title translation strings for custom error codes.
