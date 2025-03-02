@@ -8,6 +8,7 @@ use SimpleSAML\Assert\Assert;
 use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\ldap\ConnectorInterface;
+use SimpleSAML\Module\ldap\Error\ActiveDirectoryErrors;
 use Symfony\Component\Ldap\Adapter\AdapterInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Adapter;
 use Symfony\Component\Ldap\Entry;
@@ -99,7 +100,7 @@ class Ldap implements ConnectorInterface
         try {
             $this->connection->bind($username, strval($password));
         } catch (InvalidCredentialsException $e) {
-            throw new Error\Error($this->resolveBindError($e));
+            throw new Error\Error($this->resolveBindError($e),$e,null,New ActiveDirectoryErrors());
         }
 
         if ($username === null) {
