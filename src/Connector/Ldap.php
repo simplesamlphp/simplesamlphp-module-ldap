@@ -129,7 +129,7 @@ class Ldap implements ConnectorInterface
         try {
             $this->connection->saslBind($username, strval($password), $mech, $realm, $authcId, $authzId, $props);
         } catch (InvalidCredentialsException $e) {
-            throw new Error\Error($this->resolveBindError($e));
+            throw new Error\Error($this->resolveBindError($e),$e,null,New ActiveDirectoryErrors());
         }
 
         if ($username === null) {
