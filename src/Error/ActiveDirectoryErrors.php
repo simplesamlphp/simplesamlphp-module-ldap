@@ -18,9 +18,7 @@ class ActiveDirectoryErrors extends ErrorCodes
 
     public function __construct()
     {
-        // Automatically register instances of subclasses with Login to allow
-        // custom ErrorCodes to work in a redirect environment
-        Login::registerErrorCodeClass($this);
+        parent::__construct();
     }
 
     /**
