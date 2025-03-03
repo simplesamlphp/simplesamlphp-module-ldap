@@ -8,10 +8,8 @@ use SimpleSAML\Error\ErrorCodes;
 use SimpleSAML\Locale\Translate;
 use SimpleSAML\Module\core\Controller\Login;
 
-
 class ActiveDirectoryErrors extends ErrorCodes
 {
-
     public const RESETPASSWORD = 'RESETPASSWORD';
     public const RESETACCOUNT = 'RESETACCOUNT';
     public const LOGONRESTRICTION = 'LOGONRESTRICTION';
@@ -19,6 +17,7 @@ class ActiveDirectoryErrors extends ErrorCodes
     public function __construct()
     {
         parent::__construct();
+        Login::registerErrorCodeClass($this);
     }
 
     /**
