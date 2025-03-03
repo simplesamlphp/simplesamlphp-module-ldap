@@ -27,11 +27,11 @@ class ActiveDirectoryErrors extends ErrorCodes
      */
     public function getCustomTitles(): array
     {
-        return [
+        return array_merge(parent::getCustomTitles(), [
             self::RESETPASSWORD => Translate::noop('Password Reset Required'),
             self::RESETACCOUNT => Translate::noop('Account Reset Required'),
             self::LOGONRESTRICTION => Translate::noop('Logon Restriction Applied'),
-        ];
+        ]);
     }
 
     /**
@@ -41,7 +41,7 @@ class ActiveDirectoryErrors extends ErrorCodes
      */
     public function getCustomDescriptions(): array
     {
-        return [
+        return array_merge(parent::getCustomDescriptions(), [
             self::RESETPASSWORD => Translate::noop(
                 "Your password has expired or needs to be reset. Please follow the instructions " .
                 "provided to reset your password and try again."
@@ -54,6 +54,6 @@ class ActiveDirectoryErrors extends ErrorCodes
                 "Your account is currently restricted from logging in due to security measures or " .
                 "policy enforcement. Please contact the administrator for assistance."
             ),
-        ];
+        ]);
     }
 }
