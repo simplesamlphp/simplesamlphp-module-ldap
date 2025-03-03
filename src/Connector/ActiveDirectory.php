@@ -8,9 +8,6 @@ use SimpleSAML\Module\ldap\Auth\InvalidCredentialResult;
 use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
 use SimpleSAML\Module\ldap\Error\ActiveDirectoryErrors;
 
-
-
-
 use function ldap_get_option;
 
 /**
@@ -26,8 +23,19 @@ class ActiveDirectory extends Ldap
     public const RESETACCOUNT = 'RESETACCOUNT';
     public const LOGONRESTRICTION = 'LOGONRESTRICTION';
 
+    public function __construct(
+        string $connection_strings,
+        string $encryption = 'ssl',
+        int $version = 3,
+        string $extension = 'ext_ldap',
+        bool $debug = false,
+        array $options = ['referrals' => false, 'network_timeout' => 3],
+    ) {
+        parent::__construct($connection_strings, $encryption, $version, $extension, $debug, $options);
 
-  
+        // Register ActiveDirectoryErrors
+        new ActiveDirectoryErrors();
+    }
 
     /**
      * Resolves the bind exception
@@ -36,10 +44,6 @@ class ActiveDirectory extends Ldap
      */
     protected function resolveBindException(InvalidCredentialsException $e): string
     {
-        // Register error codes
-        $errorCodes = new ActiveDirectoryErrors();
-        $errorCodes->__construct();
-
         ldap_get_option(
             $this->adapter->getConnection()->getResource(),
             LDAP_OPT_DIAGNOSTIC_MESSAGE,
