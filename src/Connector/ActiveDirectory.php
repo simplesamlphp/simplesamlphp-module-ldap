@@ -59,10 +59,9 @@ class ActiveDirectory extends Ldap
      *
      * @return string
      */
-    protected function resolveBindError(InvalidCredentialsException $e): string
+    protected function resolveBindException(InvalidCredentialsException $e): string
     {
-        // Register the custom error codes
-        
+                
         ldap_get_option(
             $this->adapter->getConnection()->getResource(),
             LDAP_OPT_DIAGNOSTIC_MESSAGE,
