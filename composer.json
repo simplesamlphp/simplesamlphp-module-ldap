@@ -43,7 +43,7 @@
         "simplesamlphp/simplesamlphp": "^2.0.0"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "^1.2.1"
+        "simplesamlphp/simplesamlphp-test-framework": "~1.2.2"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-ldap/issues",
