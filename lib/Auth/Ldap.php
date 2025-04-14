@@ -618,8 +618,12 @@ class Ldap
      * The array of attributes and their values.
      * @see http://no.php.net/manual/en/function.ldap-read.php
      */
-    public function getAttributes(string $dn, $attributes = null, array $binaryAttributes = [], int $maxsize = null): array
-    {
+    public function getAttributes(
+        string $dn,
+        $attributes = null,
+        array $binaryAttributes = [],
+        int $maxsize = null
+    ): array {
         // Preparations, including a pretty debug message...
         $description = 'all attributes';
         if (is_array($attributes)) {
