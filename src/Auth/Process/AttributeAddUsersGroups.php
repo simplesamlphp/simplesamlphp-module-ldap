@@ -302,7 +302,7 @@ class AttributeAddUsersGroups extends BaseFilter
             }
 
             // Could not find return attribute, log and continue
-            Logger::notice(sprintf(
+            Logger::debug(sprintf(
                 '%s : The return attribute [%s] could not be found in entry `%s`.',
                 $this->title,
                 implode(', ', array_unique([$map['return'], strtolower($map['return'])])),
