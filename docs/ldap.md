@@ -280,7 +280,7 @@ and add an entry which uses this module:
                  * language => text mappings.
                  */
                 'description' => 'Employees',
-                'authsource' => 'example-ldap,
+                'authsource' => 'example-ldap',
             ],
 
             'students' => [
