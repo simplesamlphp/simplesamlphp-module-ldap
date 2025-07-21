@@ -174,6 +174,11 @@ class Ldap implements ConnectorInterface
                 ));
             } elseif (count($result) === 1) {
                 $entry = array_pop($result);
+                Logger::debug(sprintf(
+                    "LDAP search(): Found 1 entry searching base '%s' for '%s'",
+                    $base,
+                    $filter,
+                ));
                 break;
             } else {
                 Logger::debug(sprintf(
