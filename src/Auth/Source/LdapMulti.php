@@ -23,6 +23,7 @@ use SimpleSAML\Module\core\Auth\UserPassOrgBase;
 
 use function array_change_key_case;
 use function array_key_exists;
+use function strtolower;
 use function var_export;
 
 class LdapMulti extends UserPassOrgBase
@@ -126,6 +127,7 @@ class LdapMulti extends UserPassOrgBase
         string $organization,
         array $sasl_args = [],
     ): array {
+        $organization = strtolower($organization);
         if ($this->includeOrgInUsername) {
             $username = $username . '@' . $organization;
         }
