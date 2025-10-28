@@ -27,6 +27,7 @@ class Ldap implements ConnectorInterface
 {
     use LdapHelpers;
 
+
     /**
      * @var \Symfony\Component\Ldap\Adapter\AdapterInterface
      */
@@ -109,6 +110,7 @@ class Ldap implements ConnectorInterface
         }
     }
 
+
     /**
      * @inheritDoc
      */
@@ -138,6 +140,7 @@ class Ldap implements ConnectorInterface
         }
     }
 
+
     /**
      * @inheritDoc
      */
@@ -149,6 +152,7 @@ class Ldap implements ConnectorInterface
 
         return $this->connection->whoami();
     }
+
 
     /**
      * @inheritDoc

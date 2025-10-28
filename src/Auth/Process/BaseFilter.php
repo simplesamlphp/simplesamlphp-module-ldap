@@ -11,7 +11,10 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\ldap\Auth\Process;
 
-use SimpleSAML\{Auth, Configuration, Error, Logger};
+use SimpleSAML\Auth;
+use SimpleSAML\Configuration;
+use SimpleSAML\Error;
+use SimpleSAML\Logger;
 use SimpleSAML\Module\ldap\ConnectorFactory;
 use SimpleSAML\Module\ldap\ConnectorInterface;
 

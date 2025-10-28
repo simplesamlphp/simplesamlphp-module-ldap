@@ -163,6 +163,7 @@ class Ldap extends UserPassBase
         return $this->processAttributes(/** @scrutinizer-ignore-type */$entry);
     }
 
+
     /**
      * Attempt to log in using the given username and password.
      *

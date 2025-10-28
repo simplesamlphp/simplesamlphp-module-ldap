@@ -52,6 +52,7 @@ class AttributeAddFromLDAP extends BaseFilter
     /** @var string|null */
     protected ?string $searchPassword;
 
+
     /**
      * Initialize this filter.
      *

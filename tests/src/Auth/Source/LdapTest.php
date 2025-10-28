@@ -29,6 +29,7 @@ final class LdapTest extends TestCase
         Configuration::setPreLoadedConfig($sourceConfig, 'authsources.php');
     }
 
+
     public function buildSourceMock(): Ldap
     {
         $mb = $this->getMockBuilder(ConnectorInterface::class);
@@ -51,11 +52,12 @@ final class LdapTest extends TestCase
         };
     }
 
+
     public function testLogin(): void
     {
         $source = $this->buildSourceMock();
-        /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
         $connector = $source->getConnector();
+        /** @phpstan-ignore method.notFound */
         $connector->method('search')->willReturn(
             new Entry('test', ['test1' => ['testval1']]),
         );
@@ -76,8 +78,8 @@ final class LdapTest extends TestCase
     public function testGetAttributes(): void
     {
         $source = $this->buildSourceMock();
-        /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
         $connector = $source->getConnector();
+        /** @phpstan-ignore method.notFound */
         $connector->method('search')->willReturn(
             new Entry('test', ['test2' => ['testval2']]),
         );
@@ -90,8 +92,8 @@ final class LdapTest extends TestCase
     public function testGetAttributesWithAttributesSetToNull(): void
     {
         $source = $this->buildSourceMock();
-        /** @psalm-var \PHPUnit\Framework\MockObject\MockObject $connector */
         $connector = $source->getConnector();
+        /** @phpstan-ignore method.notFound */
         $connector->method('search')->willReturn(
             new Entry('test', ['test1' => ['testval1'], 'test2' => ['testval2'], 'test3' => ['testval3']]),
         );
