@@ -9,7 +9,7 @@ use Symfony\Component\Ldap\Entry;
 
 interface ConnectorInterface
 {
-    public const ERR_WRONG_PASS = 'WRONGUSERPASS';
+    public const string ERR_WRONG_PASS = 'WRONGUSERPASS';
 
 
     /**

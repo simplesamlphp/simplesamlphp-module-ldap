@@ -13,11 +13,11 @@ use function ldap_get_option;
  */
 class ActiveDirectory extends Ldap
 {
-    public const ERR_PASSWORD_RESET = 'RESETPASSWORD';
+    public const string ERR_PASSWORD_RESET = 'RESETPASSWORD';
 
-    public const ERR_ACCOUNT_RESET = 'RESETACCOUNT';
+    public const string ERR_ACCOUNT_RESET = 'RESETACCOUNT';
 
-    public const ERR_LOGON_RESTRICTION = 'LOGONRESTRICTION';
+    public const string ERR_LOGON_RESTRICTION = 'LOGONRESTRICTION';
 
 
     /**

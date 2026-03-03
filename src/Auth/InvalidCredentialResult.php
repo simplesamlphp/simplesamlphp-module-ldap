@@ -25,49 +25,49 @@ class InvalidCredentialResult
      *
      * @see https://ldapwiki.com/wiki/Common%20Active%20Directory%20Bind%20Errors
      */
-    public const LDAP_NO_SUCH_OBJECT = '525';
+    public const string LDAP_NO_SUCH_OBJECT = '525';
 
-    public const ERROR_LOGON_FAILURE = '52e';
+    public const string ERROR_LOGON_FAILURE = '52e';
 
-    public const ERROR_ACCOUNT_RESTRICTION = '52f';
+    public const string ERROR_ACCOUNT_RESTRICTION = '52f';
 
-    public const ERROR_INVALID_LOGON_HOURS = '530';
+    public const string ERROR_INVALID_LOGON_HOURS = '530';
 
-    public const ERROR_INVALID_WORKSTATION = '531';
+    public const string ERROR_INVALID_WORKSTATION = '531';
 
-    public const ERROR_PASSWORD_EXPIRED = '532';
+    public const string ERROR_PASSWORD_EXPIRED = '532';
 
-    public const ERROR_ACCOUNT_DISABLED = '533';
+    public const string ERROR_ACCOUNT_DISABLED = '533';
 
-    public const ERROR_TOO_MANY_CONTEXT_IDS = '568';
+    public const string ERROR_TOO_MANY_CONTEXT_IDS = '568';
 
-    public const ERROR_ACCOUNT_EXPIRED = '701';
+    public const string ERROR_ACCOUNT_EXPIRED = '701';
 
-    public const ERROR_PASSWORD_MUST_CHANGE = '773';
+    public const string ERROR_PASSWORD_MUST_CHANGE = '773';
 
-    public const ERROR_ACCOUNT_LOCKED_OUT = '775';
+    public const string ERROR_ACCOUNT_LOCKED_OUT = '775';
 
     /**
      * List of Simple Bind error codes
      *
      * N.B. - This is an incomplete list
      */
-    public const NT_STATUS_PASSWORD_EXPIRED = 'PASSWORD_EXPIRED';
+    public const string NT_STATUS_PASSWORD_EXPIRED = 'PASSWORD_EXPIRED';
 
-    public const NT_STATUS_PASSWORD_MUST_CHANGE = 'PASSWORD_MUST_CHANGE';
+    public const string NT_STATUS_PASSWORD_MUST_CHANGE = 'PASSWORD_MUST_CHANGE';
 
-    public const NT_STATUS_LOGON_FAILURE = 'LOGON_FAILURE';
+    public const string NT_STATUS_LOGON_FAILURE = 'LOGON_FAILURE';
 
     /**
      * List of keys for the code mapping
      */
-    public const KEY_INVALID_CREDENTIAL = 'invalid_credential';
+    public const string KEY_INVALID_CREDENTIAL = 'invalid_credential';
 
-    public const KEY_PASSWORD_ERROR = 'password_error';
+    public const string KEY_PASSWORD_ERROR = 'password_error';
 
-    public const KEY_ACCOUNT_ERROR = 'account_error';
+    public const string KEY_ACCOUNT_ERROR = 'account_error';
 
-    public const KEY_RESTRICTION = 'restriction';
+    public const string KEY_RESTRICTION = 'restriction';
 
 
     /**
