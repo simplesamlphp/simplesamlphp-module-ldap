@@ -191,7 +191,7 @@ class LdapMulti extends UserPassOrgBase
         /* Find authentication source. */
         Assert::keyExists($state, self::AUTHID);
 
-        /** @var \SimpleSAML\Module\core\Auth\UserPassOrgBase|null $source */
+        /** @var \SimpleSAML\Module\ldap\Auth\LdapMulti|null $source */
         $source = Auth\Source::getById($state[self::AUTHID]);
         if ($source === null) {
             throw new \Exception('Could not find authentication source with id ' . $state[self::AUTHID]);
