@@ -47,7 +47,7 @@
         "symfony/ldap": "^7.4"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "^1.11"
+        "simplesamlphp/simplesamlphp-test-framework": "^2.0"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-ldap/issues",
